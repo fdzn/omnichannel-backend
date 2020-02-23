@@ -66,18 +66,8 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 
 ## Stay in touch
 
-- Author - [Dimas Apriliansyah](https://github.com/dimasapriliansyah)
-- Website - [Github](https://github.com/dimasapriliansyah)
-
-## Backend Team
-- Lead Engineer1 - [Frans Kristanto](https://www.facebook.com/fiecar)
-- Lead Engineer2 - [Langgeng Indrasworo](http://emtpartsstore.com)
-- Core Engineer1 - [Dimas Apriliansyah](https://github.com/dimasapriliansyah)
-- Core Engineer2 - [Akhmad Faudzan Bakri](https://twitter.com/faudzanbakri)
-- Analyst1 - [Irham Hafidz](https://www.linkedin.com/in/irham-hafidz-08a727151)
-- Support1 - [Dimaz Julio Pratama](https://www.linkedin.com/in/dimaz-julio-pratama-52840851)
-- Support2 - [Febrian Ashari](https://www.instagram.com/febrianashari22)
-- Support3 - [Puji Agung Prasetyo](https://www.instagram.com/puji.a.prasetyo)
+- Author - [Akhmad Faudzan Bakri](https://twitter.com/faudzanbakri)
+- Website - [Twitter](https://twitter.com/faudzanbakri)
 
 ## License
 

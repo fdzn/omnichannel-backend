@@ -1,36 +1,55 @@
 import { Injectable } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
-import { CustomerInterface } from "../../schemas/customer.schema";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { Customer } from "../../entity/customer.entity";
+import { Contact } from "../../entity/contact.entity";
 
 //schema
 @Injectable()
 export class CustomerService {
   constructor(
-    @InjectModel("Customer")
-    private readonly customerModel: Model<CustomerInterface>
+    @InjectRepository(Customer)
+    private readonly customerRepository: Repository<Customer>,
+    @InjectRepository(Contact)
+    private readonly contactRepository: Repository<Contact>
   ) {}
 
-  async find(channelId: string, contactId: string): Promise<CustomerInterface> {
-    const foundCustomer = await this.customerModel.findOne({
-      contact: [{ type: channelId, detail: { id: contactId } }]
-    });
-    return foundCustomer;
+  async checkContactType(channelId: string): Promise<string> {
+    switch (channelId) {
+      case "whatsapp":
+        return "hp";
+      case "telegram":
+        return "telegram";
+      case "email":
+        return "email";
+      default:
+        return "hp";
+    }
   }
 
-  async create(channelId: string, from: string, fromName: string) {
-    const insertCustomer = new this.customerModel({
-      custName: fromName,
-      contact: [
-        {
-          type: channelId,
-          detail: {
-            id: from,
-            name: fromName
-          }
-        }
-      ]
+  async checkContact(contactType: string, contactId: string): Promise<Contact> {
+    const foundContact = await this.contactRepository.findOne({
+      where: { value: contactId, type: contactType }
     });
-    return await insertCustomer.save();
+    return foundContact;
+  }
+
+  async create(contactType: string, data): Promise<Customer> {
+    let insertCustomer = new Customer();
+    insertCustomer.name = data.fromName;
+    const resultInsertCustomer = await this.customerRepository.save(
+      insertCustomer
+    );
+
+    let insertContact = new Contact();
+    insertContact.customerId = resultInsertCustomer.id;
+    insertContact.type = contactType;
+    insertContact.value = data.from;
+    insertContact.avatar = data.avatar ? data.avatar : null;
+    const resultInsertContact = await this.contactRepository.save(
+      insertContact
+    );
+
+    return resultInsertCustomer;
   }
 }

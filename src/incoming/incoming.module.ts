@@ -1,8 +1,9 @@
 import { Module } from "@nestjs/common";
 
-import { TelegramModule } from "./telegram/telegram.module";
+// import { TelegramModule } from "./telegram/telegram.module";
+import { WhatsappModule } from "./whatsapp/whatsapp.module";
 
 @Module({
-  imports: [TelegramModule]
+  imports: [WhatsappModule]
 })
 export class IncomingModule {}

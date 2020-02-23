@@ -1,15 +1,15 @@
 import { Injectable } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
-import { SessionInterface } from "../../schemas/session.schema";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { InteractionHeader } from "../../entity/interaction_header.entity";
 import * as uuid from "uuid/v4";
 
 //schema
 @Injectable()
 export class SessionService {
   constructor(
-    @InjectModel("Session")
-    private readonly sessionModel: Model<SessionInterface>
+    @InjectRepository(InteractionHeader)
+    private readonly sessionRepository: Repository<InteractionHeader>
   ) {}
 
   generate(channelId: string): string {
@@ -17,28 +17,25 @@ export class SessionService {
     return sessionId;
   }
 
-  async find(channelId: string, contactId: string): Promise<SessionInterface> {
-    const foundContactId = await this.sessionModel.findOne({
-      channelId,
-      contactId
+  async check(channelId: string, contactId: string): Promise<{sessionId}> {
+    const foundSession = await this.sessionRepository.findOne({
+      select: ["sessionId"],
+      where: { from: contactId, channelId: channelId, endStatus: false }
     });
-    return foundContactId;
+    return foundSession;
   }
 
-  async create(sessionId: string, channelId: string, custId, { from }) {
-    const insertSession = new this.sessionModel({
-      sessionId: sessionId,
-      contactId: from,
-      custId: custId,
-      channelId: channelId,
-      agentId: 0,
-      groupId: 0,
-      priority: 0,
-      dateCreateSession: new Date(),
-      createdAt: new Date(),
-      updatedAt: new Date()
-    });
+  async create(sessionId: string, channelId: string, custId, { from,fromName,groupId,priority }) {
+    let insertHeader = new InteractionHeader();
+    insertHeader.channelId = channelId;
+    insertHeader.customerId = custId;
+    insertHeader.from = from;
+    insertHeader.fromName = fromName;
+    insertHeader.groupId = groupId;
+    insertHeader.priority = priority;
+    insertHeader.sessionId = sessionId;
+    insertHeader.startDate = new Date();
 
-    return await insertSession.save();
+    return await this.sessionRepository.save(insertHeader);
   }
 }
