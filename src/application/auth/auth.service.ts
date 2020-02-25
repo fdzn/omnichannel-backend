@@ -4,6 +4,7 @@ import { Repository } from "typeorm";
 
 import { User } from "../../entity/user.entity";
 import { mGroupSkill } from "../../entity/m_group_skill.entity";
+import { InteractionHeader } from "../../entity/interaction_header.entity";
 
 @Injectable()
 export class AuthService {
@@ -12,7 +13,9 @@ export class AuthService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     @InjectRepository(mGroupSkill)
-    private readonly mGroupSkillRepository: Repository<mGroupSkill>
+    private readonly mGroupSkillRepository: Repository<mGroupSkill>,
+    @InjectRepository(InteractionHeader)
+    private readonly sessionRepository: Repository<InteractionHeader>
   ) {}
 
   async login(data) {
@@ -36,6 +39,13 @@ export class AuthService {
           statusCode: 401
         };
       }
+      const updateData = {
+        isLogin: true
+      };
+      const updateStatus = await this.userRepository.update(
+        { username: foundUser.username },
+        updateData
+      );
 
       const groupSkill = await this.mGroupSkillRepository.findOne({
         where: { agentUsername: foundUser.username }
@@ -47,6 +57,34 @@ export class AuthService {
           user: foundUser,
           groupSkill: groupSkill
         },
+        statusCode: 201
+      };
+    } catch (error) {
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async logout(data) {
+    try {
+      //UPDATE INTERACTION HEADER
+      const updateHeader = {
+        agentUsername: null
+      };
+      await this.sessionRepository.update(
+        { agentUsername: data.username },
+        updateHeader
+      );
+
+      const updateUser = {
+        isLogin: false
+      };
+      await this.userRepository.update(
+        { username: data.username },
+        updateUser
+      );
+      return {
+        isError: false,
+        data: "logout Success",
         statusCode: 201
       };
     } catch (error) {

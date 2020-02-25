@@ -16,6 +16,11 @@ export class AuthLogin {
   password: string;
 }
 
+export class AuthLogout {
+  @IsNotEmpty()
+  username: string;
+}
+
 // export class IncomingTelegramResponse {
 //   @IsNotEmpty()
 //   id: string;
