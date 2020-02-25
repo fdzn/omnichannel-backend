@@ -64,8 +64,8 @@ export class WhatsappService {
       }
 
       //INSERT QUEUE
-      data.priority = 0
-      data.groupId = 1
+      data.priority = 0;
+      data.groupId = 1;
       const resultSessionCreate = await this.sessionService.create(
         sessionId,
         this.channelId,
