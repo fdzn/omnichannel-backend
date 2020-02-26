@@ -5,7 +5,7 @@ import { Response } from "express";
 import { InteractionService } from "./interaction.service";
 
 //DTO
-import { pickupManualPost, pickupAutoPost } from "./dto/interaction.dto";
+import { pickupManualPost, pickupAutoPost,endPost } from "./dto/interaction.dto";
 // import { AuthLogout } from "./dto/auth-logout.dto";
 
 @Controller("interaction")
@@ -26,6 +26,13 @@ export class InteractionController {
     @Res() res: Response
   ) {
     const result = await this.interactionService.pickupBySession(postData);
+    res.status(result.statusCode).send(result);
+  }
+
+  @Post("end")
+  @HttpCode(200)
+  async endInteraction(@Body() postData: endPost, @Res() res: Response) {
+    const result = await this.interactionService.endSession(postData);
     res.status(result.statusCode).send(result);
   }
 }

@@ -54,13 +54,29 @@ export class InteractionService {
       let updateData = new InteractionHeader();
       updateData.agentUsername = data.agentId;
       updateData.pickupDate = new Date();
-      
+
       const updateStatus = await this.sessionRepository.update(
         { id: foundSession.id },
         updateData
       );
 
       return { isError: false, data: foundSession, statusCode: 200 };
+    } catch (error) {
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async endSession(data) {
+    try {
+      let updateData = new InteractionHeader();
+      updateData.endDate = new Date();
+      updateData.endStatus = true;
+      const updateStatus = await this.sessionRepository.update(
+        { sessionId: data.sessionId },
+        updateData
+      );
+
+      return { isError: false, data: updateStatus, statusCode: 200 };
     } catch (error) {
       return { isError: true, data: error.message, statusCode: 500 };
     }

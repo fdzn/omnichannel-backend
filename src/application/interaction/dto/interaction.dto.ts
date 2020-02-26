@@ -19,3 +19,8 @@ export class pickupAutoPost {
   @IsNotEmpty()
   sessionId: string;
 }
+
+export class endPost {
+  @IsNotEmpty()
+  sessionId: string;
+}
