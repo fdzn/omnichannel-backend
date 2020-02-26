@@ -83,6 +83,7 @@ export class WhatsappService {
       insertInteraction.actionType = ActionType.IN;
       insertInteraction.sessionId = sessionId;
       insertInteraction.sendDate = new Date();
+      await this.whatsappRepository.save(insertInteraction);
       return {
         isError: false,
         data: "incoming success",
