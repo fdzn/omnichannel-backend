@@ -1,12 +1,4 @@
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsString,
-  MinLength,
-  MaxLength,
-  IsAlphanumeric,
-  IsOptional
-} from "class-validator";
+import { IsNotEmpty, IsOptional, IsInt } from "class-validator";
 
 export class IncomingWhatsapp {
   @IsNotEmpty()
@@ -25,26 +17,14 @@ export class IncomingWhatsapp {
   media: string;
 }
 
-// export class IncomingTelegramResponse {
-//   @IsNotEmpty()
-//   id: string;
+export class IncomingWhatsappResponse {
+  @IsNotEmpty()
+  isError: boolean;
 
-//   @IsNotEmpty()
-//   @IsAlphanumeric()
-//   @MinLength(2)
-//   @MaxLength(50)
-//   userid: string;
+  @IsNotEmpty()
+  data: string;
 
-//   @IsNotEmpty()
-//   @IsString()
-//   @MinLength(2)
-//   @MaxLength(50)
-//   name: string;
-
-//   @IsEmail()
-//   email: string;
-
-//   createdAt: Date;
-
-//   updatedAt: Date;
-// }
+  @IsNotEmpty()
+  @IsInt()
+  statusCode: number;
+}

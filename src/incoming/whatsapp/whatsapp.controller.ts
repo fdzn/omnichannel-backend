@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body } from "@nestjs/common";
+import { Controller, Get, Post, Res, Body } from "@nestjs/common";
+import { Response } from "express";
 import { WhatsappService } from "./whatsapp.service";
 import { IncomingWhatsapp } from "./dto/incoming-whatsapp.dto";
 
@@ -7,12 +8,13 @@ export class WhatsappController {
   constructor(private readonly whatsappService: WhatsappService) {}
 
   @Post()
-  async create(@Body() createIncomingWhatsapp: IncomingWhatsapp) {
-    return await this.whatsappService.createIncoming(createIncomingWhatsapp);
+  async incoming(@Body() dataIncoming: IncomingWhatsapp, @Res() res: Response) {
+    const result = await this.whatsappService.createIncoming(dataIncoming);
+    res.status(result.statusCode).send(result);
   }
 
-  @Get()
-  findAll(): object {
-    return this.whatsappService.test();;
-  }
+  // @Get()
+  // findAll(): object {
+  //   return this.whatsappService.test();
+  // }
 }

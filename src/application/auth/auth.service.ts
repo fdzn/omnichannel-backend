@@ -78,10 +78,7 @@ export class AuthService {
       const updateUser = {
         isLogin: false
       };
-      await this.userRepository.update(
-        { username: data.username },
-        updateUser
-      );
+      await this.userRepository.update({ username: data.username }, updateUser);
       return {
         isError: false,
         data: "logout Success",

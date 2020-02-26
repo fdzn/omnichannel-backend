@@ -17,7 +17,7 @@ export class SessionService {
     return sessionId;
   }
 
-  async check(channelId: string, contactId: string): Promise<{sessionId}> {
+  async check(channelId: string, contactId: string): Promise<{ sessionId }> {
     const foundSession = await this.sessionRepository.findOne({
       select: ["sessionId"],
       where: { from: contactId, channelId: channelId, endStatus: false }
@@ -25,7 +25,12 @@ export class SessionService {
     return foundSession;
   }
 
-  async create(sessionId: string, channelId: string, custId, { from,fromName,groupId,priority }) {
+  async create(
+    sessionId: string,
+    channelId: string,
+    custId,
+    { from, fromName, groupId, priority }
+  ) {
     let insertHeader = new InteractionHeader();
     insertHeader.channelId = channelId;
     insertHeader.customerId = custId;

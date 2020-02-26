@@ -4,7 +4,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
-  JoinColumn,
+  JoinColumn
 } from "typeorm";
 import { mUnit } from "./m_unit.entity";
 import { mGroup } from "./m_group.entity";
