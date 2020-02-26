@@ -35,6 +35,12 @@ export class mGroupSkill {
 
   @Column({ type: "smallint", default: 1 })
   limit: number;
+  
+  @Column({ type: "smallint", default: 0 })
+  slot: number;
+
+  @Column({nullable:true})
+  lastDist: Date;
 
   @CreateDateColumn({ type: "timestamp" })
   createdAt: Date;

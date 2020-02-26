@@ -17,7 +17,7 @@ export class InteractionHeader {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 50, unique: true })
+  @Column({ primary: true, length: 50, unique: true })
   sessionId: string;
 
   @Column({ length: 11, nullable: true })

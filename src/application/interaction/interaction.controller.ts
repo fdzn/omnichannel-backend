@@ -5,7 +5,11 @@ import { Response } from "express";
 import { InteractionService } from "./interaction.service";
 
 //DTO
-import { pickupManualPost, pickupAutoPost,endPost } from "./dto/interaction.dto";
+import {
+  pickupManualPost,
+  pickupAutoPost,
+  endPost
+} from "./dto/interaction.dto";
 // import { AuthLogout } from "./dto/auth-logout.dto";
 
 @Controller("interaction")
