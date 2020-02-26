@@ -10,6 +10,8 @@ import {
   pickupAutoPost,
   endPost
 } from "./dto/interaction.dto";
+
+import { CwcPost } from "./dto/cwc.dto";
 // import { AuthLogout } from "./dto/auth-logout.dto";
 
 @Controller("interaction")
@@ -37,6 +39,13 @@ export class InteractionController {
   @HttpCode(200)
   async endInteraction(@Body() postData: endPost, @Res() res: Response) {
     const result = await this.interactionService.endSession(postData);
+    res.status(result.statusCode).send(result);
+  }
+
+  @Post("submitCWC")
+  @HttpCode(200)
+  async submitCWC(@Body() postData: CwcPost, @Res() res: Response) {
+    const result = await this.interactionService.submitCWC(postData);
     res.status(result.statusCode).send(result);
   }
 }
