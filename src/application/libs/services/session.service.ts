@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { InteractionHeader } from "../../entity/interaction_header.entity";
+import { InteractionHeader } from "../../../entity/interaction_header.entity";
 import * as uuid from "uuid/v4";
 
 //schema

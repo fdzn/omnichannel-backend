@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Customer } from "../../entity/customer.entity";
-import { Contact } from "../../entity/contact.entity";
+import { Customer } from "../../../entity/customer.entity";
+import { Contact } from "../../../entity/contact.entity";
 
 //schema
 @Injectable()

@@ -1,11 +1,20 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
+
 // Application
-// Incoming
-import { IncomingModule } from "./incoming/incoming.module";
 import { ApplicationModule } from "./application/application.module";
 
+//Socket
+import { EventsModule } from "./sockets/events.module";
+
+//Subscribers
+import { SubscribersModule } from "./subscribers/subscribes.module";
 @Module({
-  imports: [TypeOrmModule.forRoot(), IncomingModule, ApplicationModule]
+  imports: [
+    TypeOrmModule.forRoot(),
+    ApplicationModule,
+    EventsModule,
+    SubscribersModule
+  ]
 })
 export class AppModule {}

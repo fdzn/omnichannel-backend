@@ -48,7 +48,7 @@ export class InteractionHeader {
   fromName: string;
 
   @Column({ length: 20, nullable: true })
-  agentUsername: number;
+  agentUsername: string;
   @ManyToOne(
     type => User,
     user => user.username

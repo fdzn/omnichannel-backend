@@ -4,7 +4,7 @@ import { Repository } from "typeorm";
 
 import { SessionService } from "../../libs/services/session.service";
 import { CustomerService } from "../../libs/services/customer.service";
-import { interactionWhatsapp } from "../../entity/interaction_whatsapp.entity";
+import { interactionWhatsapp } from "../../../entity/interaction_whatsapp.entity";
 import { ActionType } from "src/entity/templates/generalChat";
 
 @Injectable()
