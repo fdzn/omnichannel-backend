@@ -32,14 +32,13 @@ export class InteractionService {
       }
 
       let updateData = new InteractionHeader();
+      updateData = foundSession;
       updateData.agentUsername = data.agentId;
       updateData.pickupDate = new Date();
-      const updateStatus = await this.sessionRepository.update(
-        { sessionId: data.sessionId },
-        updateData
-      );
+      const updateStatus = await this.sessionRepository.save(updateData);
       return { isError: false, data: updateStatus, statusCode: 200 };
     } catch (error) {
+      console.error(error);
       return { isError: true, data: error.message, statusCode: 500 };
     }
   }
@@ -63,14 +62,15 @@ export class InteractionService {
       }
 
       let updateData = new InteractionHeader();
-      updateData = foundSession
-      updateData.agentUsername = data.agentId
-      updateData.pickupDate = new Date()
+      updateData = foundSession;
+      updateData.agentUsername = data.agentId;
+      updateData.pickupDate = new Date();
 
       const updateStatus = await this.sessionRepository.save(updateData);
 
       return { isError: false, data: foundSession, statusCode: 200 };
     } catch (error) {
+      console.error(error);
       return { isError: true, data: error.message, statusCode: 500 };
     }
   }
@@ -98,6 +98,7 @@ export class InteractionService {
       );
       return { isError: false, data: detailInteraction, statusCode: 200 };
     } catch (error) {
+      console.error(error);
       return { isError: true, data: error.message, statusCode: 500 };
     }
   }
@@ -126,6 +127,7 @@ export class InteractionService {
       );
       return { isError: false, data: detailInteraction, statusCode: 200 };
     } catch (error) {
+      console.error(error);
       return { isError: true, data: error.message, statusCode: 500 };
     }
   }
@@ -142,6 +144,7 @@ export class InteractionService {
 
       return { isError: false, data: updateStatus, statusCode: 200 };
     } catch (error) {
+      console.error(error);
       return { isError: true, data: error.message, statusCode: 500 };
     }
   }
@@ -167,19 +170,28 @@ export class InteractionService {
         where: { sessionId: data.sessionId }
       });
 
-      //INSERT KE HISTORY
+      //MOVE HEADER TO HISTORY
       let insertDataHistory = new InteractionHeader();
       insertDataHistory = foundSession;
       await this.sessionHistoryRepository.save(insertDataHistory);
-
-      //DELETE HEADER
-      const DeleteStatus = this.sessionRepository.delete({
+      await this.sessionRepository.delete({
         sessionId: data.sessionId,
         endStatus: true
       });
-      
-      //INSERT INTERACTION KE HISTORY
-      
+
+      //MOVE INTERACTION TO HISTORY
+      const entityManager = getManager();
+      const detailChannel = await this.mChannelRepository.findOne({
+        where: { id: data.channelId }
+      });
+      const detailInteraction = await entityManager.query(
+        `INSERT INTO ${detailChannel.tableHist} SELECT * FROM ${detailChannel.tableLog} WHERE sessionId=?`,
+        [data.sessionId]
+      );
+      const deleteInteraction = await entityManager.query(
+        `DELETE FROM ${detailChannel.tableLog} WHERE sessionId=?`,
+        [data.sessionId]
+      );
 
       //INSERT CWC
       let insertCwc = new Cwc();
@@ -198,6 +210,7 @@ export class InteractionService {
 
       return { isError: false, data: resultInsert, statusCode: 200 };
     } catch (error) {
+      console.error(error);
       return { isError: true, data: error.message, statusCode: 500 };
     }
   }

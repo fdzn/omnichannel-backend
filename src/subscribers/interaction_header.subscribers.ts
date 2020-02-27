@@ -27,12 +27,14 @@ export class InteractionHeaderSubscriber
   }
 
   afterUpdate(event: UpdateEvent<InteractionHeader>) {
-    this.eventsGateway.sendData(
-      `agent:${event.entity.agentUsername}`,
-      "newQueue",
-      event.entity
-    );
     console.log(`AFTER INTERACTION HEADER UPDATE: `, event.entity);
+    if (event.entity) {
+      this.eventsGateway.sendData(
+        `agent:${event.entity.agentUsername}`,
+        "newQueue",
+        event.entity
+      );
+    }
   }
 
   afterRemove(event: RemoveEvent<InteractionHeader>) {

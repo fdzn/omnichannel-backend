@@ -75,7 +75,7 @@ export class User {
   isLogin: boolean;
 
   @Column({
-    default: false
+    default: true
   })
   isAux: boolean;
 

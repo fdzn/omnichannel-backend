@@ -35,7 +35,7 @@ export class AuthService {
       if (data.password !== foundUser.password) {
         return {
           isError: true,
-          data: "password is not found",
+          data: "password incorrect",
           statusCode: 401
         };
       }
@@ -60,6 +60,7 @@ export class AuthService {
         statusCode: 201
       };
     } catch (error) {
+      console.error(error);
       return { isError: true, data: error.message, statusCode: 500 };
     }
   }
@@ -76,7 +77,8 @@ export class AuthService {
       );
 
       const updateUser = {
-        isLogin: false
+        isLogin: false,
+        isAux: true
       };
       await this.userRepository.update({ username: data.username }, updateUser);
       return {
@@ -85,6 +87,7 @@ export class AuthService {
         statusCode: 201
       };
     } catch (error) {
+      console.error(error)
       return { isError: true, data: error.message, statusCode: 500 };
     }
   }

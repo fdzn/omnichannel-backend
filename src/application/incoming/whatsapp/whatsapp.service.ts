@@ -90,6 +90,7 @@ export class WhatsappService {
         statusCode: 201
       };
     } catch (error) {
+      console.error(error);
       return { isError: true, data: error.message, statusCode: 500 };
     }
   }
