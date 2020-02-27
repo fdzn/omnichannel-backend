@@ -72,11 +72,6 @@ export class User {
   @Column({
     default: false
   })
-  socketStatus: boolean;
-
-  @Column({
-    default: false
-  })
   isLogin: boolean;
 
   @Column({

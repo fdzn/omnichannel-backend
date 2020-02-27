@@ -3,7 +3,7 @@ import { IsNotEmpty, IsOptional, IsInt } from "class-validator";
 export class CwcPost {
   @IsNotEmpty()
   name: string;
-  
+
   @IsNotEmpty()
   agentId: string;
 

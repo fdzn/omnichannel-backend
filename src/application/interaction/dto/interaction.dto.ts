@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsInt } from "class-validator";
+import { IsNotEmpty, IsInt, IsEnum } from "class-validator";
 
 export class pickupManualPost {
   @IsNotEmpty()
@@ -23,4 +23,34 @@ export class pickupAutoPost {
 export class endPost {
   @IsNotEmpty()
   sessionId: string;
+}
+
+export enum PostType {
+  "interaction",
+  "history"
+}
+
+export class GetInteractionPost {
+  @IsNotEmpty()
+  channelId: string;
+
+  @IsNotEmpty()
+  sessionId: string;
+
+  @IsEnum(PostType)
+  type: PostType;
+}
+
+export class GetInteractionByCustomerPost {
+  @IsNotEmpty()
+  channelId: string;
+
+  @IsNotEmpty()
+  from: string;
+
+  @IsInt()
+  page: number;
+
+  @IsEnum(PostType)
+  type: PostType;
 }

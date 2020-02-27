@@ -8,7 +8,9 @@ import { InteractionService } from "./interaction.service";
 import {
   pickupManualPost,
   pickupAutoPost,
-  endPost
+  endPost,
+  GetInteractionPost,
+  GetInteractionByCustomerPost
 } from "./dto/interaction.dto";
 
 import { CwcPost } from "./dto/cwc.dto";
@@ -46,6 +48,28 @@ export class InteractionController {
   @HttpCode(200)
   async submitCWC(@Body() postData: CwcPost, @Res() res: Response) {
     const result = await this.interactionService.submitCWC(postData);
+    res.status(result.statusCode).send(result);
+  }
+
+  @Post("getInteraction")
+  @HttpCode(200)
+  async getInteraction(
+    @Body() postData: GetInteractionPost,
+    @Res() res: Response
+  ) {
+    const result = await this.interactionService.getInteraction(postData);
+    res.status(result.statusCode).send(result);
+  }
+
+  @Post("getInteractionByCustomer")
+  @HttpCode(200)
+  async getInteractionByCustomer(
+    @Body() postData: GetInteractionByCustomerPost,
+    @Res() res: Response
+  ) {
+    const result = await this.interactionService.getInteractionByCustomer(
+      postData
+    );
     res.status(result.statusCode).send(result);
   }
 }
