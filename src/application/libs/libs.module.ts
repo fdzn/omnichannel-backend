@@ -3,15 +3,27 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { SessionService } from "./services/session.service";
 import { CustomerService } from "./services/customer.service";
+import { InteractionLibService } from "./services/interaction.service";
+
 // Entity
 import { InteractionHeader } from "../../entity/interaction_header.entity";
+import { InteractionWhatsapp } from "../../entity/interaction_whatsapp.entity";
+import { InteractionWhatsappHistory } from "../../entity/interaction_whatsapp_history.entity";
 import { Contact } from "../../entity/contact.entity";
 import { Customer } from "../../entity/customer.entity";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([InteractionHeader, Contact, Customer])],
-  exports: [SessionService, CustomerService],
+  imports: [
+    TypeOrmModule.forFeature([
+      InteractionHeader,
+      InteractionWhatsapp,
+      InteractionWhatsappHistory,
+      Contact,
+      Customer
+    ])
+  ],
+  exports: [SessionService, CustomerService, InteractionLibService],
   controllers: [],
-  providers: [SessionService, CustomerService]
+  providers: [SessionService, CustomerService, InteractionLibService]
 })
 export class LibsModule {}

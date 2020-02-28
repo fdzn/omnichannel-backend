@@ -30,11 +30,7 @@ export class InteractionHeaderSubscriber
   afterUpdate(event: UpdateEvent<InteractionHeader>) {
     console.log(`AFTER INTERACTION HEADER UPDATE: `, event.entity);
     if (event.entity) {
-      this.eventsGateway.sendData(
-        `agent:${event.entity.agentUsername}`,
-        "newQueue",
-        event.entity
-      );
+      this.eventsGateway.sendWorkOrder(event.entity)
     }
   }
 

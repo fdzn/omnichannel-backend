@@ -5,7 +5,7 @@ import { Repository } from "typeorm";
 import { User } from "../../entity/user.entity";
 import { mGroupSkill } from "../../entity/m_group_skill.entity";
 import { InteractionHeader } from "../../entity/interaction_header.entity";
-import { workOrder } from "../../entity/work_order.entity";
+import { WorkOrder } from "../../entity/work_order.entity";
 
 //DTO
 import { AuthLogin } from "./dto/auth-login.dto";
@@ -20,8 +20,8 @@ export class AuthService {
     private readonly mGroupSkillRepository: Repository<mGroupSkill>,
     @InjectRepository(InteractionHeader)
     private readonly sessionRepository: Repository<InteractionHeader>,
-    @InjectRepository(workOrder)
-    private readonly workOrderRepository: Repository<workOrder>
+    @InjectRepository(WorkOrder)
+    private readonly workOrderRepository: Repository<WorkOrder>
   ) {}
 
   async login(data: AuthLogin) {
@@ -83,7 +83,7 @@ export class AuthService {
       );
 
       //UPDATE WORK ORDER
-      let updateWorkOrder = new workOrder();
+      let updateWorkOrder = new WorkOrder();
       updateWorkOrder.slot = 0;
       await this.workOrderRepository.update(
         { agentUsername: data.username },

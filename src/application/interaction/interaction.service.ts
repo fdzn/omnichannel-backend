@@ -2,6 +2,8 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, getManager } from "typeorm";
 
+//SERVICE
+import { InteractionLibService } from "../libs/services/interaction.service";
 import { InteractionHeader } from "../../entity/interaction_header.entity";
 import { InteractionHeaderHistory } from "../../entity/interaction_header_history.entity";
 import { mChannel } from "../../entity/m_channel.entity";
@@ -32,7 +34,8 @@ export class InteractionService {
     @InjectRepository(Cwc)
     private readonly cwcRepository: Repository<Cwc>,
     @InjectRepository(mChannel)
-    private readonly mChannelRepository: Repository<mChannel>
+    private readonly mChannelRepository: Repository<mChannel>,
+    private readonly interactionLibService: InteractionLibService
   ) {}
 
   async pickupBySession(data: pickupAutoPost) {
@@ -76,7 +79,7 @@ export class InteractionService {
 
       let updateData = new InteractionHeader();
       updateData = foundSession;
-      updateData.agentUsername = data.agentId;
+      updateData.agentUsername = data.username;
       updateData.pickupDate = new Date();
 
       const updateStatus = await this.sessionRepository.save(updateData);
@@ -90,6 +93,7 @@ export class InteractionService {
 
   async loadWorkOrder(data: loadWorkOrderPost) {
     try {
+      let detailChannel;
       const foundSession = await this.sessionRepository.find({
         where: {
           agentUsername: data.username,
@@ -97,7 +101,20 @@ export class InteractionService {
         }
       });
 
-      return { isError: false, data: foundSession, statusCode: 200 };
+      if (foundSession.length == 0) {
+        return { isError: false, data: [], statusCode: 200 };
+      }
+
+      let result;
+      result = foundSession;
+      for (let index = 0; index < result.length; index++) {
+        result[index].lastChat = await this.interactionLibService.getLastChat(
+          result[index].channelId,
+          result[index].sessionId
+        );
+      }
+      console.log("RESULT", result);
+      return { isError: false, data: result, statusCode: 200 };
     } catch (error) {
       console.error(error);
       return { isError: true, data: error.message, statusCode: 500 };
@@ -163,13 +180,24 @@ export class InteractionService {
 
   async endSession(data: endPost) {
     try {
+      const countCase = await this.interactionLibService.countCase(
+        data.channelId,
+        data.sessionId
+      );
       let updateData = new InteractionHeader();
       updateData.endDate = new Date();
       updateData.endStatus = true;
+      updateData.caseIn = countCase.caseIn;
+      updateData.caseOut = countCase.caseOut;
+
       const updateStatus = await this.sessionRepository.update(
-        { sessionId: data.sessionId },
+        { sessionId: data.sessionId, agentUsername: data.username },
         updateData
       );
+
+      if (updateStatus.raw.affectedRows == 0) {
+        return { isError: true, data: "no data updated", statusCode: 404 };
+      }
 
       return { isError: false, data: updateStatus, statusCode: 200 };
     } catch (error) {
@@ -190,7 +218,7 @@ export class InteractionService {
         updateHeader
       );
 
-      if (updateHeaderStatus.raw.affected == 0) {
+      if (updateHeaderStatus.raw.affectedRows == 0) {
         return { isError: false, data: "SessionId not found", statusCode: 404 };
       }
 
@@ -199,42 +227,32 @@ export class InteractionService {
         where: { sessionId: data.sessionId }
       });
 
-      //MOVE HEADER TO HISTORY
+      // //MOVE HEADER TO HISTORY
       let insertDataHistory = new InteractionHeader();
       insertDataHistory = foundSession;
       await this.sessionHistoryRepository.save(insertDataHistory);
       await this.sessionRepository.remove(insertDataHistory);
 
       //MOVE INTERACTION TO HISTORY
-      const entityManager = getManager();
-      const detailChannel = await this.mChannelRepository.findOne({
-        where: { id: data.channelId }
-      });
-      const detailInteraction = await entityManager.query(
-        `INSERT INTO ${detailChannel.tableHist} SELECT * FROM ${detailChannel.tableLog} WHERE sessionId=?`,
-        [data.sessionId]
-      );
-      const deleteInteraction = await entityManager.query(
-        `DELETE FROM ${detailChannel.tableLog} WHERE sessionId=?`,
-        [data.sessionId]
+      const move = await this.interactionLibService.moveToHistory(
+        foundSession.channelId,
+        data.sessionId
       );
 
       //INSERT CWC
       let insertCwc = new Cwc();
-      insertCwc.agentUsername = data.agentId;
+      insertCwc.agentUsername = data.username;
       insertCwc.categoryId = data.categoryId;
-      insertCwc.channelId = data.channelId;
-      insertCwc.customerId = data.customerId;
       insertCwc.feedback = data.feedback;
       insertCwc.remark = data.remark;
       insertCwc.name = data.name;
       insertCwc.sentiment = data.sentiment;
       insertCwc.sessionId = data.sessionId;
       insertCwc.subcategoryId = data.subcategoryId;
-      insertCwc.updaterUsername = data.agentId;
+      insertCwc.updaterUsername = data.username;
       const resultInsert = await this.cwcRepository.save(insertCwc);
 
-      return { isError: false, data: resultInsert, statusCode: 200 };
+      return { isError: false, data: move, statusCode: 200 };
     } catch (error) {
       console.error(error);
       return { isError: true, data: error.message, statusCode: 500 };

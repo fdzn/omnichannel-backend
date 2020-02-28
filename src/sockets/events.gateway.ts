@@ -7,6 +7,7 @@ import {
 } from "@nestjs/websockets";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
+import { InteractionLibService } from "../application/libs/services/interaction.service";
 import { InteractionHeader } from "../entity/interaction_header.entity";
 import { Socket, Server } from "socket.io";
 
@@ -15,7 +16,8 @@ export class EventsGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     @InjectRepository(InteractionHeader)
-    private readonly sessionRepository: Repository<InteractionHeader>
+    private readonly sessionRepository: Repository<InteractionHeader>,
+    private readonly interactionLibService: InteractionLibService
   ) {}
 
   @WebSocketServer()
@@ -56,5 +58,11 @@ export class EventsGateway
       output[data.channelId] = parseInt(data.count);
     });
     this.sendData("agent", "countQueue", output);
+  }
+  async sendWorkOrder(data: InteractionHeader) {
+    let workOrder;
+    workOrder = data;
+    workOrder.lastChat = await this.interactionLibService.getLastChat(data.channelId,data.sessionId)
+    this.sendData(`agent:${data.agentUsername}`, "newQueue", workOrder);
   }
 }

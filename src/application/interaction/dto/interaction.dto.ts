@@ -2,7 +2,7 @@ import { IsNotEmpty, IsInt, IsEnum } from "class-validator";
 
 export class pickupManualPost {
   @IsNotEmpty()
-  agentId: string;
+  username: string;
 
   @IsNotEmpty()
   @IsInt()
@@ -31,6 +31,12 @@ export class loadWorkOrderPost {
 export class endPost {
   @IsNotEmpty()
   sessionId: string;
+
+  @IsNotEmpty()
+  channelId: string;
+
+  @IsNotEmpty()
+  username: string;
 }
 
 export enum PostType {

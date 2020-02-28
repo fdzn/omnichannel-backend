@@ -10,6 +10,8 @@ import { InteractionHeaderHistory } from "../../entity/interaction_header_histor
 import { mChannel } from "../../entity/m_channel.entity";
 import { Cwc } from "../../entity/cwc.entity";
 
+//MODULE
+import { LibsModule } from "../libs/libs.module";
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -17,7 +19,8 @@ import { Cwc } from "../../entity/cwc.entity";
       InteractionHeaderHistory,
       Cwc,
       mChannel
-    ])
+    ]),
+    LibsModule
   ],
   providers: [InteractionService],
   controllers: [InteractionController]

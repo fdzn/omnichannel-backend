@@ -4,7 +4,7 @@ import { Repository } from "typeorm";
 
 import { SessionService } from "../../libs/services/session.service";
 import { CustomerService } from "../../libs/services/customer.service";
-import { interactionWhatsapp } from "../../../entity/interaction_whatsapp.entity";
+import { InteractionWhatsapp } from "../../../entity/interaction_whatsapp.entity";
 import { ActionType } from "src/entity/templates/generalChat";
 
 import { IncomingWhatsapp } from "./dto/incoming-whatsapp.dto";
@@ -12,8 +12,8 @@ import { IncomingWhatsapp } from "./dto/incoming-whatsapp.dto";
 export class WhatsappService {
   private channelId: string;
   constructor(
-    @InjectRepository(interactionWhatsapp)
-    private readonly whatsappRepository: Repository<interactionWhatsapp>,
+    @InjectRepository(InteractionWhatsapp)
+    private readonly whatsappRepository: Repository<InteractionWhatsapp>,
     private readonly sessionService: SessionService,
     private readonly customerService: CustomerService
   ) {
@@ -36,7 +36,7 @@ export class WhatsappService {
   async createIncoming(data: IncomingWhatsapp) {
     try {
       let sessionId;
-      data.fromName = data.fromName ? data.fromName : "noName";
+      data.fromName = data.fromName ? data.fromName : "-";
 
       //CHECK SESSION
       const foundSession = await this.sessionService.check(
@@ -81,15 +81,17 @@ export class WhatsappService {
         );
       }
 
-      let insertInteraction = new interactionWhatsapp();
+      let insertInteraction = new InteractionWhatsapp();
       insertInteraction.convId = data.convId;
       insertInteraction.from = data.from;
       insertInteraction.fromName = data.fromName;
       insertInteraction.media = data.media;
       insertInteraction.message = data.message;
-      if (data.media) {
+      if (!data.media) {
         insertInteraction.messageType = "text";
-      } else {
+      } else if(data.media.length < 10) {
+        insertInteraction.messageType = "text";
+      }else{
         insertInteraction.messageType = "media";
       }
 

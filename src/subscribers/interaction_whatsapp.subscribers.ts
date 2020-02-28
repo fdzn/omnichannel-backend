@@ -4,11 +4,11 @@ import {
   EventSubscriber,
   InsertEvent
 } from "typeorm";
-import { interactionWhatsapp } from "../entity/interaction_whatsapp.entity";
+import { InteractionWhatsapp } from "../entity/interaction_whatsapp.entity";
 import { EventsGateway } from "../sockets/events.gateway";
 @EventSubscriber()
 export class InteractionWhatsappSubscriber
-  implements EntitySubscriberInterface<interactionWhatsapp> {
+  implements EntitySubscriberInterface<InteractionWhatsapp> {
   constructor(
     connection: Connection,
     private readonly eventsGateway: EventsGateway
@@ -17,10 +17,10 @@ export class InteractionWhatsappSubscriber
   }
 
   listenTo() {
-    return interactionWhatsapp;
+    return InteractionWhatsapp;
   }
 
-  afterInsert(event: InsertEvent<interactionWhatsapp>) {
+  afterInsert(event: InsertEvent<InteractionWhatsapp>) {
     this.eventsGateway.sendData(
       "agent",
       "newInteraction:whatsapp",

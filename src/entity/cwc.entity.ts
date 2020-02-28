@@ -33,29 +33,11 @@ export class Cwc {
   })
   type: CwcType;
 
-  @Column({ length: 40, nullable: true })
-  name: string;
-
-  @Column({ length: 11 })
-  channelId: string;
-  @ManyToOne(
-    type => mChannel,
-    m_channel => m_channel.id
-  )
-  @JoinColumn()
-  channel: mChannel;
-
-  @Column({ length: 50 })
+  @Column({ length: 50, unique: true })
   sessionId: string;
 
-  @Column()
-  customerId: number;
-  @ManyToOne(
-    type => Customer,
-    customer => customer.id
-  )
-  @JoinColumn()
-  customer: Customer;
+  @Column({ length: 40, nullable: true })
+  name: string;
 
   @Column()
   categoryId: number;

@@ -5,17 +5,7 @@ export class CwcPost {
   name: string;
 
   @IsNotEmpty()
-  agentId: string;
-
-  @IsNotEmpty()
   sessionId: string;
-
-  @IsNotEmpty()
-  channelId: string;
-
-  @IsNotEmpty()
-  @IsInt()
-  customerId: number;
 
   @IsNotEmpty()
   @IsInt()
@@ -33,4 +23,7 @@ export class CwcPost {
   @IsOptional()
   @IsInt()
   sentiment: number;
+
+  @IsNotEmpty()
+  username: string;
 }

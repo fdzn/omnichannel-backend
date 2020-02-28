@@ -3,7 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
 import { User } from "../../entity/user.entity";
-import { workOrder } from "../../entity/work_order.entity";
+import { WorkOrder } from "../../entity/work_order.entity";
 
 //DTO
 import { UpdateAuxPost, UpdateWorkOrderPost } from "./dto/autoin.dto";
@@ -14,8 +14,8 @@ export class AutoInService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    @InjectRepository(workOrder)
-    private readonly workOrderRepository: Repository<workOrder>
+    @InjectRepository(WorkOrder)
+    private readonly workOrderRepository: Repository<WorkOrder>
   ) {}
 
   async updateAuxStatus(data: UpdateAuxPost) {
@@ -43,7 +43,7 @@ export class AutoInService {
 
   async updateWorkOrder(data: UpdateWorkOrderPost) {
     try {
-      let updateData = new workOrder();
+      let updateData = new WorkOrder();
       updateData.slot = data.slot;
       updateData.lastDist = data.lastDist;
 
