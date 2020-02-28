@@ -9,7 +9,7 @@ import * as uuid from "uuid/v4";
 export class SessionService {
   constructor(
     @InjectRepository(InteractionHeader)
-    private readonly sessionRepository: Repository<InteractionHeader>
+    private readonly sessionRepository: Repository<InteractionHeader>,
   ) {}
 
   generate(channelId: string): string {
@@ -42,5 +42,15 @@ export class SessionService {
     insertHeader.startDate = new Date();
 
     return await this.sessionRepository.save(insertHeader);
+  }
+
+  async jumQueueByChannel() {
+    const result =  await this.sessionRepository
+      .createQueryBuilder("interaction_header")
+      .select("channelId")
+      .addSelect("COUNT(*) AS count")
+      .groupBy("channelId")
+      .getRawMany();
+    // this.eventsGateway.sendData("agent","countQueue",result)
   }
 }

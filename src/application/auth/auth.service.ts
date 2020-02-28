@@ -5,7 +5,11 @@ import { Repository } from "typeorm";
 import { User } from "../../entity/user.entity";
 import { mGroupSkill } from "../../entity/m_group_skill.entity";
 import { InteractionHeader } from "../../entity/interaction_header.entity";
+import { workOrder } from "../../entity/work_order.entity";
 
+//DTO
+import { AuthLogin } from "./dto/auth-login.dto";
+import { AuthLogout } from "./dto/auth-logout.dto";
 @Injectable()
 export class AuthService {
   private channelId: string;
@@ -15,10 +19,12 @@ export class AuthService {
     @InjectRepository(mGroupSkill)
     private readonly mGroupSkillRepository: Repository<mGroupSkill>,
     @InjectRepository(InteractionHeader)
-    private readonly sessionRepository: Repository<InteractionHeader>
+    private readonly sessionRepository: Repository<InteractionHeader>,
+    @InjectRepository(workOrder)
+    private readonly workOrderRepository: Repository<workOrder>
   ) {}
 
-  async login(data) {
+  async login(data: AuthLogin) {
     try {
       const foundUser = await this.userRepository.findOne({
         where: { username: data.username, isDeleted: 0 }
@@ -65,7 +71,7 @@ export class AuthService {
     }
   }
 
-  async logout(data) {
+  async logout(data: AuthLogout) {
     try {
       //UPDATE INTERACTION HEADER
       const updateHeader = {
@@ -76,6 +82,14 @@ export class AuthService {
         updateHeader
       );
 
+      //UPDATE WORK ORDER
+      let updateWorkOrder = new workOrder();
+      updateWorkOrder.slot = 0;
+      await this.workOrderRepository.update(
+        { agentUsername: data.username },
+        updateWorkOrder
+      );
+      //UPDATE STATUS AGENT
       const updateUser = {
         isLogin: false,
         isAux: true
@@ -87,7 +101,7 @@ export class AuthService {
         statusCode: 201
       };
     } catch (error) {
-      console.error(error)
+      console.error(error);
       return { isError: true, data: error.message, statusCode: 500 };
     }
   }

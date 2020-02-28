@@ -24,6 +24,7 @@ export class InteractionHeaderSubscriber
 
   afterInsert(event: InsertEvent<InteractionHeader>) {
     console.log(`AFTER INTERACTION HEADER INSERTED: `, event.entity);
+    this.eventsGateway.jumQueueByChannel()
   }
 
   afterUpdate(event: UpdateEvent<InteractionHeader>) {
@@ -38,6 +39,7 @@ export class InteractionHeaderSubscriber
   }
 
   afterRemove(event: RemoveEvent<InteractionHeader>) {
-    console.log(`AFTER INTERACTION HEADER REMOVE: `, event);
+    console.log(`AFTER INTERACTION HEADER REMOVE: `, event); 
+    this.eventsGateway.jumQueueByChannel();
   }
 }

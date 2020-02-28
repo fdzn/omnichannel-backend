@@ -7,6 +7,19 @@ import { InteractionHeaderHistory } from "../../entity/interaction_header_histor
 import { mChannel } from "../../entity/m_channel.entity";
 import { Cwc } from "../../entity/cwc.entity";
 
+//DTO
+import {
+  pickupManualPost,
+  pickupAutoPost,
+  endPost,
+  GetInteractionPost,
+  GetInteractionByCustomerPost,
+  loadWorkOrderPost,
+  PostType
+} from "./dto/interaction.dto";
+
+import { CwcPost } from "./dto/cwc.dto";
+
 @Injectable()
 export class InteractionService {
   constructor(
@@ -22,7 +35,7 @@ export class InteractionService {
     private readonly mChannelRepository: Repository<mChannel>
   ) {}
 
-  async pickupBySession(data) {
+  async pickupBySession(data: pickupAutoPost) {
     try {
       const foundSession = await this.sessionRepository.findOne({
         where: { sessionId: data.sessionId }
@@ -33,7 +46,7 @@ export class InteractionService {
 
       let updateData = new InteractionHeader();
       updateData = foundSession;
-      updateData.agentUsername = data.agentId;
+      updateData.agentUsername = data.username;
       updateData.pickupDate = new Date();
       const updateStatus = await this.sessionRepository.save(updateData);
       return { isError: false, data: updateStatus, statusCode: 200 };
@@ -43,7 +56,7 @@ export class InteractionService {
     }
   }
 
-  async pickupManual(data) {
+  async pickupManual(data: pickupManualPost) {
     try {
       const foundSession = await this.sessionRepository.findOne({
         where: {
@@ -75,7 +88,23 @@ export class InteractionService {
     }
   }
 
-  async getInteraction(data) {
+  async loadWorkOrder(data: loadWorkOrderPost) {
+    try {
+      const foundSession = await this.sessionRepository.find({
+        where: {
+          agentUsername: data.username,
+          channelId: data.channelId
+        }
+      });
+
+      return { isError: false, data: foundSession, statusCode: 200 };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async getInteraction(data: GetInteractionPost) {
     try {
       const detailChannel = await this.mChannelRepository.findOne({
         where: { id: data.channelId }
@@ -85,9 +114,9 @@ export class InteractionService {
         return { isError: true, data: "Channel is not found", statusCode: 500 };
       }
       let table;
-      if (data.type == "interaction") {
+      if (data.type == PostType.interaction) {
         table = detailChannel.tableLog;
-      } else if (data.type == "history") {
+      } else if (data.type == PostType.history) {
         table = detailChannel.tableHist;
       }
       const entityManager = getManager();
@@ -103,7 +132,7 @@ export class InteractionService {
     }
   }
 
-  async getInteractionByCustomer(data) {
+  async getInteractionByCustomer(data: GetInteractionByCustomerPost) {
     try {
       const limit = 10;
       const detailChannel = await this.mChannelRepository.findOne({
@@ -114,9 +143,9 @@ export class InteractionService {
         return { isError: true, data: "Channel is not found", statusCode: 500 };
       }
       let table;
-      if (data.type == "interaction") {
+      if (data.type == PostType.interaction) {
         table = detailChannel.tableLog;
-      } else if (data.type == "history") {
+      } else if (data.type == PostType.history) {
         table = detailChannel.tableHist;
       }
       const entityManager = getManager();
@@ -132,7 +161,7 @@ export class InteractionService {
     }
   }
 
-  async endSession(data) {
+  async endSession(data: endPost) {
     try {
       let updateData = new InteractionHeader();
       updateData.endDate = new Date();
@@ -149,7 +178,7 @@ export class InteractionService {
     }
   }
 
-  async submitCWC(data) {
+  async submitCWC(data: CwcPost) {
     try {
       const dateNow = new Date();
 
@@ -174,10 +203,7 @@ export class InteractionService {
       let insertDataHistory = new InteractionHeader();
       insertDataHistory = foundSession;
       await this.sessionHistoryRepository.save(insertDataHistory);
-      await this.sessionRepository.delete({
-        sessionId: data.sessionId,
-        endStatus: true
-      });
+      await this.sessionRepository.remove(insertDataHistory);
 
       //MOVE INTERACTION TO HISTORY
       const entityManager = getManager();

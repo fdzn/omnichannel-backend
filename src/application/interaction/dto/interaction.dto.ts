@@ -14,10 +14,18 @@ export class pickupManualPost {
 
 export class pickupAutoPost {
   @IsNotEmpty()
-  agentId: string;
+  username: string;
 
   @IsNotEmpty()
   sessionId: string;
+}
+
+export class loadWorkOrderPost {
+  @IsNotEmpty()
+  username: string;
+
+  @IsNotEmpty()
+  channelId: string;
 }
 
 export class endPost {

@@ -5,11 +5,19 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect
 } from "@nestjs/websockets";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { InteractionHeader } from "../entity/interaction_header.entity";
 import { Socket, Server } from "socket.io";
 
 @WebSocketGateway()
 export class EventsGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+  constructor(
+    @InjectRepository(InteractionHeader)
+    private readonly sessionRepository: Repository<InteractionHeader>
+  ) {}
+
   @WebSocketServer()
   server: Server;
 
@@ -24,6 +32,7 @@ export class EventsGateway
     socket.join(`${level}`);
     socket.join(`${level}:${userId}`);
     console.log("client connected", socket.handshake.query);
+    this.jumQueueByChannel();
   }
 
   handleDisconnect(client: Socket) {
@@ -33,5 +42,19 @@ export class EventsGateway
   sendData(room: string, event: string, data: object) {
     console.log(room, event, data);
     this.server.to(room).emit(event, data);
+  }
+
+  async jumQueueByChannel() {
+    const result = await this.sessionRepository
+      .createQueryBuilder("interaction_header")
+      .select("channelId")
+      .addSelect("COUNT(*) AS count")
+      .groupBy("channelId")
+      .getRawMany();
+    let output = {};
+    result.forEach((data, index) => {
+      output[data.channelId] = parseInt(data.count);
+    });
+    this.sendData("agent", "countQueue", output);
   }
 }

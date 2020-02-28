@@ -31,5 +31,6 @@ export class CwcPost {
   feedback: string;
 
   @IsOptional()
-  sentiment: string;
+  @IsInt()
+  sentiment: number;
 }

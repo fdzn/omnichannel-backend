@@ -7,6 +7,7 @@ import { CustomerService } from "../../libs/services/customer.service";
 import { interactionWhatsapp } from "../../../entity/interaction_whatsapp.entity";
 import { ActionType } from "src/entity/templates/generalChat";
 
+import { IncomingWhatsapp } from "./dto/incoming-whatsapp.dto";
 @Injectable()
 export class WhatsappService {
   private channelId: string;
@@ -32,7 +33,7 @@ export class WhatsappService {
     return true;
   }
 
-  async createIncoming(data) {
+  async createIncoming(data: IncomingWhatsapp) {
     try {
       let sessionId;
       data.fromName = data.fromName ? data.fromName : "noName";
@@ -68,18 +69,30 @@ export class WhatsappService {
         }
 
         //INSERT QUEUE
-        data.priority = 0;
-        data.groupId = 1;
+        let insertSession;
+        insertSession = data;
+        insertSession.priority = 0;
+        insertSession.groupId = 1;
         const resultSessionCreate = await this.sessionService.create(
           sessionId,
           this.channelId,
           custId,
-          data
+          insertSession
         );
       }
 
       let insertInteraction = new interactionWhatsapp();
-      insertInteraction = data;
+      insertInteraction.convId = data.convId;
+      insertInteraction.from = data.from;
+      insertInteraction.fromName = data.fromName;
+      insertInteraction.media = data.media;
+      insertInteraction.message = data.message;
+      if (data.media) {
+        insertInteraction.messageType = "text";
+      } else {
+        insertInteraction.messageType = "media";
+      }
+
       insertInteraction.actionType = ActionType.IN;
       insertInteraction.sessionId = sessionId;
       insertInteraction.sendDate = new Date();

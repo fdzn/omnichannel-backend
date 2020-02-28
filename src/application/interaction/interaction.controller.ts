@@ -10,7 +10,8 @@ import {
   pickupAutoPost,
   endPost,
   GetInteractionPost,
-  GetInteractionByCustomerPost
+  GetInteractionByCustomerPost,
+  loadWorkOrderPost
 } from "./dto/interaction.dto";
 
 import { CwcPost } from "./dto/cwc.dto";
@@ -70,6 +71,16 @@ export class InteractionController {
     const result = await this.interactionService.getInteractionByCustomer(
       postData
     );
+    res.status(result.statusCode).send(result);
+  }
+
+  @Post("loadWorkOrder")
+  @HttpCode(200)
+  async loadWorkOrder(
+    @Body() postData: loadWorkOrderPost,
+    @Res() res: Response
+  ) {
+    const result = await this.interactionService.loadWorkOrder(postData);
     res.status(result.statusCode).send(result);
   }
 }
