@@ -18,7 +18,7 @@ export class InteractionLibService {
     >
   ) {}
 
-  getRepository(channelId) {
+  getRepository(channelId: string) {
     switch (channelId) {
       case "whatsapp":
         return {
@@ -34,6 +34,20 @@ export class InteractionLibService {
           logRepo: null,
           history: null,
           historyRepo: null
+        };
+    }
+  }
+
+  getFunction(channelId: string) {
+    switch (channelId) {
+      case "whatsapp":
+        return {
+          getInteraction: this.getInteractionWhatsapp
+        };
+
+      default:
+        return {
+          getInteraction: null
         };
     }
   }
@@ -81,14 +95,53 @@ export class InteractionLibService {
     };
   }
 
+  //FUNCTION INTERACTION
+  async getInteractionWhatsapp(sessionId: string, type: PostType) {
+    let messages;
+    if (type == PostType.INTERACTION) {
+      messages = await this.WhatsappRepository.find({
+        select: [
+          "from",
+          "fromName",
+          "messageType",
+          "message",
+          "media",
+          "sendDate",
+          "actionType",
+          "agentUsername",
+          "convId"
+        ],
+        where: { sessionId: sessionId }
+      });
+    } else if (type == PostType.HISTORY) {
+      messages = await this.WhatsappHistoryRepository.find({
+        select: [
+          "from",
+          "fromName",
+          "messageType",
+          "message",
+          "media",
+          "sendDate",
+          "actionType",
+          "agentUsername",
+          "convId"
+        ],
+        where: { sessionId: sessionId }
+      });
+    }
+
+    return {
+      sessionId: sessionId,
+      messages: messages
+    };
+  }
+
   async getInteractionBySession(
     channelId: string,
     sessionId: string,
     type: PostType
   ) {
     const repo = this.getRepository(channelId);
-    console.log("FAUZAN", type);
-    console.log(type == PostType.INTERACTION);
     if (type == PostType.INTERACTION) {
       return await repo.logRepo.find({
         where: { sessionId: sessionId }

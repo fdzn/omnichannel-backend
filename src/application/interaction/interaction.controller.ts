@@ -11,7 +11,8 @@ import {
   endPost,
   GetInteractionPost,
   GetInteractionByCustomerPost,
-  loadWorkOrderPost
+  loadWorkOrderPost,
+  GetInteractionSpecific
 } from "./dto/interaction.dto";
 
 import { CwcPost } from "./dto/cwc.dto";
@@ -49,6 +50,16 @@ export class InteractionController {
   @HttpCode(200)
   async submitCWC(@Body() postData: CwcPost, @Res() res: Response) {
     const result = await this.interactionService.submitCWC(postData);
+    res.status(result.statusCode).send(result);
+  }
+
+  @Post("getInteractionWhatsapp")
+  @HttpCode(200)
+  async getInteractionWhatsapp(
+    @Body() postData: GetInteractionSpecific,
+    @Res() res: Response
+  ) {
+    const result = await this.interactionService.getInteractionWhatsapp(postData);
     res.status(result.statusCode).send(result);
   }
 

@@ -16,6 +16,7 @@ import {
   endPost,
   GetInteractionPost,
   GetInteractionByCustomerPost,
+  GetInteractionSpecific,
   loadWorkOrderPost,
   PostType
 } from "./dto/interaction.dto";
@@ -121,6 +122,20 @@ export class InteractionService {
     }
   }
 
+  async getInteractionWhatsapp(data: GetInteractionSpecific) {
+    try {
+      const output = await this.interactionLibService.getInteractionWhatsapp(
+        data.sessionId,
+        data.type
+      );
+
+      return { isError: false, data: output, statusCode: 200 };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
   async getInteraction(data: GetInteractionPost) {
     try {
       const output = await this.interactionLibService.getInteractionBySession(
@@ -128,8 +143,6 @@ export class InteractionService {
         data.sessionId,
         data.type
       );
-
-      // console.log(output)
 
       return { isError: false, data: output, statusCode: 200 };
     } catch (error) {

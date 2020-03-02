@@ -54,6 +54,14 @@ export class GetInteractionPost {
   type: PostType;
 }
 
+export class GetInteractionSpecific {
+  @IsNotEmpty()
+  sessionId: string;
+
+  @IsEnum(PostType)
+  type: PostType;
+}
+
 export class GetInteractionByCustomerPost {
   @IsNotEmpty()
   channelId: string;
