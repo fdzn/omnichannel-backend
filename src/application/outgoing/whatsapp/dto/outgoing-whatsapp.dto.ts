@@ -1,6 +1,9 @@
 import { IsNotEmpty, IsOptional, IsInt } from "class-validator";
 
-export class IncomingWhatsapp {
+export class OutgoingWhatsapp {
+  @IsNotEmpty()
+  sessionId: string;
+
   @IsNotEmpty()
   from: string;
 
@@ -15,4 +18,7 @@ export class IncomingWhatsapp {
 
   @IsOptional()
   media: string;
+
+  @IsNotEmpty()
+  username: string;
 }

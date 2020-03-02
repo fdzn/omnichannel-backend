@@ -20,19 +20,6 @@ export class WhatsappService {
     this.channelId = "whatsapp";
   }
 
-  async test() {
-    // const detailSession = await this.sessionService.check(
-    //   this.channelId,
-    //   "081286128030"
-    // );
-    // if (detailSession) {
-    //   return true;
-    // } else {
-    //   return false;
-    // }
-    return true;
-  }
-
   async createIncoming(data: IncomingWhatsapp) {
     try {
       let sessionId;
