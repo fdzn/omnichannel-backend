@@ -38,10 +38,9 @@ export class endPost {
   @IsNotEmpty()
   username: string;
 }
-
 export enum PostType {
-  "interaction",
-  "history"
+  INTERACTION = "interaction",
+  HISTORY = "history"
 }
 
 export class GetInteractionPost {

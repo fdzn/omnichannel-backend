@@ -123,26 +123,15 @@ export class InteractionService {
 
   async getInteraction(data: GetInteractionPost) {
     try {
-      const detailChannel = await this.mChannelRepository.findOne({
-        where: { id: data.channelId }
-      });
-
-      if (!detailChannel) {
-        return { isError: true, data: "Channel is not found", statusCode: 500 };
-      }
-      let table;
-      if (data.type == PostType.interaction) {
-        table = detailChannel.tableLog;
-      } else if (data.type == PostType.history) {
-        table = detailChannel.tableHist;
-      }
-      const entityManager = getManager();
-
-      const detailInteraction = await entityManager.query(
-        `select * from ${table} where sessionId=?`,
-        [data.sessionId]
+      const output = await this.interactionLibService.getInteractionBySession(
+        data.channelId,
+        data.sessionId,
+        data.type
       );
-      return { isError: false, data: detailInteraction, statusCode: 200 };
+
+      // console.log(output)
+
+      return { isError: false, data: output, statusCode: 200 };
     } catch (error) {
       console.error(error);
       return { isError: true, data: error.message, statusCode: 500 };
@@ -152,26 +141,15 @@ export class InteractionService {
   async getInteractionByCustomer(data: GetInteractionByCustomerPost) {
     try {
       const limit = 10;
-      const detailChannel = await this.mChannelRepository.findOne({
-        where: { id: data.channelId }
-      });
-
-      if (!detailChannel) {
-        return { isError: true, data: "Channel is not found", statusCode: 500 };
-      }
-      let table;
-      if (data.type == PostType.interaction) {
-        table = detailChannel.tableLog;
-      } else if (data.type == PostType.history) {
-        table = detailChannel.tableHist;
-      }
-      const entityManager = getManager();
-
-      const detailInteraction = await entityManager.query(
-        `SELECT * FROM ${table} WHERE from=? LIMIT ?,?`,
-        [data.from, data.page * limit, limit]
+      const output = await this.interactionLibService.getInteractionByFrom(
+        data.channelId,
+        data.from,
+        data.type,
+        data.page * limit,
+        limit
       );
-      return { isError: false, data: detailInteraction, statusCode: 200 };
+
+      return { isError: false, data: output, statusCode: 200 };
     } catch (error) {
       console.error(error);
       return { isError: true, data: error.message, statusCode: 500 };

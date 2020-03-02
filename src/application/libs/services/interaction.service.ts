@@ -4,6 +4,7 @@ import { Repository, getConnection, QueryBuilder } from "typeorm";
 import { InteractionWhatsapp } from "../../../entity/interaction_whatsapp.entity";
 import { InteractionWhatsappHistory } from "../../../entity/interaction_whatsapp_history.entity";
 import { ActionType } from "src/entity/templates/generalChat";
+import { PostType } from "src/application/interaction/dto/interaction.dto";
 
 //schema
 @Injectable()
@@ -12,7 +13,9 @@ export class InteractionLibService {
     @InjectRepository(InteractionWhatsapp)
     private readonly WhatsappRepository: Repository<InteractionWhatsapp>,
     @InjectRepository(InteractionWhatsappHistory)
-    private readonly WhatsappHistoryRepository: Repository<InteractionWhatsapp>
+    private readonly WhatsappHistoryRepository: Repository<
+      InteractionWhatsappHistory
+    >
   ) {}
 
   getRepository(channelId) {
@@ -42,7 +45,7 @@ export class InteractionLibService {
     });
 
     if (dataInteraction.length == 0) {
-      return
+      return;
     }
 
     await repo.historyRepo.insert(dataInteraction);
@@ -76,5 +79,46 @@ export class InteractionLibService {
       caseIn: caseIn,
       caseOut: caseOut
     };
+  }
+
+  async getInteractionBySession(
+    channelId: string,
+    sessionId: string,
+    type: PostType
+  ) {
+    const repo = this.getRepository(channelId);
+    console.log("FAUZAN", type);
+    console.log(type == PostType.INTERACTION);
+    if (type == PostType.INTERACTION) {
+      return await repo.logRepo.find({
+        where: { sessionId: sessionId }
+      });
+    } else if (type == PostType.HISTORY) {
+      return await repo.historyRepo.find({
+        where: { sessionId: sessionId }
+      });
+    }
+  }
+
+  async getInteractionByFrom(
+    channelId: string,
+    from: string,
+    type: PostType,
+    skip: number,
+    limit: number
+  ) {
+    const repo = this.getRepository(channelId);
+    let repoUse;
+    if (type == PostType.INTERACTION) {
+      repoUse = repo.logRepo;
+    } else if (type == PostType.HISTORY) {
+      repoUse = repo.historyRepo;
+    }
+
+    return await repoUse.find({
+      where: { from: from },
+      skip: skip,
+      limit: limit
+    });
   }
 }
