@@ -70,8 +70,20 @@ export class GetInteractionByCustomerPost {
   from: string;
 
   @IsInt()
+  @IsNotEmpty()
   page: number;
 
   @IsEnum(PostType)
+  @IsNotEmpty()
   type: PostType;
+}
+
+export class JourneyPost {
+  @IsNotEmpty()
+  @IsInt()
+  customerId: number;
+
+  @IsNotEmpty()
+  @IsInt()
+  page: number;
 }

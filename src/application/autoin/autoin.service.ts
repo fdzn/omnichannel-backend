@@ -10,7 +10,6 @@ import { UpdateAuxPost, UpdateWorkOrderPost } from "./dto/autoin.dto";
 
 @Injectable()
 export class AutoInService {
-  private channelId: string;
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
@@ -28,12 +27,12 @@ export class AutoInService {
         updateData
       );
       if (updateStatus.raw.affectedRows == 0) {
-        return { isError: true, data: "No Data Update", statusCode: 204 };
+        return { isError: true, data: "No Data Update", statusCode: 404 };
       }
       return {
         isError: false,
         data: updateStatus,
-        statusCode: 201
+        statusCode: 200
       };
     } catch (error) {
       console.error(error);
@@ -52,7 +51,7 @@ export class AutoInService {
         updateData
       );
       if (updateStatus.raw.affectedRows == 0) {
-        return { isError: true, data: "No Data Update", statusCode: 204 };
+        return { isError: true, data: "No Data Update", statusCode: 404 };
       }
       return {
         isError: false,

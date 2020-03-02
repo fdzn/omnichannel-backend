@@ -32,9 +32,9 @@ export class Contact {
   @Column({ nullable: true })
   avatar: string;
 
-  @CreateDateColumn({ type: "timestamp" })
+  @CreateDateColumn({ type: "timestamp", select: false })
   createdAt: Date;
 
-  @UpdateDateColumn({ type: "timestamp" })
+  @UpdateDateColumn({ type: "timestamp", select: false })
   updatedAt: Date;
 }

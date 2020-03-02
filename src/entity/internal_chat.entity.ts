@@ -1,27 +1,42 @@
 import {
+  Entity,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
+  JoinColumn,
+  ManyToOne
 } from "typeorm";
-
+import { User } from "./user.entity";
 export enum ActionType {
   IN = "in",
   OUT = "OUT"
 }
-
-export abstract class generalChat {
+@Entity()
+export class InternalChat {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ length: 50 })
-  sessionId: string;
+  room: string;
 
-  @Column({ length: 50 })
-  from: string;
+  @Column({ length: 20, nullable: true })
+  fromUsername: string;
+  @ManyToOne(
+    type => User,
+    user => user.username
+  )
+  @JoinColumn()
+  from: User;
 
-  @Column({ length: 50, nullable: true })
-  fromName: string;
+  @Column({ length: 20, nullable: true })
+  toUsername: string;
+  @ManyToOne(
+    type => User,
+    user => user.username
+  )
+  @JoinColumn()
+  to: User;
 
   @Column({ length: 5, default: "text" })
   messageType: string;
@@ -34,16 +49,6 @@ export abstract class generalChat {
 
   @Column()
   sendDate: Date;
-
-  @Column({
-    type: "enum",
-    enum: ActionType,
-    nullable: true
-  })
-  actionType: ActionType;
-
-  @Column({ nullable: true })
-  ResponseTime: Number;
 
   @CreateDateColumn({ type: "timestamp", select: false })
   createdAt: Date;

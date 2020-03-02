@@ -1,15 +1,16 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { InteractionHeader } from "../../../entity/interaction_header.entity";
 import * as uuid from "uuid/v4";
+import { Repository } from "typeorm";
 
-//schema
+//ENTITY
+import { InteractionHeader } from "../../../entity/interaction_header.entity";
+
 @Injectable()
 export class SessionService {
   constructor(
     @InjectRepository(InteractionHeader)
-    private readonly sessionRepository: Repository<InteractionHeader>,
+    private readonly sessionRepository: Repository<InteractionHeader>
   ) {}
 
   generate(channelId: string): string {
@@ -42,15 +43,5 @@ export class SessionService {
     insertHeader.startDate = new Date();
 
     return await this.sessionRepository.save(insertHeader);
-  }
-
-  async jumQueueByChannel() {
-    const result =  await this.sessionRepository
-      .createQueryBuilder("interaction_header")
-      .select("channelId")
-      .addSelect("COUNT(*) AS count")
-      .groupBy("channelId")
-      .getRawMany();
-    // this.eventsGateway.sendData("agent","countQueue",result)
   }
 }

@@ -6,7 +6,6 @@ import { CustomerService } from "./customer.service";
 
 //DTO
 import { GetCustomerDetailPost } from "./dto/customer.dto";
-// import { AuthLogout } from "./dto/auth-logout.dto";
 
 @Controller("customer")
 export class CustomerController {
@@ -14,10 +13,7 @@ export class CustomerController {
 
   @Post("getById")
   @HttpCode(200)
-  async updateAux(
-    @Body() postData: GetCustomerDetailPost,
-    @Res() res: Response
-  ) {
+  async getById(@Body() postData: GetCustomerDetailPost, @Res() res: Response) {
     const result = await this.customerService.getById(postData);
     res.status(result.statusCode).send(result);
   }

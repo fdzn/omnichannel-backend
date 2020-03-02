@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsInt } from "class-validator";
+import { IsNotEmpty, IsOptional } from "class-validator";
 
 export class IncomingWhatsapp {
   @IsNotEmpty()

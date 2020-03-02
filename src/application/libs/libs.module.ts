@@ -1,11 +1,12 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
+//SERVICES
 import { SessionService } from "./services/session.service";
 import { CustomerService } from "./services/customer.service";
 import { InteractionLibService } from "./services/interaction.service";
 
-// Entity
+//ENTITY
 import { InteractionHeader } from "../../entity/interaction_header.entity";
 import { InteractionWhatsapp } from "../../entity/interaction_whatsapp.entity";
 import { InteractionWhatsappHistory } from "../../entity/interaction_whatsapp_history.entity";

@@ -6,8 +6,11 @@ import {
   UpdateEvent,
   RemoveEvent
 } from "typeorm";
-import { InteractionHeader } from "../entity/interaction_header.entity";
 import { EventsGateway } from "../sockets/events.gateway";
+
+//ENTITY
+import { InteractionHeader } from "../entity/interaction_header.entity";
+
 @EventSubscriber()
 export class InteractionHeaderSubscriber
   implements EntitySubscriberInterface<InteractionHeader> {

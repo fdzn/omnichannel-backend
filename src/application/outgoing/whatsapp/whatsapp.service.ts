@@ -2,23 +2,18 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
-import { SessionService } from "../../libs/services/session.service";
-import { CustomerService } from "../../libs/services/customer.service";
+//ENTITY
 import { InteractionWhatsapp } from "../../../entity/interaction_whatsapp.entity";
 import { ActionType } from "src/entity/templates/generalChat";
 
+//DTO
 import { OutgoingWhatsapp } from "./dto/outgoing-whatsapp.dto";
 @Injectable()
 export class WhatsappService {
-  private channelId: string;
   constructor(
     @InjectRepository(InteractionWhatsapp)
-    private readonly whatsappRepository: Repository<InteractionWhatsapp>,
-    private readonly sessionService: SessionService,
-    private readonly customerService: CustomerService
-  ) {
-    this.channelId = "whatsapp";
-  }
+    private readonly whatsappRepository: Repository<InteractionWhatsapp>
+  ) {}
 
   async saveInteraction(data: OutgoingWhatsapp) {
     let insertInteraction = new InteractionWhatsapp();

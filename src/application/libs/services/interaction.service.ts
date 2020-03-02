@@ -1,8 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository, getConnection, QueryBuilder } from "typeorm";
+import { Repository } from "typeorm";
+
+//ENTITY
 import { InteractionWhatsapp } from "../../../entity/interaction_whatsapp.entity";
 import { InteractionWhatsappHistory } from "../../../entity/interaction_whatsapp_history.entity";
+
+//DTO
 import { ActionType } from "src/entity/templates/generalChat";
 import { PostType } from "src/application/interaction/dto/interaction.dto";
 
@@ -83,9 +87,9 @@ export class InteractionLibService {
 
   //FUNCTION INTERACTION
   async getInteractionWhatsapp(sessionId: string, type: PostType) {
-    let messages
-    let from
-    let fromName
+    let messages;
+    let from;
+    let fromName;
     if (type == PostType.INTERACTION) {
       messages = await this.WhatsappRepository.find({
         select: [
@@ -120,18 +124,20 @@ export class InteractionLibService {
       });
     }
 
-    if(messages.length > 0){
-      const found = messages.find(element => element.actionType == ActionType.IN);
-      if(found){
-        from = found.from
-        fromName = found.fromName
+    if (messages.length > 0) {
+      const found = messages.find(
+        element => element.actionType == ActionType.IN
+      );
+      if (found) {
+        from = found.from;
+        fromName = found.fromName;
       }
     }
-    
+
     return {
       sessionId: sessionId,
-      from:from,
-      fromName:fromName,
+      from: from,
+      fromName: fromName,
       messages: messages
     };
   }
@@ -158,7 +164,7 @@ export class InteractionLibService {
     from: string,
     type: PostType,
     skip: number,
-    limit: number
+    take: number
   ) {
     const repo = this.getRepository(channelId);
     let repoUse;
@@ -171,7 +177,7 @@ export class InteractionLibService {
     return await repoUse.find({
       where: { from: from },
       skip: skip,
-      limit: limit
+      take: take
     });
   }
 }

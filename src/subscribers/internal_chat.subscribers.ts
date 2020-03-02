@@ -7,10 +7,10 @@ import {
 import { EventsGateway } from "../sockets/events.gateway";
 
 //ENTITY
-import { InteractionWhatsapp } from "../entity/interaction_whatsapp.entity";
+import { InternalChat } from "../entity/internal_chat.entity";
 @EventSubscriber()
-export class InteractionWhatsappSubscriber
-  implements EntitySubscriberInterface<InteractionWhatsapp> {
+export class InternalChatSubscribers
+  implements EntitySubscriberInterface<InternalChat> {
   constructor(
     connection: Connection,
     private readonly eventsGateway: EventsGateway
@@ -19,15 +19,15 @@ export class InteractionWhatsappSubscriber
   }
 
   listenTo() {
-    return InteractionWhatsapp;
+    return InternalChat;
   }
 
-  afterInsert(event: InsertEvent<InteractionWhatsapp>) {
+  afterInsert(event: InsertEvent<InternalChat>) {
     this.eventsGateway.sendData(
       "agent",
-      "newInteraction:whatsapp",
+      "newInteraction:internalChat",
       event.entity
     );
-    console.log(`AFTER INTERACTION WHATSAPP INSERTED: `, event.entity);
+    console.log(`AFTER INTERACTION INTERNAL CHAT INSERTED: `, event.entity);
   }
 }

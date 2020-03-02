@@ -2,11 +2,10 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, getManager } from "typeorm";
 
-//SERVICE
+//ENTITY
 import { InteractionLibService } from "../libs/services/interaction.service";
 import { InteractionHeader } from "../../entity/interaction_header.entity";
 import { InteractionHeaderHistory } from "../../entity/interaction_header_history.entity";
-import { mChannel } from "../../entity/m_channel.entity";
 import { Cwc } from "../../entity/cwc.entity";
 
 //DTO
@@ -18,9 +17,8 @@ import {
   GetInteractionByCustomerPost,
   GetInteractionSpecific,
   loadWorkOrderPost,
-  PostType
+  JourneyPost
 } from "./dto/interaction.dto";
-
 import { CwcPost } from "./dto/cwc.dto";
 
 @Injectable()
@@ -34,8 +32,6 @@ export class InteractionService {
     >,
     @InjectRepository(Cwc)
     private readonly cwcRepository: Repository<Cwc>,
-    @InjectRepository(mChannel)
-    private readonly mChannelRepository: Repository<mChannel>,
     private readonly interactionLibService: InteractionLibService
   ) {}
 
@@ -86,6 +82,26 @@ export class InteractionService {
       const updateStatus = await this.sessionRepository.save(updateData);
 
       return { isError: false, data: foundSession, statusCode: 200 };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async loadJourney(data: JourneyPost) {
+    try {
+      const limit = 10;
+      const entityManager = getManager();
+      const journey = await entityManager.query(
+        `SELECT a.sessionId,a.startDate,a.agentUsername,c.name as category,d.name as subCategory 
+        FROM interaction_header_history a 
+        LEFT JOIN cwc b on a.sessionId=b.sessionId 
+        LEFT JOIN m_category c on b.categoryId = c.id
+        LEFT JOIN m_sub_category d on b.subcategoryId = d.id
+        WHERE a.customerId=? LIMIT ?,?`,
+        [data.customerId, data.page * limit, limit]
+      );
+      return { isError: false, data: journey, statusCode: 200 };
     } catch (error) {
       console.error(error);
       return { isError: true, data: error.message, statusCode: 500 };

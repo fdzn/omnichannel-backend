@@ -1,6 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
+
+//ENTITY
 import { Customer } from "../../../entity/customer.entity";
 import { Contact } from "../../../entity/contact.entity";
 

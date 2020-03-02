@@ -7,9 +7,13 @@ import {
 } from "@nestjs/websockets";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { InteractionLibService } from "../application/libs/services/interaction.service";
-import { InteractionHeader } from "../entity/interaction_header.entity";
 import { Socket, Server } from "socket.io";
+
+//SERVICES
+import { InteractionLibService } from "../application/libs/services/interaction.service";
+
+//ENTITY
+import { InteractionHeader } from "../entity/interaction_header.entity";
 
 @WebSocketGateway()
 export class EventsGateway

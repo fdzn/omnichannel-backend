@@ -75,10 +75,10 @@ export class Cwc {
   @JoinColumn()
   agent: User;
 
-  @CreateDateColumn({ type: "timestamp" })
+  @CreateDateColumn({ type: "timestamp", select: false })
   createdAt: Date;
 
-  @UpdateDateColumn({ type: "timestamp" })
+  @UpdateDateColumn({ type: "timestamp", select: false })
   updatedAt: Date;
 
   @Column({ length: 20, nullable: true })

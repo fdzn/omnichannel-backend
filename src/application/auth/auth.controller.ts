@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Res, Body } from "@nestjs/common";
+import { Controller, Post, Res, Body, HttpCode } from "@nestjs/common";
 import { Response } from "express";
 
 //SERVICES
@@ -13,12 +13,14 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post("login")
+  @HttpCode(200)
   async login(@Body() userData: AuthLogin, @Res() res: Response) {
     const result = await this.authService.login(userData);
     res.status(result.statusCode).send(result);
   }
 
   @Post("logout")
+  @HttpCode(200)
   async logout(@Body() userData: AuthLogout, @Res() res: Response) {
     const result = await this.authService.logout(userData);
     res.status(result.statusCode).send(result);

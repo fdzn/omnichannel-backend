@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Res, Body, HttpCode } from "@nestjs/common";
+import { Controller, Post, Res, Body, HttpCode } from "@nestjs/common";
 import { Response } from "express";
 
 //SERVICES
@@ -10,13 +10,12 @@ import {
   pickupAutoPost,
   endPost,
   GetInteractionPost,
-  GetInteractionByCustomerPost,
   loadWorkOrderPost,
-  GetInteractionSpecific
+  GetInteractionSpecific,
+  JourneyPost
 } from "./dto/interaction.dto";
 
 import { CwcPost } from "./dto/cwc.dto";
-// import { AuthLogout } from "./dto/auth-logout.dto";
 
 @Controller("interaction")
 export class InteractionController {
@@ -59,7 +58,9 @@ export class InteractionController {
     @Body() postData: GetInteractionSpecific,
     @Res() res: Response
   ) {
-    const result = await this.interactionService.getInteractionWhatsapp(postData);
+    const result = await this.interactionService.getInteractionWhatsapp(
+      postData
+    );
     res.status(result.statusCode).send(result);
   }
 
@@ -73,15 +74,10 @@ export class InteractionController {
     res.status(result.statusCode).send(result);
   }
 
-  @Post("getInteractionByCustomer")
+  @Post("loadJourney")
   @HttpCode(200)
-  async getInteractionByCustomer(
-    @Body() postData: GetInteractionByCustomerPost,
-    @Res() res: Response
-  ) {
-    const result = await this.interactionService.getInteractionByCustomer(
-      postData
-    );
+  async loadJourney(@Body() postData: JourneyPost, @Res() res: Response) {
+    const result = await this.interactionService.loadJourney(postData);
     res.status(result.statusCode).send(result);
   }
 
