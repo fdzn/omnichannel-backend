@@ -89,6 +89,7 @@ export class InteractionLibService {
     if (type == PostType.INTERACTION) {
       messages = await this.WhatsappRepository.find({
         select: [
+          "id",
           "from",
           "fromName",
           "messageType",
@@ -104,6 +105,7 @@ export class InteractionLibService {
     } else if (type == PostType.HISTORY) {
       messages = await this.WhatsappHistoryRepository.find({
         select: [
+          "id",
           "from",
           "fromName",
           "messageType",
