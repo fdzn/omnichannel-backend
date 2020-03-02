@@ -38,20 +38,6 @@ export class InteractionLibService {
     }
   }
 
-  getFunction(channelId: string) {
-    switch (channelId) {
-      case "whatsapp":
-        return {
-          getInteraction: this.getInteractionWhatsapp
-        };
-
-      default:
-        return {
-          getInteraction: null
-        };
-    }
-  }
-
   async moveToHistory(channelId: string, sessionId: string) {
     const repo = this.getRepository(channelId);
     const dataInteraction = await repo.logRepo.find({
@@ -97,7 +83,9 @@ export class InteractionLibService {
 
   //FUNCTION INTERACTION
   async getInteractionWhatsapp(sessionId: string, type: PostType) {
-    let messages;
+    let messages
+    let from
+    let fromName
     if (type == PostType.INTERACTION) {
       messages = await this.WhatsappRepository.find({
         select: [
@@ -130,8 +118,18 @@ export class InteractionLibService {
       });
     }
 
+    if(messages.length > 0){
+      const found = messages.find(element => element.actionType == ActionType.IN);
+      if(found){
+        from = found.from
+        fromName = found.fromName
+      }
+    }
+    
     return {
       sessionId: sessionId,
+      from:from,
+      fromName:fromName,
       messages: messages
     };
   }
