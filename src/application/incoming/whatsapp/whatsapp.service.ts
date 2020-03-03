@@ -19,6 +19,10 @@ export class WhatsappService {
   ) {
     this.channelId = "whatsapp";
   }
+  async capiwha(data) {
+    console.log("INCOMING WHATSAPP", data);
+    return data;
+  }
 
   async createIncoming(data: IncomingWhatsapp) {
     try {
@@ -76,9 +80,9 @@ export class WhatsappService {
       insertInteraction.message = data.message;
       if (!data.media) {
         insertInteraction.messageType = "text";
-      } else if(data.media.length < 10) {
+      } else if (data.media.length < 10) {
         insertInteraction.messageType = "text";
-      }else{
+      } else {
         insertInteraction.messageType = "media";
       }
 
