@@ -1,18 +1,20 @@
 import { Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
-import { MongooseModule } from "@nestjs/mongoose";
-// Application
-// Incoming
-import { IncomingModule } from "./incoming/incoming.module";
+import { TypeOrmModule } from "@nestjs/typeorm";
 
+// Application
+import { ApplicationModule } from "./application/application.module";
+
+//Socket
+import { EventsModule } from "./sockets/events.module";
+
+//Subscribers
+import { SubscribersModule } from "./subscribers/subscribes.module";
 @Module({
   imports: [
-    ConfigModule.forRoot(),
-    MongooseModule.forRoot(
-      "mongodb://admin@localhost:27017/on5-demo?authSource=admin",
-      {}
-    ),
-    IncomingModule
+    TypeOrmModule.forRoot(),
+    ApplicationModule,
+    EventsModule,
+    SubscribersModule
   ]
 })
 export class AppModule {}
