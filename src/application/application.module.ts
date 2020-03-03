@@ -8,6 +8,7 @@ import { OutgoingModule } from "./outgoing/outgoing.module";
 import { AutoInModule } from "./autoin/autoin.module";
 import { CustomerModule } from "./customer/customer.module";
 import { InternalChatModule } from "./internalChat/internalChat.module";
+import { MasterDataModule } from "./masterData/masterData.module";
 @Module({
   imports: [
     AuthModule,
@@ -16,6 +17,7 @@ import { InternalChatModule } from "./internalChat/internalChat.module";
     OutgoingModule,
     CustomerModule,
     AutoInModule,
+    MasterDataModule,
     InternalChatModule
   ]
 })
