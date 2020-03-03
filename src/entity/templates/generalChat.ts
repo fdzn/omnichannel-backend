@@ -7,7 +7,7 @@ import {
 
 export enum ActionType {
   IN = "in",
-  OUT = "OUT"
+  OUT = "out"
 }
 
 export abstract class generalChat {

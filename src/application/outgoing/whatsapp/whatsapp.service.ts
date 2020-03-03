@@ -19,7 +19,7 @@ export class WhatsappService {
     let insertInteraction = new InteractionWhatsapp();
     insertInteraction.convId = data.convId;
     insertInteraction.from = data.from;
-    insertInteraction.fromName = data.fromName;
+    insertInteraction.fromName = data.username;
     insertInteraction.media = data.media;
     insertInteraction.message = data.message;
     if (!data.media) {

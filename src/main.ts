@@ -4,31 +4,30 @@ import {
   FastifyAdapter,
   NestFastifyApplication
 } from "@nestjs/platform-fastify";
+import * as fs from "fs";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
 // import { Transport } from "@nestjs/microservices";
 
 async function bootstrap() {
+  // const httpsOptions = {
+  //   key: fs.readFileSync("/etc/pki/tls/private/marselina.biz.id.key", "utf8"),
+  //   cert: fs.readFileSync("/etc/pki/tls/certs/marselina.biz.id.crt", "utf8")
+  // };
+  // const app = await NestFactory.create<NestFastifyApplication>(
+  //   AppModule,
+  //   new FastifyAdapter({ https: httpsOptions })
+  // );
+
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter()
   );
   app.enableCors();
-  // const microservice = app.connectMicroservice({
-  //   transport: Transport.RMQ,
-  //   options: {
-  //     urls: ["amqp://guest:guest@localhost:5672/"],
-  //     queue: "user-messages",
-  //     noAck: false,
-  //     queueOptions: {
-  //       durable: false
-  //     }
-  //   }
-  // });
 
   const options = new DocumentBuilder()
     .setTitle("Omnichannel Backend")
-    .setDescription("This is api documentation for Omnichannel Backend")
+    .setDescription("This is API documentation for Omnichannel Backend")
     .setVersion("1.0")
     .addTag("on5-demo")
     .setContact(
