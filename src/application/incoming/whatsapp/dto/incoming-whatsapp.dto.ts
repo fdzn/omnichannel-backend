@@ -13,6 +13,17 @@ export class IncomingWhatsapp {
   @IsOptional()
   message: string;
 
+  @IsNotEmpty()
+  messageType: string;
+
   @IsOptional()
   media: string;
+
+  @IsOptional()
+  account: string;
+}
+
+export class CapiwhaPost {
+  @IsNotEmpty()
+  data: string;
 }

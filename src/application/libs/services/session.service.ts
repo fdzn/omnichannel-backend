@@ -29,8 +29,8 @@ export class SessionService {
   async create(
     sessionId: string,
     channelId: string,
-    custId,
-    { from, fromName, groupId, priority }
+    custId: number,
+    { from, fromName, groupId, priority, account }
   ) {
     let insertHeader = new InteractionHeader();
     insertHeader.channelId = channelId;
@@ -40,8 +40,8 @@ export class SessionService {
     insertHeader.groupId = groupId;
     insertHeader.priority = priority;
     insertHeader.sessionId = sessionId;
+    insertHeader.account = account;
     insertHeader.startDate = new Date();
-
     return await this.sessionRepository.save(insertHeader);
   }
 }

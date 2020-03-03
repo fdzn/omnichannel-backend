@@ -1,7 +1,7 @@
 import { Controller, Post, Res, Body, HttpCode } from "@nestjs/common";
 import { Response } from "express";
 import { WhatsappService } from "./whatsapp.service";
-import { IncomingWhatsapp } from "./dto/incoming-whatsapp.dto";
+import { IncomingWhatsapp, CapiwhaPost } from "./dto/incoming-whatsapp.dto";
 
 @Controller("incoming/whatsapp")
 export class WhatsappController {
@@ -15,9 +15,10 @@ export class WhatsappController {
   }
 
   @Post("capiwha")
-  @HttpCode(200)
-  async capiwha(@Body() dataIncoming, @Res() res: Response) {
-    const result = await this.whatsappService.capiwha(dataIncoming);
-    res.status(200).send(result);
+  @HttpCode(201)
+  async capiwha(@Body() dataIncoming: CapiwhaPost, @Res() res: Response) {
+    const normalizationData = await this.whatsappService.capiwha(dataIncoming);
+    const result = await this.whatsappService.createIncoming(normalizationData);
+    res.status(result.statusCode).send(result);
   }
 }

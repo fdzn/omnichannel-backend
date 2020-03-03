@@ -19,9 +19,36 @@ export class WhatsappService {
   ) {
     this.channelId = "whatsapp";
   }
-  async capiwha(data) {
-    console.log("INCOMING WHATSAPP", data);
-    return data;
+
+  validURL(str) {
+    var pattern = new RegExp(
+      "^(https?:\\/\\/)?" + // protocol
+      "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
+      "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
+      "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
+      "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
+        "(\\#[-a-z\\d_]*)?$",
+      "i"
+    ); // fragment locator
+    return !!pattern.test(str);
+  }
+
+  async capiwha(post) {
+    console.log("INCOMING WHATSAPP", post);
+    const data = JSON.parse(post.data);
+    let output = new IncomingWhatsapp();
+    output.from = data.from;
+    output.fromName = "-";
+    output.account = data.to;
+    if (this.validURL(data.text)) {
+      output.media = data.text;
+      output.messageType = "media";
+    } else {
+      output.message = data.text;
+      output.messageType = "text";
+    }
+    console.log("NORMALIZATION", output);
+    return output;
   }
 
   async createIncoming(data: IncomingWhatsapp) {
@@ -58,12 +85,17 @@ export class WhatsappService {
           );
           custId = detailCust.id;
         }
+        //SET PRIORITY
+        const priority = 0;
 
+        //SET GROUP ID
+        const groupId = 1;
+        
         //INSERT QUEUE
         let insertSession;
         insertSession = data;
-        insertSession.priority = 0;
-        insertSession.groupId = 1;
+        insertSession.priority = priority;
+        insertSession.groupId = groupId;
         const resultSessionCreate = await this.sessionService.create(
           sessionId,
           this.channelId,
@@ -78,14 +110,7 @@ export class WhatsappService {
       insertInteraction.fromName = data.fromName;
       insertInteraction.media = data.media;
       insertInteraction.message = data.message;
-      if (!data.media) {
-        insertInteraction.messageType = "text";
-      } else if (data.media.length < 10) {
-        insertInteraction.messageType = "text";
-      } else {
-        insertInteraction.messageType = "media";
-      }
-
+      insertInteraction.messageType = data.messageType;
       insertInteraction.actionType = ActionType.IN;
       insertInteraction.sessionId = sessionId;
       insertInteraction.sendDate = new Date();
