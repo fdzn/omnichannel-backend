@@ -1,4 +1,4 @@
-import { Controller, Post, Res, Body, HttpCode } from "@nestjs/common";
+import { Controller, Get, Post, Res, Body, HttpCode } from "@nestjs/common";
 import { Response } from "express";
 
 //SERVICE
@@ -14,7 +14,15 @@ export class WhatsappController {
   @Post()
   @HttpCode(200)
   async outgoing(@Body() dataOutgoing: OutgoingWhatsapp, @Res() res: Response) {
-    const result = await this.whatsappService.createOutgoing(dataOutgoing);
+    const result = await this.whatsappService.capiwha(dataOutgoing);
     res.status(result.statusCode).send(result);
+  }
+
+  @Get()
+  async findAll() {
+    let data = new OutgoingWhatsapp();
+    data.from = "628981547873";
+    data.message = "HAIII";
+    const result = await this.whatsappService.capiwha(data);
   }
 }

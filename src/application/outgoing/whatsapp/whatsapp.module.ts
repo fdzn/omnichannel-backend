@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { Module, HttpModule } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
 //COMPONENT
@@ -9,7 +9,7 @@ import { WhatsappController } from "./whatsapp.controller";
 import { InteractionWhatsapp } from "../../../entity/interaction_whatsapp.entity";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([InteractionWhatsapp])],
+  imports: [TypeOrmModule.forFeature([InteractionWhatsapp]), HttpModule],
   providers: [WhatsappService],
   controllers: [WhatsappController]
 })
