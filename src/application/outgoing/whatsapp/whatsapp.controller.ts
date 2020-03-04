@@ -17,12 +17,4 @@ export class WhatsappController {
     const result = await this.whatsappService.capiwha(dataOutgoing);
     res.status(result.statusCode).send(result);
   }
-
-  @Get()
-  async findAll() {
-    let data = new OutgoingWhatsapp();
-    data.from = "628981547873";
-    data.message = "HAIII";
-    const result = await this.whatsappService.capiwha(data);
-  }
 }
