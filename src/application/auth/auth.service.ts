@@ -1,18 +1,15 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
+import { JwtService } from "@nestjs/jwt";
 
 import { User } from "../../entity/user.entity";
 import { mGroupSkill } from "../../entity/m_group_skill.entity";
 import { InteractionHeader } from "../../entity/interaction_header.entity";
 import { WorkOrder } from "../../entity/work_order.entity";
 
-//DTO
-import { AuthLogin } from "./dto/auth-login.dto";
-import { AuthLogout } from "./dto/auth-logout.dto";
 @Injectable()
 export class AuthService {
-  private channelId: string;
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
@@ -21,49 +18,96 @@ export class AuthService {
     @InjectRepository(InteractionHeader)
     private readonly sessionRepository: Repository<InteractionHeader>,
     @InjectRepository(WorkOrder)
-    private readonly workOrderRepository: Repository<WorkOrder>
+    private readonly workOrderRepository: Repository<WorkOrder>,
+    private readonly jwtService: JwtService
   ) {}
 
-  async login(data: AuthLogin) {
+  async validateUser(username: string, password: string) {
     try {
       const foundUser = await this.userRepository.findOne({
-        where: { username: data.username, isDeleted: 0 }
+        select: ["username", "password"],
+        where: {
+          username: username,
+          isDeleted: false,
+          isLogin: false,
+          isActive: true
+        }
       });
 
       if (!foundUser) {
         return {
           isError: true,
-          data: "username is not found",
-          statusCode: 401
+          data: "username is not found"
         };
       }
 
-      if (data.password !== foundUser.password) {
+      if (password !== foundUser.password) {
         return {
           isError: true,
-          data: "password incorrect",
-          statusCode: 401
+          data: "password incorrect"
         };
       }
-      const updateData = {
-        isLogin: true
-      };
-      const updateStatus = await this.userRepository.update(
-        { username: foundUser.username },
-        updateData
-      );
-
-      const groupSkill = await this.mGroupSkillRepository.findOne({
-        where: { agentUsername: foundUser.username }
-      });
 
       return {
         isError: false,
-        data: {
-          user: foundUser,
-          groupSkill: groupSkill
-        },
-        statusCode: 201
+        data: "authentication success"
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message };
+    }
+  }
+
+  async updateLoginData(username: string) {
+    const updateData = {
+      isLogin: true
+    };
+
+    return await this.userRepository.update({ username: username }, updateData);
+  }
+
+  async getDetailUser(username: string) {
+    const foundUser = await this.userRepository.findOne({
+      select: [
+        "username",
+        "name",
+        "level",
+        "phone",
+        "email",
+        "avatar",
+        "hostPBX",
+        "loginPBX",
+        "passwordPBX",
+        "unitId",
+        "groupId"
+      ],
+      where: {
+        username: username
+      }
+    });
+
+    const groupSkill = await this.mGroupSkillRepository.findOne({
+      select: ["channelId"],
+      where: { agentUsername: foundUser.username }
+    });
+    let detailUser;
+    detailUser = foundUser;
+    detailUser.skill = groupSkill;
+    return {
+      user: foundUser,
+      groupSkill: groupSkill
+    };
+  }
+
+  async login(username: string) {
+    try {
+      const resultUpdate = await this.updateLoginData(username);
+      const detailUser = await this.getDetailUser(username);
+      const accessToken = this.jwtService.sign(detailUser);
+      return {
+        isError: false,
+        data: accessToken,
+        statusCode: 200
       };
     } catch (error) {
       console.error(error);
@@ -71,14 +115,14 @@ export class AuthService {
     }
   }
 
-  async logout(data: AuthLogout) {
+  async logout(payload) {
     try {
       //UPDATE INTERACTION HEADER
       const updateHeader = {
         agentUsername: null
       };
       await this.sessionRepository.update(
-        { agentUsername: data.username },
+        { agentUsername: payload.username },
         updateHeader
       );
 
@@ -86,15 +130,19 @@ export class AuthService {
       let updateWorkOrder = new WorkOrder();
       updateWorkOrder.slot = 0;
       await this.workOrderRepository.update(
-        { agentUsername: data.username },
+        { agentUsername: payload.username },
         updateWorkOrder
       );
+
       //UPDATE STATUS AGENT
       const updateUser = {
         isLogin: false,
         isAux: true
       };
-      await this.userRepository.update({ username: data.username }, updateUser);
+      await this.userRepository.update(
+        { username: payload.username },
+        updateUser
+      );
       return {
         isError: false,
         data: "logout Success",
