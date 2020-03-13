@@ -2,22 +2,7 @@ import { IsNotEmpty, IsInt, IsEnum } from "class-validator";
 
 export class pickupManualPost {
   @IsNotEmpty()
-  username: string;
-
-  @IsNotEmpty()
-  @IsInt()
-  groupId: number;
-
-  @IsNotEmpty()
   channelId: string;
-}
-
-export class pickupAutoPost {
-  @IsNotEmpty()
-  username: string;
-
-  @IsNotEmpty()
-  sessionId: string;
 }
 
 export class loadWorkOrderPost {
@@ -34,10 +19,8 @@ export class endPost {
 
   @IsNotEmpty()
   channelId: string;
-
-  @IsNotEmpty()
-  username: string;
 }
+
 export enum PostType {
   INTERACTION = "interaction",
   HISTORY = "history"

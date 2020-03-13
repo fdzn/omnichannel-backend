@@ -11,7 +11,6 @@ import { Cwc } from "../../entity/cwc.entity";
 //DTO
 import {
   pickupManualPost,
-  pickupAutoPost,
   endPost,
   GetInteractionPost,
   GetInteractionByCustomerPost,
@@ -34,34 +33,13 @@ export class InteractionService {
     private readonly cwcRepository: Repository<Cwc>,
     private readonly interactionLibService: InteractionLibService
   ) {}
-
-  async pickupBySession(data: pickupAutoPost) {
-    try {
-      const foundSession = await this.sessionRepository.findOne({
-        where: { sessionId: data.sessionId }
-      });
-      if (!foundSession) {
-        return { isError: true, data: "sessionId not found", statusCode: 404 };
-      }
-
-      let updateData = new InteractionHeader();
-      updateData = foundSession;
-      updateData.agentUsername = data.username;
-      updateData.pickupDate = new Date();
-      const updateStatus = await this.sessionRepository.save(updateData);
-      return { isError: false, data: updateStatus, statusCode: 200 };
-    } catch (error) {
-      console.error(error);
-      return { isError: true, data: error.message, statusCode: 500 };
-    }
-  }
-
-  async pickupManual(data: pickupManualPost) {
+  
+  async pickupManual(data: pickupManualPost,payload) {
     try {
       const foundSession = await this.sessionRepository.findOne({
         where: {
           agentUsername: null,
-          groupId: data.groupId,
+          groupId: payload.groupId,
           channelId: data.channelId
         },
         order: {
@@ -76,7 +54,7 @@ export class InteractionService {
 
       let updateData = new InteractionHeader();
       updateData = foundSession;
-      updateData.agentUsername = data.username;
+      updateData.agentUsername = payload.username;
       updateData.pickupDate = new Date();
 
       const updateStatus = await this.sessionRepository.save(updateData);
@@ -185,7 +163,7 @@ export class InteractionService {
     }
   }
 
-  async endSession(data: endPost) {
+  async endSession(data: endPost,payload) {
     try {
       const countCase = await this.interactionLibService.countCase(
         data.channelId,
@@ -198,7 +176,7 @@ export class InteractionService {
       updateData.caseOut = countCase.caseOut;
 
       const updateStatus = await this.sessionRepository.update(
-        { sessionId: data.sessionId, agentUsername: data.username },
+        { sessionId: data.sessionId, agentUsername: payload.username },
         updateData
       );
 
@@ -213,7 +191,7 @@ export class InteractionService {
     }
   }
 
-  async submitCWC(data: CwcPost) {
+  async submitCWC(data: CwcPost,payload) {
     try {
       const dateNow = new Date();
 
@@ -248,7 +226,7 @@ export class InteractionService {
 
       //INSERT CWC
       let insertCwc = new Cwc();
-      insertCwc.agentUsername = data.username;
+      insertCwc.agentUsername = payload.username;
       insertCwc.categoryId = data.categoryId;
       insertCwc.feedback = data.feedback;
       insertCwc.remark = data.remark;
@@ -256,7 +234,7 @@ export class InteractionService {
       insertCwc.sentiment = data.sentiment;
       insertCwc.sessionId = data.sessionId;
       insertCwc.subcategoryId = data.subcategoryId;
-      insertCwc.updaterUsername = data.username;
+      insertCwc.updaterUsername = payload.username;
       const resultInsert = await this.cwcRepository.save(insertCwc);
 
       return { isError: false, data: move, statusCode: 200 };

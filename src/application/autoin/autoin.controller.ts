@@ -5,16 +5,16 @@ import { Response } from "express";
 import { AutoInService } from "./autoin.service";
 
 //DTO
-import { UpdateAuxPost, UpdateWorkOrderPost } from "./dto/autoin.dto";
+import { UpdateAuxPost, UpdateWorkOrderPost,PickupPost } from "./dto/autoin.dto";
 
 @Controller("autoin")
 export class AutoInController {
-  constructor(private readonly autoinhService: AutoInService) {}
+  constructor(private readonly autoinService: AutoInService) {}
 
   @Post("updateAux")
   @HttpCode(200)
   async updateAux(@Body() postData: UpdateAuxPost, @Res() res: Response) {
-    const result = await this.autoinhService.updateAuxStatus(postData);
+    const result = await this.autoinService.updateAuxStatus(postData);
     res.status(result.statusCode).send(result);
   }
 
@@ -24,7 +24,14 @@ export class AutoInController {
     @Body() postData: UpdateWorkOrderPost,
     @Res() res: Response
   ) {
-    const result = await this.autoinhService.updateWorkOrder(postData);
+    const result = await this.autoinService.updateWorkOrder(postData);
+    res.status(result.statusCode).send(result);
+  }
+
+  @Post("pickup")
+  @HttpCode(200)
+  async pickup(@Body() postData: PickupPost, @Res() res: Response) {
+    const result = await this.autoinService.pickup(postData);
     res.status(result.statusCode).send(result);
   }
 }

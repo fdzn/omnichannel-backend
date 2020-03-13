@@ -10,8 +10,8 @@ import {
 import { Response } from "express";
 
 //GUARD
-import { LocalAuthGuard } from "./local.auth.guard";
-import { JwtAuthGuard } from "./jwt.auth.guard";
+import { LocalAuthGuard } from "./guards/local.auth.guard";
+import { JwtAuthGuard } from "./guards/jwt.auth.guard";
 //SERVICES
 import { AuthService } from "./auth.service";
 

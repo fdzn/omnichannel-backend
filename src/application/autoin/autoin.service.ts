@@ -4,9 +4,10 @@ import { Repository } from "typeorm";
 
 import { User } from "../../entity/user.entity";
 import { WorkOrder } from "../../entity/work_order.entity";
+import { InteractionHeader } from "../../entity/interaction_header.entity";
 
 //DTO
-import { UpdateAuxPost, UpdateWorkOrderPost } from "./dto/autoin.dto";
+import { UpdateAuxPost, UpdateWorkOrderPost, PickupPost } from "./dto/autoin.dto";
 
 @Injectable()
 export class AutoInService {
@@ -14,7 +15,9 @@ export class AutoInService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     @InjectRepository(WorkOrder)
-    private readonly workOrderRepository: Repository<WorkOrder>
+    private readonly workOrderRepository: Repository<WorkOrder>,
+    @InjectRepository(InteractionHeader)
+    private readonly sessionRepository: Repository<InteractionHeader>
   ) {}
 
   async updateAuxStatus(data: UpdateAuxPost) {
@@ -58,6 +61,27 @@ export class AutoInService {
         data: updateStatus,
         statusCode: 200
       };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async pickup(data: PickupPost) {
+    try {
+      const foundSession = await this.sessionRepository.findOne({
+        where: { sessionId: data.sessionId }
+      });
+      if (!foundSession) {
+        return { isError: true, data: "sessionId not found", statusCode: 404 };
+      }
+
+      let updateData = new InteractionHeader();
+      updateData = foundSession;
+      updateData.agentUsername = data.username;
+      updateData.pickupDate = new Date();
+      const updateStatus = await this.sessionRepository.save(updateData);
+      return { isError: false, data: updateStatus, statusCode: 200 };
     } catch (error) {
       console.error(error);
       return { isError: true, data: error.message, statusCode: 500 };

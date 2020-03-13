@@ -23,7 +23,4 @@ export class CwcPost {
   @IsOptional()
   @IsInt()
   sentiment: number;
-
-  @IsNotEmpty()
-  username: string;
 }

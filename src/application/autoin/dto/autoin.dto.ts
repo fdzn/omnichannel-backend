@@ -23,3 +23,11 @@ export class UpdateWorkOrderPost {
   @IsDateString()
   lastDist: Date;
 }
+
+export class PickupPost {
+  @IsNotEmpty()
+  username: string;
+
+  @IsNotEmpty()
+  sessionId: string;
+}

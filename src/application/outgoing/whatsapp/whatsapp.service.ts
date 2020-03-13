@@ -17,11 +17,11 @@ export class WhatsappService {
     private readonly httpService: HttpService
   ) {}
 
-  async saveInteraction(data: OutgoingWhatsapp) {
+  async saveInteraction(data: OutgoingWhatsapp, payload) {
     let insertInteraction = new InteractionWhatsapp();
     insertInteraction.convId = data.convId;
     insertInteraction.from = data.from;
-    insertInteraction.fromName = data.username;
+    insertInteraction.fromName = payload.username;
     insertInteraction.media = data.media;
     insertInteraction.message = data.message;
     if (!data.media) {
@@ -34,12 +34,12 @@ export class WhatsappService {
 
     insertInteraction.actionType = ActionType.OUT;
     insertInteraction.sessionId = data.sessionId;
-    insertInteraction.agentUsername = data.username;
+    insertInteraction.agentUsername = payload.username;
     insertInteraction.sendDate = new Date();
     return this.whatsappRepository.save(insertInteraction);
   }
 
-  async capiwha(data: OutgoingWhatsapp) {
+  async capiwha(data: OutgoingWhatsapp, payload) {
     console.log("SEND", data);
     try {
       const options = {
@@ -57,7 +57,7 @@ export class WhatsappService {
       const response = await rp(options);
       const json = JSON.parse(response);
       if (json.success) {
-        await this.saveInteraction(data);
+        await this.saveInteraction(data, payload);
         return {
           isError: false,
           data: "outgoing success",
@@ -77,9 +77,9 @@ export class WhatsappService {
     }
   }
 
-  async createOutgoing(data: OutgoingWhatsapp) {
+  async createOutgoing(data: OutgoingWhatsapp,payload) {
     try {
-      this.saveInteraction(data);
+      this.saveInteraction(data,payload);
       return {
         isError: false,
         data: "outgoing success",

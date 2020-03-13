@@ -2,9 +2,6 @@ import { IsNotEmpty, IsOptional, IsInt } from "class-validator";
 
 export class SendPost {
   @IsNotEmpty()
-  from: string;
-
-  @IsNotEmpty()
   to: string;
 
   @IsNotEmpty()
@@ -16,10 +13,8 @@ export class SendPost {
 
 export class GetChatPost {
   @IsNotEmpty()
-  from: string;
-
-  @IsNotEmpty()
   to: string;
+  
   @IsNotEmpty()
   @IsInt()
   page: number;

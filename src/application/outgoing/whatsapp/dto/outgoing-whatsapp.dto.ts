@@ -18,7 +18,4 @@ export class OutgoingWhatsapp {
 
   @IsOptional()
   media: string;
-
-  @IsNotEmpty()
-  username: string;
 }

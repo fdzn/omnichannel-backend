@@ -10,18 +10,17 @@ import { SendPost, GetChatPost } from "./dto/internalChat.dto";
 
 @Injectable()
 export class InternalChatService {
-  private channelId: string;
   constructor(
     @InjectRepository(InternalChat)
     private readonly internalChatRepository: Repository<InternalChat>
   ) {}
 
-  async send(data: SendPost) {
+  async send(data: SendPost, payload) {
     try {
       let sentData = new InternalChat();
-      sentData.fromUsername = data.from;
+      sentData.fromUsername = payload.username;
       sentData.toUsername = data.to;
-      sentData.room = `${data.from}-${data.to}`;
+      sentData.room = `${payload.username}-${data.to}`;
       sentData.message = data.message;
       sentData.sendDate = new Date();
       if (!data.media) {
@@ -46,13 +45,13 @@ export class InternalChatService {
     }
   }
 
-  async getChat(data: GetChatPost) {
+  async getChat(data: GetChatPost, payload) {
     try {
       const limit = 10;
       const listChat = await this.internalChatRepository.find({
         where: [
-          { room: `${data.from}-${data.to}` },
-          { room: `${data.to}-${data.from}` }
+          { room: `${payload.username}-${data.to}` },
+          { room: `${data.to}-${payload.username}` }
         ],
         order: {
           id: "DESC"

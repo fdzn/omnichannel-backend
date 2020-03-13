@@ -8,9 +8,10 @@ import { AutoInController } from "./autoin.controller";
 //ENTITY
 import { User } from "../../entity/user.entity";
 import { WorkOrder } from "../../entity/work_order.entity";
+import { InteractionHeader } from "../../entity/interaction_header.entity";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, WorkOrder])],
+  imports: [TypeOrmModule.forFeature([User, WorkOrder, InteractionHeader])],
   providers: [AutoInService],
   controllers: [AutoInController]
 })
