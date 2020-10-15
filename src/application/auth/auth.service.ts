@@ -100,14 +100,10 @@ export class AuthService {
     try {
       // const resultUpdate = await this.updateLoginData(username);
       const detailUser = await this.getDetailUser(username);
-      // console.log(detailUser)
       const accessToken = this.jwtService.sign(detailUser);
       return {
         isError: false,
-        data: {
-          detailUser: detailUser,
-          accessToken: accessToken,
-        },
+        data: accessToken,
         statusCode: 200,
       };
     } catch (error) {

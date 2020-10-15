@@ -40,10 +40,9 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get("isLogin")
+  @Get("getDataLogin")
   @HttpCode(200)
   getDetailLogin(@Request() payload, @Res() res: Response) {
-    console.log(payload)
     const result = {
       isError: false,
       data: payload.user,
