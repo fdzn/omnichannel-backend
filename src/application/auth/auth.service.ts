@@ -30,27 +30,27 @@ export class AuthService {
           username: username,
           isDeleted: false,
           isLogin: false,
-          isActive: true
-        }
+          isActive: true,
+        },
       });
 
       if (!foundUser) {
         return {
           isError: true,
-          data: "username is not found"
+          data: "username is not found",
         };
       }
 
       if (password !== foundUser.password) {
         return {
           isError: true,
-          data: "password incorrect"
+          data: "password incorrect",
         };
       }
 
       return {
         isError: false,
-        data: "authentication success"
+        data: "authentication success",
       };
     } catch (error) {
       console.error(error);
@@ -60,7 +60,7 @@ export class AuthService {
 
   async updateLoginData(username: string) {
     const updateData = {
-      isLogin: true
+      isLogin: true,
     };
 
     return await this.userRepository.update({ username: username }, updateData);
@@ -73,41 +73,42 @@ export class AuthService {
         "name",
         "level",
         "phone",
-        "email",
-        "avatar",
         "hostPBX",
         "loginPBX",
         "passwordPBX",
         "unitId",
-        "groupId"
+        "groupId",
       ],
       where: {
-        username: username
-      }
+        username: username,
+      },
     });
 
     const groupSkill = await this.mGroupSkillRepository.findOne({
       select: ["channelId"],
-      where: { agentUsername: foundUser.username }
+      where: { agentUsername: foundUser.username },
     });
     let detailUser;
     detailUser = foundUser;
-    detailUser.skill = groupSkill;
-    return {
-      user: foundUser,
-      groupSkill: groupSkill
-    };
+    detailUser.skill = groupSkill ? groupSkill : null;
+
+    let output = { ...detailUser };
+    return output;
   }
 
   async login(username: string) {
     try {
-      const resultUpdate = await this.updateLoginData(username);
+      // const resultUpdate = await this.updateLoginData(username);
       const detailUser = await this.getDetailUser(username);
+      // console.log(detailUser)
       const accessToken = this.jwtService.sign(detailUser);
       return {
         isError: false,
-        data: accessToken,
-        statusCode: 200
+        data: {
+          detailUser: detailUser,
+          accessToken: accessToken,
+        },
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -119,7 +120,7 @@ export class AuthService {
     try {
       //UPDATE INTERACTION HEADER
       const updateHeader = {
-        agentUsername: null
+        agentUsername: null,
       };
       await this.sessionRepository.update(
         { agentUsername: payload.username },
@@ -137,7 +138,7 @@ export class AuthService {
       //UPDATE STATUS AGENT
       const updateUser = {
         isLogin: false,
-        isAux: true
+        isAux: true,
       };
       await this.userRepository.update(
         { username: payload.username },
@@ -146,7 +147,7 @@ export class AuthService {
       return {
         isError: false,
         data: "logout Success",
-        statusCode: 201
+        statusCode: 201,
       };
     } catch (error) {
       console.error(error);

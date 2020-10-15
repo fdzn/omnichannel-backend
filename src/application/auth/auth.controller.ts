@@ -1,11 +1,12 @@
 import {
   Controller,
   Post,
+  Get,
   Res,
   Body,
   Request,
   HttpCode,
-  UseGuards
+  UseGuards,
 } from "@nestjs/common";
 import { Response } from "express";
 
@@ -33,11 +34,21 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post("logout")
   @HttpCode(200)
-  async logout(
-    @Request() payload,
-    @Res() res: Response
-  ) {
+  async logout(@Request() payload, @Res() res: Response) {
     const result = await this.authService.logout(payload);
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get("isLogin")
+  @HttpCode(200)
+  getDetailLogin(@Request() payload, @Res() res: Response) {
+    console.log(payload)
+    const result = {
+      isError: false,
+      data: payload.user,
+      statusCode: 200,
+    };
     res.status(result.statusCode).send(result);
   }
 }
