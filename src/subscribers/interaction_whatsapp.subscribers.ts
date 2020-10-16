@@ -25,7 +25,7 @@ export class InteractionWhatsappSubscriber
   afterInsert(event: InsertEvent<InteractionWhatsapp>) {
     this.eventsGateway.sendData(
       "agent",
-      "newInteraction:whatsapp",
+      "newInteractionWhatsapp",
       event.entity
     );
     console.log(`AFTER INTERACTION WHATSAPP INSERTED: `, event.entity);

@@ -25,7 +25,7 @@ export class InternalChatSubscribers
   afterInsert(event: InsertEvent<InternalChat>) {
     this.eventsGateway.sendData(
       "agent",
-      "newInteraction:internalChat",
+      "newInteractionInternalChat",
       event.entity
     );
     console.log(`AFTER INTERACTION INTERNAL CHAT INSERTED: `, event.entity);
