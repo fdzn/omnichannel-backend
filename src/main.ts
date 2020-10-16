@@ -1,9 +1,5 @@
 import { NestFactory } from "@nestjs/core";
 import { ValidationPipe } from "@nestjs/common";
-import {
-  FastifyAdapter,
-  NestFastifyApplication,
-} from "@nestjs/platform-fastify";
 import * as fs from "fs";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
@@ -28,15 +24,9 @@ async function bootstrap() {
       httpsOptions["ca"] = fs.readFileSync(process.env.HTTPS_BUNDLE, "utf8");
     }
 
-    app = await NestFactory.create<NestFastifyApplication>(
-      AppModule,
-      new FastifyAdapter({ https: httpsOptions })
-    );
+    app = await NestFactory.create(AppModule, { httpsOptions });
   } else {
-    app = await NestFactory.create<NestFastifyApplication>(
-      AppModule,
-      new FastifyAdapter()
-    );
+    app = await NestFactory.create(AppModule);
   }
 
   app.enableCors();

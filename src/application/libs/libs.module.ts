@@ -1,7 +1,8 @@
-import { Module } from "@nestjs/common";
+import { Module, HttpModule } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
 //SERVICES
+import { LibsService } from "./services/lib.service";
 import { SessionService } from "./services/session.service";
 import { CustomerService } from "./services/customer.service";
 import { InteractionLibService } from "./services/interaction.service";
@@ -15,16 +16,27 @@ import { Customer } from "../../entity/customer.entity";
 
 @Module({
   imports: [
+    HttpModule,
     TypeOrmModule.forFeature([
       InteractionHeader,
       InteractionWhatsapp,
       InteractionWhatsappHistory,
       Contact,
-      Customer
-    ])
+      Customer,
+    ]),
   ],
-  exports: [SessionService, CustomerService, InteractionLibService],
+  exports: [
+    LibsService,
+    SessionService,
+    CustomerService,
+    InteractionLibService,
+  ],
   controllers: [],
-  providers: [SessionService, CustomerService, InteractionLibService]
+  providers: [
+    LibsService,
+    SessionService,
+    CustomerService,
+    InteractionLibService,
+  ],
 })
 export class LibsModule {}

@@ -1,8 +1,8 @@
-import { Injectable, HttpService, RequestMethod } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import * as FormData from "form-data";
-import * as rp from "request-promise";
+
+import { LibsService } from "../../libs/services/lib.service";
 //ENTITY
 import { InteractionWhatsapp } from "../../../entity/interaction_whatsapp.entity";
 import { ActionType } from "src/entity/templates/generalChat";
@@ -12,9 +12,9 @@ import { OutgoingWhatsapp } from "./dto/outgoing-whatsapp.dto";
 @Injectable()
 export class WhatsappService {
   constructor(
+    private readonly libsService: LibsService,
     @InjectRepository(InteractionWhatsapp)
-    private readonly whatsappRepository: Repository<InteractionWhatsapp>,
-    private readonly httpService: HttpService
+    private readonly whatsappRepository: Repository<InteractionWhatsapp>
   ) {}
 
   async saveInteraction(data: OutgoingWhatsapp, payload) {
@@ -42,52 +42,29 @@ export class WhatsappService {
   async capiwha(data: OutgoingWhatsapp, payload) {
     console.log("SEND", data);
     try {
-      const options = {
-        method: "POST",
-        url: "https://panel.capiwha.apiwha.com/send_message.php",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        formData: {
-          apikey: "BQ0FXHO336K3UOOV8CER",
-          number: data.from,
-          text: data.media ? data.media : data.message
-        }
+      await this.saveInteraction(data, payload);
+      const url = process.env.CAPIWHA_OUTGOING_URL;
+      const dataPost = {
+        apikey: process.env.CAPIWHA_KEY,
+        number: data.from,
+        text: data.media ? data.media : data.message,
       };
-      const response = await rp(options);
-      const json = JSON.parse(response);
-      if (json.success) {
-        await this.saveInteraction(data, payload);
-        return {
-          isError: false,
-          data: "outgoing success",
-          statusCode: 201
-        };
-      } else {
-        return {
-          isError: true,
-          data: json.description
-            ? json.description
-            : "Unknown error from capiwha",
-          statusCode: 500
-        };
-      }
+      return await this.libsService.postHTTP(url, dataPost);
     } catch (error) {
-      return { isError: true, data: error.message, statusCode: 500 };
+      return this.libsService.parseError(error);
     }
   }
 
-  async createOutgoing(data: OutgoingWhatsapp,payload) {
+  async createOutgoing(data: OutgoingWhatsapp, payload) {
     try {
-      this.saveInteraction(data,payload);
+      this.saveInteraction(data, payload);
       return {
         isError: false,
         data: "outgoing success",
-        statusCode: 201
+        statusCode: 201,
       };
     } catch (error) {
-      console.error(error);
-      return { isError: true, data: error.message, statusCode: 500 };
+      return this.libsService.parseError(error);
     }
   }
 }
