@@ -22,7 +22,6 @@ import {
   endPost,
   GetInteractionPost,
   loadWorkOrderPost,
-  GetInteractionSpecific,
   JourneyPost,
 } from "./dto/interaction.dto";
 
@@ -71,7 +70,7 @@ export class InteractionController {
     res.status(result.statusCode).send(result);
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get("getInteraction/:channelId/:type/:sessionId")
   @HttpCode(200)
   async getInteraction(

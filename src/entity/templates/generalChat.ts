@@ -2,12 +2,12 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
 } from "typeorm";
 
 export enum ActionType {
   IN = "in",
-  OUT = "out"
+  OUT = "out",
 }
 
 export abstract class generalChat {
@@ -32,13 +32,19 @@ export abstract class generalChat {
   @Column({ type: "text", nullable: true })
   media: string;
 
-  @Column()
+  @Column({ nullable: true })
   sendDate: Date;
+
+  @Column({ default: false })
+  sendStatus: Boolean;
+
+  @Column({ type: "text", nullable: true })
+  systemMessage: string;
 
   @Column({
     type: "enum",
     enum: ActionType,
-    nullable: true
+    nullable: true,
   })
   actionType: ActionType;
 

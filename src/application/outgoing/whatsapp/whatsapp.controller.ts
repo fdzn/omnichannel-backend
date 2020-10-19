@@ -5,7 +5,7 @@ import {
   Body,
   Request,
   HttpCode,
-  UseGuards
+  UseGuards,
 } from "@nestjs/common";
 import { Response } from "express";
 
@@ -21,7 +21,7 @@ import { OutgoingWhatsapp } from "./dto/outgoing-whatsapp.dto";
 @Controller("outgoing/whatsapp")
 export class WhatsappController {
   constructor(private readonly whatsappService: WhatsappService) {}
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Post()
   @HttpCode(200)
   async outgoing(
@@ -29,9 +29,14 @@ export class WhatsappController {
     @Body() dataOutgoing: OutgoingWhatsapp,
     @Res() res: Response
   ) {
-    console.log("OUTGOING WHATSAPP",JSON.stringify(dataOutgoing));
-    
-    const result = await this.whatsappService.capiwha(dataOutgoing,payload);
-    res.status(result.statusCode).send(result);
+    console.log("OUTGOING WHATSAPP", JSON.stringify(dataOutgoing));
+
+    const resultSave = await this.whatsappService.saveInteraction(
+      dataOutgoing,
+      payload.user
+    );
+    res.status(200).send(resultSave);
+
+    await this.whatsappService.capiwha(dataOutgoing, resultSave, payload.user);
   }
 }

@@ -35,13 +35,13 @@ export class WhatsappService {
     insertInteraction.actionType = ActionType.OUT;
     insertInteraction.sessionId = data.sessionId;
     insertInteraction.agentUsername = payload.username;
-    insertInteraction.sendDate = new Date();
     return this.whatsappRepository.save(insertInteraction);
   }
 
-  async capiwha(data: OutgoingWhatsapp, payload) {
+  async capiwha(data: OutgoingWhatsapp, resultSave, payload) {
     try {
-      await this.saveInteraction(data, payload);
+      const { id } = resultSave;
+
       const url = process.env.CAPIWHA_OUTGOING_URL;
 
       const dataPost = new FormData();
@@ -52,17 +52,23 @@ export class WhatsappService {
       const result = await this.libsService.postHTTP(url, dataPost, config);
       const resultDetail = result.data;
       if (resultDetail.success) {
-        return {
-          isError: false,
-          data: resultDetail.description,
-          statusCode: 200,
-        };
+        const updateInteraction = new InteractionWhatsapp();
+        updateInteraction.id = id;
+        updateInteraction.sessionId = data.sessionId;
+        updateInteraction.sendDate = new Date();
+        updateInteraction.sendStatus = true;
+        updateInteraction.systemMessage = JSON.stringify(resultDetail);
+        updateInteraction.agentUsername = payload.username;
+        const result = await this.whatsappRepository.save(updateInteraction);
+        console.log("UPDATE STATUS", result);
       } else {
-        return {
-          isError: true,
-          data: resultDetail.description,
-          statusCode: 500,
-        };
+        const updateInteraction = new InteractionWhatsapp();
+        updateInteraction.id = id;
+        updateInteraction.sessionId = data.sessionId;
+        updateInteraction.sendStatus = false;
+        updateInteraction.systemMessage = JSON.stringify(resultDetail);
+        updateInteraction.agentUsername = payload.username;
+        await this.whatsappRepository.save(updateInteraction);
       }
     } catch (error) {
       return this.libsService.parseError(error);
