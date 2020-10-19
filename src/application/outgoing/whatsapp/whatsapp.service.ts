@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-
+import * as FormData from "form-data";
 import { LibsService } from "../../libs/services/lib.service";
 //ENTITY
 import { InteractionWhatsapp } from "../../../entity/interaction_whatsapp.entity";
@@ -40,16 +40,30 @@ export class WhatsappService {
   }
 
   async capiwha(data: OutgoingWhatsapp, payload) {
-    console.log("SEND", data);
     try {
       await this.saveInteraction(data, payload);
       const url = process.env.CAPIWHA_OUTGOING_URL;
-      const dataPost = {
-        apikey: process.env.CAPIWHA_KEY,
-        number: data.from,
-        text: data.media ? data.media : data.message,
-      };
-      return await this.libsService.postHTTP(url, dataPost);
+
+      const dataPost = new FormData();
+      dataPost.append("apikey", process.env.CAPIWHA_KEY);
+      dataPost.append("number", data.from);
+      dataPost.append("text", data.media ? data.media : data.message);
+      const config = { headers: dataPost.getHeaders() };
+      const result = await this.libsService.postHTTP(url, dataPost, config);
+      const resultDetail = result.data;
+      if (resultDetail.success) {
+        return {
+          isError: false,
+          data: resultDetail.description,
+          statusCode: 200,
+        };
+      } else {
+        return {
+          isError: true,
+          data: resultDetail.description,
+          statusCode: 500,
+        };
+      }
     } catch (error) {
       return this.libsService.parseError(error);
     }

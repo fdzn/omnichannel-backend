@@ -153,7 +153,7 @@ export class LibsService {
 
     return `${type}/${extension}`;
   }
-  
+
   async postHTTP(url, dataPost, config = null) {
     try {
       const date = new Date();
@@ -162,7 +162,7 @@ export class LibsService {
       const result = await this.http.post(url, dataPost, config).toPromise();
       return {
         isError: false,
-        data: result,
+        data: result.data,
         statusCode: 200,
       };
     } catch (e) {
