@@ -7,9 +7,6 @@ export class pickupManualPost {
 
 export class loadWorkOrderPost {
   @IsNotEmpty()
-  username: string;
-
-  @IsNotEmpty()
   channelId: string;
 }
 

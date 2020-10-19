@@ -29,7 +29,7 @@ export class InteractionLibService {
           log: InteractionWhatsapp,
           logRepo: this.WhatsappRepository,
           history: InteractionWhatsappHistory,
-          historyRepo: this.WhatsappHistoryRepository
+          historyRepo: this.WhatsappHistoryRepository,
         };
 
       default:
@@ -37,7 +37,7 @@ export class InteractionLibService {
           log: null,
           logRepo: null,
           history: null,
-          historyRepo: null
+          historyRepo: null,
         };
     }
   }
@@ -45,7 +45,7 @@ export class InteractionLibService {
   async moveToHistory(channelId: string, sessionId: string) {
     const repo = this.getRepository(channelId);
     const dataInteraction = await repo.logRepo.find({
-      where: { sessionId: sessionId }
+      where: { sessionId: sessionId },
     });
 
     if (dataInteraction.length == 0) {
@@ -59,29 +59,29 @@ export class InteractionLibService {
   async getLastChat(channelId: string, sessionId: string) {
     const repo = this.getRepository(channelId);
     const result = await repo.logRepo.findOne({
-      select: ["message"],
+      select: ["message", "sendDate", "actionType"],
       where: { sessionId: sessionId },
       order: {
-        id: "DESC"
-      }
+        id: "DESC",
+      },
     });
-    return result.message;
+    return result;
   }
 
   async countCase(channelId: string, sessionId: string) {
     const repo = this.getRepository(channelId);
     const caseIn = await repo.logRepo.count({
       sessionId: sessionId,
-      actionType: ActionType.IN
+      actionType: ActionType.IN,
     });
 
     const caseOut = await repo.logRepo.count({
       sessionId: sessionId,
-      actionType: ActionType.OUT
+      actionType: ActionType.OUT,
     });
     return {
       caseIn: caseIn,
-      caseOut: caseOut
+      caseOut: caseOut,
     };
   }
 
@@ -102,9 +102,9 @@ export class InteractionLibService {
           "sendDate",
           "actionType",
           "agentUsername",
-          "convId"
+          "convId",
         ],
-        where: { sessionId: sessionId }
+        where: { sessionId: sessionId },
       });
     } else if (type == PostType.HISTORY) {
       messages = await this.WhatsappHistoryRepository.find({
@@ -118,15 +118,15 @@ export class InteractionLibService {
           "sendDate",
           "actionType",
           "agentUsername",
-          "convId"
+          "convId",
         ],
-        where: { sessionId: sessionId }
+        where: { sessionId: sessionId },
       });
     }
 
     if (messages.length > 0) {
       const found = messages.find(
-        element => element.actionType == ActionType.IN
+        (element) => element.actionType == ActionType.IN
       );
       if (found) {
         from = found.from;
@@ -138,7 +138,7 @@ export class InteractionLibService {
       sessionId: sessionId,
       from: from,
       fromName: fromName,
-      messages: messages
+      messages: messages,
     };
   }
 
@@ -150,11 +150,11 @@ export class InteractionLibService {
     const repo = this.getRepository(channelId);
     if (type == PostType.INTERACTION) {
       return await repo.logRepo.find({
-        where: { sessionId: sessionId }
+        where: { sessionId: sessionId },
       });
     } else if (type == PostType.HISTORY) {
       return await repo.historyRepo.find({
-        where: { sessionId: sessionId }
+        where: { sessionId: sessionId },
       });
     }
   }
@@ -177,7 +177,7 @@ export class InteractionLibService {
     return await repoUse.find({
       where: { from: from },
       skip: skip,
-      take: take
+      take: take,
     });
   }
 }

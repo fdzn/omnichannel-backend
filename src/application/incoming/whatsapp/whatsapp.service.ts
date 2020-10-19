@@ -23,10 +23,10 @@ export class WhatsappService {
   validURL(str) {
     var pattern = new RegExp(
       "^(https?:\\/\\/)?" + // protocol
-      "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
-      "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
-      "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
-      "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
+        "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
+        "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
+        "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
+        "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
         "(\\#[-a-z\\d_]*)?$",
       "i"
     ); // fragment locator
@@ -38,7 +38,7 @@ export class WhatsappService {
     const data = JSON.parse(post.data);
     let output = new IncomingWhatsapp();
     output.from = data.from;
-    output.fromName = "-";
+    output.fromName = "No Name";
     output.account = data.to;
     if (this.validURL(data.text)) {
       output.media = data.text;
@@ -90,7 +90,7 @@ export class WhatsappService {
 
         //SET GROUP ID
         const groupId = 1;
-        
+
         //INSERT QUEUE
         let insertSession;
         insertSession = data;
@@ -118,7 +118,7 @@ export class WhatsappService {
       return {
         isError: false,
         data: "incoming success",
-        statusCode: 201
+        statusCode: 201,
       };
     } catch (error) {
       console.error(error);

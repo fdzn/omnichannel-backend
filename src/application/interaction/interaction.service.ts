@@ -16,7 +16,7 @@ import {
   GetInteractionByCustomerPost,
   GetInteractionSpecific,
   loadWorkOrderPost,
-  JourneyPost
+  JourneyPost,
 } from "./dto/interaction.dto";
 import { CwcPost } from "./dto/cwc.dto";
 
@@ -33,19 +33,19 @@ export class InteractionService {
     private readonly cwcRepository: Repository<Cwc>,
     private readonly interactionLibService: InteractionLibService
   ) {}
-  
-  async pickupManual(data: pickupManualPost,payload) {
+
+  async pickupManual(data: pickupManualPost, payload) {
     try {
       const foundSession = await this.sessionRepository.findOne({
         where: {
           agentUsername: null,
           groupId: payload.groupId,
-          channelId: data.channelId
+          channelId: data.channelId,
         },
         order: {
           priority: "DESC",
-          id: "ASC"
-        }
+          id: "ASC",
+        },
       });
 
       if (!foundSession) {
@@ -86,14 +86,14 @@ export class InteractionService {
     }
   }
 
-  async loadWorkOrder(data: loadWorkOrderPost) {
+  async loadWorkOrder(data: loadWorkOrderPost, payload) {
     try {
       let detailChannel;
       const foundSession = await this.sessionRepository.find({
         where: {
-          agentUsername: data.username,
-          channelId: data.channelId
-        }
+          agentUsername: payload.username,
+          channelId: data.channelId,
+        },
       });
 
       if (foundSession.length == 0) {
@@ -163,7 +163,7 @@ export class InteractionService {
     }
   }
 
-  async endSession(data: endPost,payload) {
+  async endSession(data: endPost, payload) {
     try {
       const countCase = await this.interactionLibService.countCase(
         data.channelId,
@@ -191,7 +191,7 @@ export class InteractionService {
     }
   }
 
-  async submitCWC(data: CwcPost,payload) {
+  async submitCWC(data: CwcPost, payload) {
     try {
       const dateNow = new Date();
 
@@ -209,7 +209,7 @@ export class InteractionService {
 
       //GET SESSION ID
       const foundSession = await this.sessionRepository.findOne({
-        where: { sessionId: data.sessionId }
+        where: { sessionId: data.sessionId },
       });
 
       // //MOVE HEADER TO HISTORY

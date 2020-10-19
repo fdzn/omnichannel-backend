@@ -1,11 +1,13 @@
 import {
   Controller,
   Post,
+  Get,
+  Param,
   Res,
   Body,
   Request,
   HttpCode,
-  UseGuards
+  UseGuards,
 } from "@nestjs/common";
 import { Response } from "express";
 
@@ -21,7 +23,7 @@ import {
   GetInteractionPost,
   loadWorkOrderPost,
   GetInteractionSpecific,
-  JourneyPost
+  JourneyPost,
 } from "./dto/interaction.dto";
 
 import { CwcPost } from "./dto/cwc.dto";
@@ -69,27 +71,14 @@ export class InteractionController {
     res.status(result.statusCode).send(result);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post("getInteractionWhatsapp")
-  @HttpCode(200)
-  async getInteractionWhatsapp(
-    @Body() postData: GetInteractionSpecific,
-    @Res() res: Response
-  ) {
-    const result = await this.interactionService.getInteractionWhatsapp(
-      postData
-    );
-    res.status(result.statusCode).send(result);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Post("getInteraction")
+  // @UseGuards(JwtAuthGuard)
+  @Get("getInteraction/:channelId/:type/:sessionId")
   @HttpCode(200)
   async getInteraction(
-    @Body() postData: GetInteractionPost,
+    @Param() params: GetInteractionPost,
     @Res() res: Response
   ) {
-    const result = await this.interactionService.getInteraction(postData);
+    const result = await this.interactionService.getInteraction(params);
     res.status(result.statusCode).send(result);
   }
 
@@ -102,13 +91,18 @@ export class InteractionController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post("loadWorkOrder")
+  @Get("loadWorkOrder/:channelId")
   @HttpCode(200)
   async loadWorkOrder(
-    @Body() postData: loadWorkOrderPost,
+    @Param() params: loadWorkOrderPost,
+    @Request() payload,
     @Res() res: Response
   ) {
-    const result = await this.interactionService.loadWorkOrder(postData);
+    console.log(payload);
+    const result = await this.interactionService.loadWorkOrder(
+      params,
+      payload.user
+    );
     res.status(result.statusCode).send(result);
   }
 }
