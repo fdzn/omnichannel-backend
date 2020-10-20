@@ -8,7 +8,7 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { Response } from "express";
-
+import { ApiTags } from "@nestjs/swagger";
 //GUARD
 import { JwtAuthGuard } from "../../auth/guards/jwt.auth.guard";
 
@@ -18,6 +18,7 @@ import { WhatsappService } from "./whatsapp.service";
 //DTO
 import { OutgoingWhatsapp } from "./dto/outgoing-whatsapp.dto";
 
+@ApiTags("Outgoing")
 @Controller("outgoing/whatsapp")
 export class WhatsappController {
   constructor(private readonly whatsappService: WhatsappService) {}

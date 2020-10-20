@@ -9,6 +9,7 @@ import {
   Request,
 } from "@nestjs/common";
 import { Response } from "express";
+import { ApiTags } from "@nestjs/swagger";
 
 //GUARD
 import { JwtAuthGuard } from "../auth/guards/jwt.auth.guard";
@@ -22,7 +23,7 @@ import {
   UpdateWorkOrderPost,
   PickupPost,
 } from "./dto/autoin.dto";
-
+@ApiTags("Auto In")
 @Controller("autoin")
 export class AutoInController {
   constructor(private readonly autoinService: AutoInService) {}

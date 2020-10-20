@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { Response } from "express";
-
+import { ApiTags } from "@nestjs/swagger";
 //GUARD
 import { JwtAuthGuard } from "../auth/guards/jwt.auth.guard";
 //SERVICES
@@ -27,6 +27,7 @@ import {
 
 import { CwcPost } from "./dto/cwc.dto";
 
+@ApiTags("Interaction")
 @Controller("interaction")
 export class InteractionController {
   constructor(private readonly interactionService: InteractionService) {}
@@ -82,10 +83,17 @@ export class InteractionController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post("loadJourney")
+  @Get("getJourneyCustomer/:customerId/:page")
   @HttpCode(200)
-  async loadJourney(@Body() postData: JourneyPost, @Res() res: Response) {
-    const result = await this.interactionService.loadJourney(postData);
+  async loadJourney(
+    @Param("customerId") customerId: number,
+    @Param("page") page: number,
+    @Res() res: Response
+  ) {
+    let params = new JourneyPost();
+    params.customerId = customerId;
+    params.page = page;
+    const result = await this.interactionService.loadJourney(params);
     res.status(result.statusCode).send(result);
   }
 

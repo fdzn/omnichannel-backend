@@ -1,14 +1,16 @@
 import {
   Controller,
   Post,
+  Get,
+  Param,
   Res,
   Body,
   Request,
   HttpCode,
-  UseGuards
+  UseGuards,
 } from "@nestjs/common";
 import { Response } from "express";
-
+import { ApiTags } from "@nestjs/swagger";
 //GUARD
 import { JwtAuthGuard } from "../auth/guards/jwt.auth.guard";
 
@@ -18,6 +20,7 @@ import { InternalChatService } from "./internalChat.service";
 //DTO
 import { SendPost, GetChatPost } from "./dto/internalChat.dto";
 
+@ApiTags("Internal Chat")
 @Controller("internalChat")
 export class InternalChatController {
   constructor(private readonly internalChatService: InternalChatService) {}
@@ -29,19 +32,23 @@ export class InternalChatController {
     @Body() postData: SendPost,
     @Res() res: Response
   ) {
-    const result = await this.internalChatService.send(postData,payload);
+    const result = await this.internalChatService.send(postData, payload.user);
     res.status(result.statusCode).send(result);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post("getChat")
+  @Get("getChat/:to/:page")
   @HttpCode(200)
   async getChat(
     @Request() payload,
-    @Body() postData: GetChatPost,
+    @Param("to") to: string,
+    @Param("page") page: number,
     @Res() res: Response
   ) {
-    const result = await this.internalChatService.getChat(postData,payload);
+    let params = new GetChatPost();
+    params.page = page;
+    params.to = to;
+    const result = await this.internalChatService.getChat(params, payload.user);
     res.status(result.statusCode).send(result);
   }
 }

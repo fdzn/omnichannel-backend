@@ -9,6 +9,7 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { Response } from "express";
+import { ApiTags } from "@nestjs/swagger";
 
 //GUARD
 import { LocalAuthGuard } from "./guards/local.auth.guard";
@@ -19,6 +20,7 @@ import { AuthService } from "./auth.service";
 //DTO
 import { AuthLogin } from "./dto/auth-login.dto";
 
+@ApiTags("Auth")
 @Controller("auth")
 export class AuthController {
   constructor(private readonly authService: AuthService) {}

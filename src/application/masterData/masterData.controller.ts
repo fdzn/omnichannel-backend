@@ -1,6 +1,15 @@
-import { Controller, Post, Res, Body, HttpCode,UseGuards } from "@nestjs/common";
+import {
+  Controller,
+  Post,
+  Get,
+  Param,
+  Res,
+  Body,
+  HttpCode,
+  UseGuards,
+} from "@nestjs/common";
 import { Response } from "express";
-
+import { ApiTags } from "@nestjs/swagger";
 //GUARD
 import { JwtAuthGuard } from "../auth/guards/jwt.auth.guard";
 
@@ -10,12 +19,13 @@ import { MasterDataService } from "./masterData.service";
 //DTO
 import { GetSubCategoryPost } from "./dto/masterData.dto";
 
+@ApiTags("Master")
 @Controller("master")
 export class MasterDataController {
   constructor(private readonly masterDataService: MasterDataService) {}
 
   @UseGuards(JwtAuthGuard)
-  @Post("getCategory")
+  @Get("getCategory")
   @HttpCode(200)
   async getCategory(@Res() res: Response) {
     const result = await this.masterDataService.getCategory();
@@ -23,13 +33,15 @@ export class MasterDataController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post("getSubCategory")
+  @Get("getSubCategory/:categoryId")
   @HttpCode(200)
   async getSubCategory(
-    @Body() postData: GetSubCategoryPost,
+    @Param("categoryId") categoryId: number,
     @Res() res: Response
   ) {
-    const result = await this.masterDataService.getSubCategory(postData);
+    let params = new GetSubCategoryPost();
+    params.categoryId = categoryId;
+    const result = await this.masterDataService.getSubCategory(params);
     res.status(result.statusCode).send(result);
   }
 }
