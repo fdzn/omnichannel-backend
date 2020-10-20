@@ -7,7 +7,11 @@ import { WorkOrder } from "../../entity/work_order.entity";
 import { InteractionHeader } from "../../entity/interaction_header.entity";
 
 //DTO
-import { UpdateAuxPost, UpdateWorkOrderPost, PickupPost } from "./dto/autoin.dto";
+import {
+  UpdateAuxPost,
+  UpdateWorkOrderPost,
+  PickupPost,
+} from "./dto/autoin.dto";
 
 @Injectable()
 export class AutoInService {
@@ -20,13 +24,13 @@ export class AutoInService {
     private readonly sessionRepository: Repository<InteractionHeader>
   ) {}
 
-  async updateAuxStatus(data: UpdateAuxPost) {
+  async updateAuxStatus(data: UpdateAuxPost, sessionData) {
     try {
       let updateData = new User();
       updateData.isAux = data.auxStatus;
 
       const updateStatus = await this.userRepository.update(
-        { username: data.username },
+        { username: sessionData.username },
         updateData
       );
       if (updateStatus.raw.affectedRows == 0) {
@@ -35,7 +39,7 @@ export class AutoInService {
       return {
         isError: false,
         data: updateStatus,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -59,7 +63,7 @@ export class AutoInService {
       return {
         isError: false,
         data: updateStatus,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -70,7 +74,7 @@ export class AutoInService {
   async pickup(data: PickupPost) {
     try {
       const foundSession = await this.sessionRepository.findOne({
-        where: { sessionId: data.sessionId }
+        where: { sessionId: data.sessionId },
       });
       if (!foundSession) {
         return { isError: true, data: "sessionId not found", statusCode: 404 };

@@ -1,9 +1,6 @@
 import { IsNotEmpty, IsBoolean, IsInt, IsDateString } from "class-validator";
 
 export class UpdateAuxPost {
-  @IsNotEmpty()
-  username: string;
-
   @IsBoolean()
   auxStatus: boolean;
 }

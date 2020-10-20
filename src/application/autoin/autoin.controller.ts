@@ -1,20 +1,44 @@
-import { Controller, Post, Res, Body, HttpCode } from "@nestjs/common";
+import {
+  Controller,
+  Post,
+  Put,
+  Res,
+  Body,
+  HttpCode,
+  UseGuards,
+  Request,
+} from "@nestjs/common";
 import { Response } from "express";
+
+//GUARD
+import { JwtAuthGuard } from "../auth/guards/jwt.auth.guard";
 
 //SERVICES
 import { AutoInService } from "./autoin.service";
 
 //DTO
-import { UpdateAuxPost, UpdateWorkOrderPost,PickupPost } from "./dto/autoin.dto";
+import {
+  UpdateAuxPost,
+  UpdateWorkOrderPost,
+  PickupPost,
+} from "./dto/autoin.dto";
 
 @Controller("autoin")
 export class AutoInController {
   constructor(private readonly autoinService: AutoInService) {}
 
-  @Post("updateAux")
+  @UseGuards(JwtAuthGuard)
+  @Put("updateAux")
   @HttpCode(200)
-  async updateAux(@Body() postData: UpdateAuxPost, @Res() res: Response) {
-    const result = await this.autoinService.updateAuxStatus(postData);
+  async updateAux(
+    @Request() payload,
+    @Body() postData: UpdateAuxPost,
+    @Res() res: Response
+  ) {
+    const result = await this.autoinService.updateAuxStatus(
+      postData,
+      payload.user
+    );
     res.status(result.statusCode).send(result);
   }
 
