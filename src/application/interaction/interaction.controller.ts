@@ -90,18 +90,25 @@ export class InteractionController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get("loadWorkOrder/:channelId")
+  @Get("getWorkOrder/:channelId")
   @HttpCode(200)
-  async loadWorkOrder(
+  async loadWorkOrderByChannel(
     @Param() params: loadWorkOrderPost,
     @Request() payload,
     @Res() res: Response
   ) {
-    console.log(payload);
-    const result = await this.interactionService.loadWorkOrder(
+    const result = await this.interactionService.loadWorkOrderByChannel(
       params,
       payload.user
     );
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get("getWorkOrder")
+  @HttpCode(200)
+  async loadWorkOrder(@Request() payload, @Res() res: Response) {
+    const result = await this.interactionService.loadWorkOrder(payload.user);
     res.status(result.statusCode).send(result);
   }
 }

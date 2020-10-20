@@ -86,9 +86,35 @@ export class InteractionService {
     }
   }
 
-  async loadWorkOrder(data: loadWorkOrderPost, payload) {
+  async loadWorkOrder(payload) {
     try {
-      let detailChannel;
+      const foundSession = await this.sessionRepository.find({
+        where: {
+          agentUsername: payload.username,
+        },
+      });
+
+      if (foundSession.length == 0) {
+        return { isError: false, data: [], statusCode: 200 };
+      }
+
+      let result;
+      result = foundSession;
+      for (let index = 0; index < result.length; index++) {
+        result[index].lastChat = await this.interactionLibService.getLastChat(
+          result[index].channelId,
+          result[index].sessionId
+        );
+      }
+      return { isError: false, data: result, statusCode: 200 };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async loadWorkOrderByChannel(data: loadWorkOrderPost, payload) {
+    try {
       const foundSession = await this.sessionRepository.find({
         where: {
           agentUsername: payload.username,
@@ -108,7 +134,6 @@ export class InteractionService {
           result[index].sessionId
         );
       }
-      console.log("RESULT", result);
       return { isError: false, data: result, statusCode: 200 };
     } catch (error) {
       console.error(error);
