@@ -77,12 +77,12 @@ export class InteractionService {
       }
 
       let updateData = new InteractionHeader();
-      updateData.agentUsername = data.username;
-      updateData.pickupDate = new Date();
-      const updateStatus = await this.sessionRepository.update(
-        { sessionId: data.sessionId },
-        updateData
-      );
+      updateData = foundSession
+      updateData.agentUsername = data.username
+      updateData.pickupDate = new Date()
+
+      const updateStatus = await this.sessionRepository.save(updateData);
+
       return { isError: false, data: updateStatus, statusCode: 200 };
     } catch (error) {
       return { isError: true, data: error.message, statusCode: 500 };
