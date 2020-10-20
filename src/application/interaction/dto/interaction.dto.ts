@@ -5,6 +5,14 @@ export class pickupManualPost {
   channelId: string;
 }
 
+export class pickupAutoPost {
+  @IsNotEmpty()
+  agentId: string;
+
+  @IsNotEmpty()
+  sessionId: string;
+}
+
 export class loadWorkOrderPost {
   @IsNotEmpty()
   channelId: string;
@@ -20,7 +28,7 @@ export class endPost {
 
 export enum PostType {
   INTERACTION = "interaction",
-  HISTORY = "history"
+  HISTORY = "history",
 }
 
 export class GetInteractionPost {

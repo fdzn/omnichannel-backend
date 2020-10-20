@@ -66,6 +66,28 @@ export class InteractionService {
     }
   }
 
+  async pickupBySession(data) {
+    try {
+      const foundSession = await this.sessionRepository.findOne({
+        where: { sessionId: data.sessionId },
+      });
+      if (!foundSession) {
+        return { isError: true, data: "sessionId not found", statusCode: 404 };
+      }
+
+      let updateData = new InteractionHeader();
+      updateData.agentUsername = data.agentId;
+      updateData.pickupDate = new Date();
+      const updateStatus = await this.sessionRepository.update(
+        { sessionId: data.sessionId },
+        updateData
+      );
+      return { isError: false, data: updateStatus, statusCode: 200 };
+    } catch (error) {
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
   async loadJourney(data: JourneyPost) {
     try {
       const limit = 10;

@@ -19,6 +19,7 @@ import { InteractionService } from "./interaction.service";
 //DTO
 import {
   pickupManualPost,
+  pickupAutoPost,
   endPost,
   GetInteractionPost,
   loadWorkOrderPost,
@@ -46,6 +47,17 @@ export class InteractionController {
     );
     res.status(result.statusCode).send(result);
   }
+
+  @Post("pickupBySession")
+  @HttpCode(200)
+  async pickupBySession(
+    @Body() postData: pickupAutoPost,
+    @Res() res: Response
+  ) {
+    const result = await this.interactionService.pickupBySession(postData);
+    res.status(result.statusCode).send(result);
+  }
+
 
   @UseGuards(JwtAuthGuard)
   @Post("end")
