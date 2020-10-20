@@ -54,10 +54,10 @@ export class InteractionController {
     @Body() postData: pickupAutoPost,
     @Res() res: Response
   ) {
+    console.log("PICKUP BY SESSION", JSON.stringify(postData));
     const result = await this.interactionService.pickupBySession(postData);
     res.status(result.statusCode).send(result);
   }
-
 
   @UseGuards(JwtAuthGuard)
   @Post("end")
