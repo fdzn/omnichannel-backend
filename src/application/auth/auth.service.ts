@@ -78,6 +78,7 @@ export class AuthService {
         "passwordPBX",
         "unitId",
         "groupId",
+        "isAux",
       ],
       where: {
         username: username,
