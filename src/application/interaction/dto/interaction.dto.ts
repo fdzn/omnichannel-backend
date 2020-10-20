@@ -7,7 +7,7 @@ export class pickupManualPost {
 
 export class pickupAutoPost {
   @IsNotEmpty()
-  agentId: string;
+  username: string;
 
   @IsNotEmpty()
   sessionId: string;

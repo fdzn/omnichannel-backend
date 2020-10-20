@@ -11,6 +11,7 @@ import { Cwc } from "../../entity/cwc.entity";
 //DTO
 import {
   pickupManualPost,
+  pickupAutoPost,
   endPost,
   GetInteractionPost,
   GetInteractionByCustomerPost,
@@ -66,7 +67,7 @@ export class InteractionService {
     }
   }
 
-  async pickupBySession(data) {
+  async pickupBySession(data: pickupAutoPost) {
     try {
       const foundSession = await this.sessionRepository.findOne({
         where: { sessionId: data.sessionId },
@@ -76,7 +77,7 @@ export class InteractionService {
       }
 
       let updateData = new InteractionHeader();
-      updateData.agentUsername = data.agentId;
+      updateData.agentUsername = data.username;
       updateData.pickupDate = new Date();
       const updateStatus = await this.sessionRepository.update(
         { sessionId: data.sessionId },
