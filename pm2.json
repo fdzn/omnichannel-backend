@@ -1,0 +1,9 @@
+{
+  "apps": [
+    {
+      "name": "omnichannel-backen",
+      "script": "npm",
+      "args": "run start:prod"
+    }
+  ]
+}
