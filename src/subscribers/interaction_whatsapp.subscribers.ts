@@ -24,11 +24,21 @@ export class InteractionWhatsappSubscriber
   }
 
   afterInsert(event: InsertEvent<InteractionWhatsapp>) {
-    this.eventsGateway.sendData(
-      "agent",
-      "newInteractionWhatsapp",
-      event.entity
-    );
+    const username = event.entity.agentUsername;
+    if (username) {
+      this.eventsGateway.sendData(
+        `agent:${username}`,
+        "newInteractionWhatsapp",
+        event.entity
+      );
+    } else {
+      this.eventsGateway.sendData(
+        `agent`,
+        "newInteractionWhatsapp",
+        event.entity
+      );
+    }
+
     console.log(`AFTER INTERACTION WHATSAPP INSERTED: `, event.entity);
   }
 
