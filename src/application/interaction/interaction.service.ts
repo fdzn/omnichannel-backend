@@ -7,6 +7,7 @@ import { InteractionLibService } from "../libs/services/interaction.service";
 import { InteractionHeader } from "../../entity/interaction_header.entity";
 import { InteractionHeaderHistory } from "../../entity/interaction_header_history.entity";
 import { Cwc } from "../../entity/cwc.entity";
+import { WorkOrder } from "../../entity/work_order.entity";
 
 //DTO
 import {
@@ -32,6 +33,8 @@ export class InteractionService {
     >,
     @InjectRepository(Cwc)
     private readonly cwcRepository: Repository<Cwc>,
+    @InjectRepository(WorkOrder)
+    private readonly workOrderRepository: Repository<WorkOrder>,
     private readonly interactionLibService: InteractionLibService
   ) {}
 
@@ -211,6 +214,20 @@ export class InteractionService {
     }
   }
 
+  async updateWorkOrder(channelId, username) {
+    const findWorkOrder = await this.workOrderRepository.findOne({
+      select: ["slot"],
+      where: { channelId: channelId, agentUsername: username },
+    });
+    if (findWorkOrder.slot > 0) {
+      let updateWorkOrder = new WorkOrder();
+      updateWorkOrder.slot = findWorkOrder.slot - 1;
+      this.workOrderRepository.update(
+        { channelId: channelId, agentUsername: username },
+        updateWorkOrder
+      );
+    }
+  }
   async submitCWC(data: CwcPost, payload) {
     try {
       const dateNow = new Date();
@@ -252,6 +269,8 @@ export class InteractionService {
         data.sessionId
       );
 
+      this.updateWorkOrder(data.channelId, payload.username);
+      
       //INSERT CWC
       let insertCwc = new Cwc();
       insertCwc.agentUsername = payload.username;

@@ -68,7 +68,7 @@ export class InteractionController {
     @Body() postData: CwcPost,
     @Res() res: Response
   ) {
-    const result = await this.interactionService.submitCWC(postData, payload);
+    const result = await this.interactionService.submitCWC(postData, payload.user);
     res.status(result.statusCode).send(result);
   }
 

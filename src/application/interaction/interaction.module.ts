@@ -9,6 +9,7 @@ import { InteractionController } from "./interaction.controller";
 import { InteractionHeader } from "../../entity/interaction_header.entity";
 import { InteractionHeaderHistory } from "../../entity/interaction_header_history.entity";
 import { Cwc } from "../../entity/cwc.entity";
+import { WorkOrder } from "../../entity/work_order.entity";
 
 //MODULE
 import { LibsModule } from "../libs/libs.module";
@@ -18,6 +19,7 @@ import { LibsModule } from "../libs/libs.module";
       InteractionHeader,
       InteractionHeaderHistory,
       Cwc,
+      WorkOrder,
     ]),
     LibsModule,
   ],
