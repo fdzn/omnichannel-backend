@@ -61,18 +61,6 @@ export class InteractionController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post("end")
-  @HttpCode(200)
-  async endInteraction(
-    @Request() payload,
-    @Body() postData: endPost,
-    @Res() res: Response
-  ) {
-    const result = await this.interactionService.endSession(postData, payload);
-    res.status(result.statusCode).send(result);
-  }
-
-  @UseGuards(JwtAuthGuard)
   @Post("submitCWC")
   @HttpCode(200)
   async submitCWC(

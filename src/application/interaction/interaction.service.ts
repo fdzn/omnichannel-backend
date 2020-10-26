@@ -211,43 +211,23 @@ export class InteractionService {
     }
   }
 
-  async endSession(data: endPost, payload) {
-    try {
-      const countCase = await this.interactionLibService.countCase(
-        data.channelId,
-        data.sessionId
-      );
-      let updateData = new InteractionHeader();
-      updateData.endDate = new Date();
-      updateData.endStatus = true;
-      updateData.caseIn = countCase.caseIn;
-      updateData.caseOut = countCase.caseOut;
-
-      const updateStatus = await this.sessionRepository.update(
-        { sessionId: data.sessionId, agentUsername: payload.username },
-        updateData
-      );
-
-      if (updateStatus.raw.affectedRows == 0) {
-        return { isError: true, data: "no data updated", statusCode: 404 };
-      }
-
-      return { isError: false, data: updateStatus, statusCode: 200 };
-    } catch (error) {
-      console.error(error);
-      return { isError: true, data: error.message, statusCode: 500 };
-    }
-  }
-
   async submitCWC(data: CwcPost, payload) {
     try {
       const dateNow = new Date();
 
+      //COUNT CASE
+      const countCase = await this.interactionLibService.countCase(
+        data.channelId,
+        data.sessionId
+      );
+
       //UPDATE SUBMIT DATA
       let updateHeader = new InteractionHeader();
       updateHeader.submitCwcDate = dateNow;
+      updateHeader.caseIn = countCase.caseIn;
+      updateHeader.caseOut = countCase.caseOut;
       const updateHeaderStatus = await this.sessionRepository.update(
-        { sessionId: data.sessionId, endStatus: true },
+        { sessionId: data.sessionId },
         updateHeader
       );
 
@@ -278,7 +258,6 @@ export class InteractionService {
       insertCwc.categoryId = data.categoryId;
       insertCwc.feedback = data.feedback;
       insertCwc.remark = data.remark;
-      insertCwc.name = data.name;
       insertCwc.sentiment = data.sentiment;
       insertCwc.sessionId = data.sessionId;
       insertCwc.subcategoryId = data.subcategoryId;

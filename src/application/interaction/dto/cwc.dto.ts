@@ -2,10 +2,10 @@ import { IsNotEmpty, IsOptional, IsInt } from "class-validator";
 
 export class CwcPost {
   @IsNotEmpty()
-  name: string;
+  sessionId: string;
 
   @IsNotEmpty()
-  sessionId: string;
+  channelId: string;
 
   @IsNotEmpty()
   @IsInt()

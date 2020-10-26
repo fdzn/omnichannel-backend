@@ -36,9 +36,6 @@ export class Cwc {
   @Column({ length: 50, unique: true })
   sessionId: string;
 
-  @Column({ length: 40, nullable: true })
-  name: string;
-
   @Column()
   categoryId: number;
   @ManyToOne((type) => mCategory, (m_category) => m_category.id)

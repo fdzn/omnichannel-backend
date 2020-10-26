@@ -66,15 +66,7 @@ export class InteractionHeader {
   frDate: Date;
 
   @Column({ nullable: true })
-  endDate: Date;
-
-  @Column({ nullable: true })
   submitCwcDate: Date;
-
-  @Column({
-    default: false,
-  })
-  endStatus: boolean;
 
   @Column({ nullable: true })
   caseIn: number;
