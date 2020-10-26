@@ -5,7 +5,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
 } from "typeorm";
 import { Customer } from "./customer.entity";
 
@@ -16,17 +16,14 @@ export class Contact {
 
   @Column({ nullable: true })
   customerId: number;
-  @ManyToOne(
-    type => Customer,
-    customer => customer.id
-  )
+  @ManyToOne((type) => Customer, (customer) => customer.id)
   @JoinColumn()
   customer: Customer;
 
   @Column({ length: 20 })
   type: string;
 
-  @Column({ length: 100 })
+  @Column({ length: 100, unique: true })
   value: string;
 
   @Column({ nullable: true })

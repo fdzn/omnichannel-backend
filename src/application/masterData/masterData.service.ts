@@ -22,12 +22,12 @@ export class MasterDataService {
     try {
       const result = await this.mCategoryRepository.find({
         select: ["id", "name"],
-        where: { isDeleted: false, isActive: true }
+        where: { isDeleted: false, isActive: true },
       });
       return {
         isError: false,
         data: result,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -39,12 +39,16 @@ export class MasterDataService {
     try {
       const result = await this.mSubCategoryRepository.find({
         select: ["id", "name"],
-        where: { categoryId: data.categoryId, isDeleted: false, isActive: true }
+        where: {
+          categoryId: data.categoryId,
+          isDeleted: false,
+          isActive: true,
+        },
       });
       return {
         isError: false,
         data: result,
-        statusCode: 201
+        statusCode: 201,
       };
     } catch (error) {
       console.error(error);

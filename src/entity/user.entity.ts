@@ -4,7 +4,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
-  JoinColumn
+  JoinColumn,
 } from "typeorm";
 import { mUnit } from "./m_unit.entity";
 import { mGroup } from "./m_group.entity";
@@ -12,7 +12,7 @@ export enum UserLevel {
   ADMIN = "admin",
   AGENT = "agent",
   SUPERVISOR = "supervisor",
-  BACKROOM = "backroom"
+  BACKROOM = "backroom",
 }
 
 @Entity()
@@ -26,7 +26,7 @@ export class User {
   @Column({
     type: "enum",
     enum: UserLevel,
-    default: UserLevel.AGENT
+    default: UserLevel.AGENT,
   })
   level: UserLevel;
 
@@ -53,44 +53,38 @@ export class User {
 
   @Column({ nullable: true })
   unitId: number;
-  @ManyToOne(
-    type => mUnit,
-    m_unit => m_unit.id
-  )
+  @ManyToOne((type) => mUnit, (m_unit) => m_unit.id)
   @JoinColumn()
   unit: mUnit;
 
   @Column({ nullable: true })
   groupId: number;
-  @ManyToOne(
-    type => mGroup,
-    m_group => m_group.id
-  )
+  @ManyToOne((type) => mGroup, (m_group) => m_group.id)
   @JoinColumn()
   group: mGroup;
 
   @Column({
-    default: false
+    default: false,
   })
   isLogin: boolean;
 
   @Column({
-    default: true
+    default: true,
   })
   isAux: boolean;
 
   @Column({
-    default: false
+    default: false,
   })
   isAuxPhone: boolean;
 
   @Column({
-    default: true
+    default: true,
   })
   isActive: boolean;
 
   @Column({
-    default: false
+    default: false,
   })
   isDeleted: boolean;
 

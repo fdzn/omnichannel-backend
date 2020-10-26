@@ -7,19 +7,13 @@ import { mCategory } from "./m_category.entity";
 export class mSubCategory extends generalMaster {
   @Column({ nullable: true })
   categoryId: number;
-  @ManyToOne(
-    type => mCategory,
-    m_category => m_category.id
-  )
+  @ManyToOne((type) => mCategory, (m_category) => m_category.id)
   @JoinColumn()
   category: mCategory;
 
   @Column({ length: 20, nullable: true })
   updaterUsername: string;
-  @ManyToOne(
-    type => User,
-    user => user.username
-  )
+  @ManyToOne((type) => User, (user) => user.username)
   @JoinColumn()
   updater: User;
 }

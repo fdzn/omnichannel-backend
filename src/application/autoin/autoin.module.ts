@@ -13,6 +13,6 @@ import { InteractionHeader } from "../../entity/interaction_header.entity";
 @Module({
   imports: [TypeOrmModule.forFeature([User, WorkOrder, InteractionHeader])],
   providers: [AutoInService],
-  controllers: [AutoInController]
+  controllers: [AutoInController],
 })
 export class AutoInModule {}

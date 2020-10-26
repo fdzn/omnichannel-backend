@@ -14,7 +14,7 @@ export class SendPost {
 export class GetChatPost {
   @IsNotEmpty()
   to: string;
-  
+
   @IsNotEmpty()
   @IsInt()
   page: number;

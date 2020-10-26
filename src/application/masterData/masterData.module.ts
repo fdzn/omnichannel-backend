@@ -12,6 +12,6 @@ import { mSubCategory } from "../../entity/m_sub_category.entity";
 @Module({
   imports: [TypeOrmModule.forFeature([mCategory, mSubCategory])],
   providers: [MasterDataService],
-  controllers: [MasterDataController]
+  controllers: [MasterDataController],
 })
 export class MasterDataModule {}

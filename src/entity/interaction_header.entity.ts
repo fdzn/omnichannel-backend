@@ -5,7 +5,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
 } from "typeorm";
 import { User } from "./user.entity";
 import { mChannel } from "./m_channel.entity";
@@ -22,10 +22,7 @@ export class InteractionHeader {
 
   @Column({ length: 11, nullable: true })
   channelId: string;
-  @ManyToOne(
-    type => mChannel,
-    m_channel => m_channel.id
-  )
+  @ManyToOne((type) => mChannel, (m_channel) => m_channel.id)
   @JoinColumn()
   channel: mChannel;
 
@@ -34,10 +31,7 @@ export class InteractionHeader {
 
   @Column({ nullable: true })
   customerId: number;
-  @ManyToOne(
-    type => Customer,
-    customer => customer.id
-  )
+  @ManyToOne((type) => Customer, (customer) => customer.id)
   @JoinColumn()
   customer: Customer;
 
@@ -49,19 +43,13 @@ export class InteractionHeader {
 
   @Column({ length: 20, nullable: true })
   agentUsername: string;
-  @ManyToOne(
-    type => User,
-    user => user.username
-  )
+  @ManyToOne((type) => User, (user) => user.username)
   @JoinColumn()
   agent: User;
 
   @Column({ nullable: true })
   groupId: number;
-  @ManyToOne(
-    type => mGroup,
-    m_group => m_group.id
-  )
+  @ManyToOne((type) => mGroup, (m_group) => m_group.id)
   @JoinColumn()
   group: mGroup;
 
@@ -84,7 +72,7 @@ export class InteractionHeader {
   submitCwcDate: Date;
 
   @Column({
-    default: false
+    default: false,
   })
   endStatus: boolean;
 

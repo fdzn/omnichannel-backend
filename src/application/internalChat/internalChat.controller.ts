@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { Response } from "express";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 //GUARD
 import { JwtAuthGuard } from "../auth/guards/jwt.auth.guard";
 
@@ -20,6 +20,7 @@ import { InternalChatService } from "./internalChat.service";
 //DTO
 import { SendPost, GetChatPost } from "./dto/internalChat.dto";
 
+@ApiBearerAuth()
 @ApiTags("Internal Chat")
 @Controller("internalChat")
 export class InternalChatController {

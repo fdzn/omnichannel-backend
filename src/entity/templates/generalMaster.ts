@@ -2,7 +2,7 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
 } from "typeorm";
 
 export abstract class generalMaster {
@@ -13,12 +13,12 @@ export abstract class generalMaster {
   name: string;
 
   @Column({
-    default: true
+    default: true,
   })
   isActive: boolean;
 
   @Column({
-    default: false
+    default: false,
   })
   isDeleted: boolean;
 

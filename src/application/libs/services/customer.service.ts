@@ -31,7 +31,7 @@ export class CustomerService {
 
   async checkContact(contactType: string, contactId: string): Promise<Contact> {
     const foundContact = await this.contactRepository.findOne({
-      where: { value: contactId, type: contactType }
+      where: { value: contactId, type: contactType },
     });
     return foundContact;
   }

@@ -2,7 +2,7 @@ import {
   Connection,
   EntitySubscriberInterface,
   EventSubscriber,
-  InsertEvent
+  InsertEvent,
 } from "typeorm";
 import { EventsGateway } from "../sockets/events.gateway";
 

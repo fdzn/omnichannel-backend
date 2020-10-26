@@ -37,6 +37,7 @@ async function bootstrap() {
       .setDescription("This is API documentation for Omnichannel Backend")
       .setVersion("1.0")
       .addTag("Omnichannel-backend")
+      .addBearerAuth()
       .setContact(
         "Akhmad Faudzan Bakri",
         "https://github.com/fdzn",

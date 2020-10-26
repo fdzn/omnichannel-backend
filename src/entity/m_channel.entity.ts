@@ -4,7 +4,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   JoinColumn,
-  ManyToOne
+  ManyToOne,
 } from "typeorm";
 import { User } from "./user.entity";
 
@@ -32,21 +32,18 @@ export class mChannel {
   order: number;
 
   @Column({
-    default: true
+    default: true,
   })
   isActive: boolean;
 
   @Column({
-    default: false
+    default: false,
   })
   isDeleted: boolean;
 
   @Column({ length: 20, nullable: true })
   updaterUsername: string;
-  @ManyToOne(
-    type => User,
-    user => user.username
-  )
+  @ManyToOne((type) => User, (user) => user.username)
   @JoinColumn()
   updater: User;
 

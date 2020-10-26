@@ -3,7 +3,7 @@ import {
   WebSocketServer,
   OnGatewayInit,
   OnGatewayConnection,
-  OnGatewayDisconnect
+  OnGatewayDisconnect,
 } from "@nestjs/websockets";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
@@ -66,7 +66,10 @@ export class EventsGateway
   async sendWorkOrder(data: InteractionHeader) {
     let workOrder;
     workOrder = data;
-    workOrder.lastChat = await this.interactionLibService.getLastChat(data.channelId,data.sessionId)
+    workOrder.lastChat = await this.interactionLibService.getLastChat(
+      data.channelId,
+      data.sessionId
+    );
     this.sendData(`agent:${data.agentUsername}`, "newQueue", workOrder);
   }
 }

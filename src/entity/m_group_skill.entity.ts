@@ -5,7 +5,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
 } from "typeorm";
 import { User } from "./user.entity";
 import { mChannel } from "./m_channel.entity";
@@ -17,19 +17,13 @@ export class mGroupSkill {
 
   @Column({ length: 20, nullable: true })
   agentUsername: string;
-  @ManyToOne(
-    type => User,
-    user => user.username
-  )
+  @ManyToOne((type) => User, (user) => user.username)
   @JoinColumn()
   agent: User;
 
   @Column({ length: 11, nullable: true })
   channelId: string;
-  @ManyToOne(
-    type => mChannel,
-    m_channel => m_channel.id
-  )
+  @ManyToOne((type) => mChannel, (m_channel) => m_channel.id)
   @JoinColumn()
   channel: mChannel;
 
@@ -41,10 +35,7 @@ export class mGroupSkill {
 
   @Column({ length: 20, nullable: true })
   updaterUsername: string;
-  @ManyToOne(
-    type => User,
-    user => user.username
-  )
+  @ManyToOne((type) => User, (user) => user.username)
   @JoinColumn()
   updater: User;
 }

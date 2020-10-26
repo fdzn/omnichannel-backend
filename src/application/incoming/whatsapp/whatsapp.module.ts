@@ -14,6 +14,6 @@ import { InteractionWhatsapp } from "../../../entity/interaction_whatsapp.entity
 @Module({
   imports: [TypeOrmModule.forFeature([InteractionWhatsapp]), LibsModule],
   providers: [WhatsappService],
-  controllers: [WhatsappController]
+  controllers: [WhatsappController],
 })
 export class WhatsappModule {}

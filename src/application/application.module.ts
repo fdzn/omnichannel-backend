@@ -18,7 +18,7 @@ import { MasterDataModule } from "./masterData/masterData.module";
     CustomerModule,
     AutoInModule,
     MasterDataModule,
-    InternalChatModule
-  ]
+    InternalChatModule,
+  ],
 })
 export class ApplicationModule {}

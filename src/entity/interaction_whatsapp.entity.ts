@@ -5,10 +5,7 @@ import { User } from "./user.entity";
 export class InteractionWhatsapp extends generalChat {
   @Column({ length: 20, nullable: true })
   agentUsername: string;
-  @ManyToOne(
-    type => User,
-    user => user.username
-  )
+  @ManyToOne((type) => User, (user) => user.username)
   @JoinColumn()
   agent: User;
 

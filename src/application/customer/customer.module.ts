@@ -10,10 +10,8 @@ import { Customer } from "../../entity/customer.entity";
 import { Contact } from "../../entity/contact.entity";
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Contact, Customer])
-  ],
+  imports: [TypeOrmModule.forFeature([Contact, Customer])],
   providers: [CustomerService],
-  controllers: [CustomerController]
+  controllers: [CustomerController],
 })
 export class CustomerModule {}

@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { Response } from "express";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 //GUARD
 import { JwtAuthGuard } from "../auth/guards/jwt.auth.guard";
 
@@ -19,6 +19,7 @@ import { MasterDataService } from "./masterData.service";
 //DTO
 import { GetSubCategoryPost } from "./dto/masterData.dto";
 
+@ApiBearerAuth()
 @ApiTags("Master")
 @Controller("master")
 export class MasterDataController {

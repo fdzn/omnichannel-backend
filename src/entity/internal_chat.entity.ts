@@ -5,12 +5,12 @@ import {
   UpdateDateColumn,
   PrimaryGeneratedColumn,
   JoinColumn,
-  ManyToOne
+  ManyToOne,
 } from "typeorm";
 import { User } from "./user.entity";
 export enum ActionType {
   IN = "in",
-  OUT = "OUT"
+  OUT = "OUT",
 }
 @Entity()
 export class InternalChat {
@@ -22,19 +22,13 @@ export class InternalChat {
 
   @Column({ length: 20, nullable: true })
   fromUsername: string;
-  @ManyToOne(
-    type => User,
-    user => user.username
-  )
+  @ManyToOne((type) => User, (user) => user.username)
   @JoinColumn()
   from: User;
 
   @Column({ length: 20, nullable: true })
   toUsername: string;
-  @ManyToOne(
-    type => User,
-    user => user.username
-  )
+  @ManyToOne((type) => User, (user) => user.username)
   @JoinColumn()
   to: User;
 

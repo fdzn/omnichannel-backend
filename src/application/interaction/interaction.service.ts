@@ -77,9 +77,9 @@ export class InteractionService {
       }
 
       let updateData = new InteractionHeader();
-      updateData = foundSession
-      updateData.agentUsername = data.username
-      updateData.pickupDate = new Date()
+      updateData = foundSession;
+      updateData.agentUsername = data.username;
+      updateData.pickupDate = new Date();
 
       const updateStatus = await this.sessionRepository.save(updateData);
 

@@ -17,11 +17,11 @@ import { LibsModule } from "../libs/libs.module";
     TypeOrmModule.forFeature([
       InteractionHeader,
       InteractionHeaderHistory,
-      Cwc
+      Cwc,
     ]),
-    LibsModule
+    LibsModule,
   ],
   providers: [InteractionService],
-  controllers: [InteractionController]
+  controllers: [InteractionController],
 })
 export class InteractionModule {}

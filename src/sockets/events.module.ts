@@ -10,6 +10,6 @@ import { InteractionHeader } from "../entity/interaction_header.entity";
 @Module({
   imports: [TypeOrmModule.forFeature([InteractionHeader]), LibsModule],
   providers: [EventsGateway],
-  exports: [EventsGateway]
+  exports: [EventsGateway],
 })
 export class EventsModule {}

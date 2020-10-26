@@ -11,6 +11,6 @@ import { InternalChat } from "../../entity/internal_chat.entity";
 @Module({
   imports: [TypeOrmModule.forFeature([InternalChat])],
   providers: [InternalChatService],
-  controllers: [InternalChatController]
+  controllers: [InternalChatController],
 })
 export class InternalChatModule {}

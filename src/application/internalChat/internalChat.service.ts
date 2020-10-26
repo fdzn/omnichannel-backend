@@ -37,7 +37,7 @@ export class InternalChatService {
       return {
         isError: false,
         data: sentStatus,
-        statusCode: 201
+        statusCode: 201,
       };
     } catch (error) {
       console.error(error);
@@ -51,18 +51,18 @@ export class InternalChatService {
       const listChat = await this.internalChatRepository.find({
         where: [
           { room: `${payload.username}-${data.to}` },
-          { room: `${data.to}-${payload.username}` }
+          { room: `${data.to}-${payload.username}` },
         ],
         order: {
-          id: "DESC"
+          id: "DESC",
         },
         skip: data.page * limit,
-        take: limit
+        take: limit,
       });
       return {
         isError: false,
         data: listChat,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);

@@ -12,7 +12,7 @@ import { EventsModule } from "../sockets/events.module";
   providers: [
     InteractionHeaderSubscriber,
     InteractionWhatsappSubscriber,
-    InternalChatSubscribers
-  ]
+    InternalChatSubscribers,
+  ],
 })
 export class SubscribersModule {}

@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { Response } from "express";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
 //GUARD
 import { LocalAuthGuard } from "./guards/local.auth.guard";
@@ -20,6 +20,7 @@ import { AuthService } from "./auth.service";
 //DTO
 import { AuthLogin } from "./dto/auth-login.dto";
 
+@ApiBearerAuth()
 @ApiTags("Auth")
 @Controller("auth")
 export class AuthController {

@@ -6,7 +6,7 @@ import {
   ManyToOne,
   OneToOne,
   JoinColumn,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
 } from "typeorm";
 
 import { mCategory } from "./m_category.entity";
@@ -18,7 +18,7 @@ import { User } from "./user.entity";
 
 export enum CwcType {
   MANUAL = "manual",
-  INTERACTION = "interaction"
+  INTERACTION = "interaction",
 }
 
 @Entity()
@@ -29,7 +29,7 @@ export class Cwc {
   @Column({
     type: "enum",
     enum: CwcType,
-    default: CwcType.INTERACTION
+    default: CwcType.INTERACTION,
   })
   type: CwcType;
 
@@ -41,19 +41,13 @@ export class Cwc {
 
   @Column()
   categoryId: number;
-  @ManyToOne(
-    type => mCategory,
-    m_category => m_category.id
-  )
+  @ManyToOne((type) => mCategory, (m_category) => m_category.id)
   @JoinColumn()
   category: mCategory;
 
   @Column()
   subcategoryId: number;
-  @ManyToOne(
-    type => mSubCategory,
-    mSubCategory => mSubCategory.id
-  )
+  @ManyToOne((type) => mSubCategory, (mSubCategory) => mSubCategory.id)
   @JoinColumn()
   subcategory: mSubCategory;
 
@@ -68,10 +62,7 @@ export class Cwc {
 
   @Column({ length: 20, nullable: true })
   agentUsername: string;
-  @ManyToOne(
-    type => User,
-    user => user.username
-  )
+  @ManyToOne((type) => User, (user) => user.username)
   @JoinColumn()
   agent: User;
 
@@ -83,10 +74,7 @@ export class Cwc {
 
   @Column({ length: 20, nullable: true })
   updaterUsername: string;
-  @ManyToOne(
-    type => User,
-    user => user.username
-  )
+  @ManyToOne((type) => User, (user) => user.username)
   @JoinColumn()
   updater: User;
 }

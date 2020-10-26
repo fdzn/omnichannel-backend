@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
-import { v4 as uuid } from 'uuid';
+import { v4 as uuid } from "uuid";
 import { Repository } from "typeorm";
 
 //ENTITY
@@ -22,7 +22,7 @@ export class SessionService {
   async check(channelId: string, contactId: string): Promise<{ sessionId }> {
     const foundSession = await this.sessionRepository.findOne({
       select: ["sessionId"],
-      where: { from: contactId, channelId: channelId, endStatus: false }
+      where: { from: contactId, channelId: channelId, endStatus: false },
     });
     return foundSession;
   }

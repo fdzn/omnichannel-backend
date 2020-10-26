@@ -5,13 +5,13 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
 } from "typeorm";
 import { User } from "./user.entity";
 
 export enum CustomerGender {
   MALE = "male",
-  FEMALE = "female"
+  FEMALE = "female",
 }
 
 @Entity()
@@ -25,7 +25,7 @@ export class Customer {
   @Column({
     type: "enum",
     enum: CustomerGender,
-    nullable: true
+    nullable: true,
   })
   gender: string;
 
@@ -42,21 +42,18 @@ export class Customer {
   priority: number;
 
   @Column({
-    default: true
+    default: true,
   })
   isActive: boolean;
 
   @Column({
-    default: false
+    default: false,
   })
   isDeleted: boolean;
 
   @Column({ length: 20, nullable: true })
   updaterUsername: string;
-  @ManyToOne(
-    type => User,
-    user => user.username
-  )
+  @ManyToOne((type) => User, (user) => user.username)
   @JoinColumn()
   updater: User;
 
