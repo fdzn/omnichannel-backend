@@ -37,7 +37,7 @@ export class CustomerService {
       }
 
       const contactDetail = await this.contactRepository.find({
-        select: ["type", "value", "avatar"],
+        select: ["id", "type", "value", "avatar"],
         where: { customerId: customerDetail.id },
       });
 
