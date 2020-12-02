@@ -22,7 +22,7 @@ export class SessionService {
   async check(channelId: string, contactId: string): Promise<{ sessionId }> {
     const foundSession = await this.sessionRepository.findOne({
       select: ["sessionId"],
-      where: { from: contactId, channelId: channelId, endStatus: false },
+      where: { from: contactId, channelId: channelId },
     });
     return foundSession;
   }
