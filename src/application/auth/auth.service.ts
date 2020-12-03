@@ -99,7 +99,7 @@ export class AuthService {
 
   async login(username: string) {
     try {
-      // const resultUpdate = await this.updateLoginData(username);
+      const resultUpdate = await this.updateLoginData(username);
       const detailUser = await this.getDetailUser(username);
       const accessToken = this.jwtService.sign(detailUser);
       return {

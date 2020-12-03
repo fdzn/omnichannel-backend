@@ -5,6 +5,7 @@ import { Repository } from "typeorm";
 //ENTITY
 import { mCategory } from "../../entity/m_category.entity";
 import { mSubCategory } from "../../entity/m_sub_category.entity";
+import { User } from "../../entity/user.entity";
 
 //DTO
 import { GetSubCategoryPost } from "./dto/masterData.dto";
@@ -15,7 +16,9 @@ export class MasterDataService {
     @InjectRepository(mCategory)
     private readonly mCategoryRepository: Repository<mCategory>,
     @InjectRepository(mSubCategory)
-    private readonly mSubCategoryRepository: Repository<mSubCategory>
+    private readonly mSubCategoryRepository: Repository<mSubCategory>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>
   ) {}
 
   async getCategory() {
@@ -49,6 +52,37 @@ export class MasterDataService {
         isError: false,
         data: result,
         statusCode: 201,
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async getUser() {
+    try {
+      const result = await this.userRepository.find({
+        select: [
+          "username",
+          "name",
+          "level",
+          "avatar",
+          "phone",
+          "email",
+          "unit",
+          "group",
+          "isLogin",
+        ],
+        where: {
+          isDeleted: false,
+          isActive: true,
+        },
+      });
+
+      return {
+        isError: false,
+        data: result,
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);

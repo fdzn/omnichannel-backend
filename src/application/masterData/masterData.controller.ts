@@ -34,6 +34,14 @@ export class MasterDataController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get("getUser")
+  @HttpCode(200)
+  async getUser(@Res() res: Response) {
+    const result = await this.masterDataService.getUser();
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get("getSubCategory/:categoryId")
   @HttpCode(200)
   async getSubCategory(
