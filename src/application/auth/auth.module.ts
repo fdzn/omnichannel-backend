@@ -21,7 +21,7 @@ import { WorkOrder } from "../../entity/work_order.entity";
     PassportModule,
     JwtModule.register({
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: "3600s" },
+      // signOptions: { expiresIn: "3600s" },
     }),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],
