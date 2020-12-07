@@ -20,6 +20,8 @@ export class CustomerService {
     switch (channelId) {
       case "whatsapp":
         return "hp";
+      case "videocall":
+        return "email";
       case "telegram":
         return "telegram";
       case "email":
