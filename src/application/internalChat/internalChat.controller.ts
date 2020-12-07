@@ -52,4 +52,26 @@ export class InternalChatController {
     const result = await this.internalChatService.getChat(params, payload.user);
     res.status(result.statusCode).send(result);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get("getChatAll/:to")
+  @HttpCode(200)
+  async getChatAll(
+    @Request() payload,
+    @Param("to") to: string,
+    @Res() res: Response
+  ) {
+    let params = new GetChatPost();
+    params.to = to;
+    const result = await this.internalChatService.getChatAll(params, payload.user);
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get("getUser")
+  @HttpCode(200)
+  async getUser(@Request() payload, @Res() res: Response) {
+    const result = await this.internalChatService.getUser(payload.user);
+    res.status(result.statusCode).send(result);
+  }
 }

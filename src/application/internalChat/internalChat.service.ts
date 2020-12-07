@@ -4,7 +4,7 @@ import { Repository } from "typeorm";
 
 //ENTITY
 import { InternalChat } from "../../entity/internal_chat.entity";
-
+import { User } from "../../entity/user.entity";
 //DTO
 import { SendPost, GetChatPost } from "./dto/internalChat.dto";
 
@@ -12,7 +12,9 @@ import { SendPost, GetChatPost } from "./dto/internalChat.dto";
 export class InternalChatService {
   constructor(
     @InjectRepository(InternalChat)
-    private readonly internalChatRepository: Repository<InternalChat>
+    private readonly internalChatRepository: Repository<InternalChat>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>
   ) {}
 
   async send(data: SendPost, payload) {
@@ -62,6 +64,78 @@ export class InternalChatService {
       return {
         isError: false,
         data: listChat,
+        statusCode: 200,
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async getChatAll(data: GetChatPost, payload) {
+    try {
+      const listChat = await this.internalChatRepository.find({
+        where: [
+          { room: `${payload.username}-${data.to}` },
+          { room: `${data.to}-${payload.username}` },
+        ],
+        order: {
+          id: "DESC",
+        },
+      });
+      return {
+        isError: false,
+        data: listChat,
+        statusCode: 200,
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async getUser(payload) {
+    try {
+      let listUser = await this.userRepository.find({
+        select: [
+          "username",
+          "name",
+          "level",
+          "avatar",
+          "phone",
+          "email",
+          "unit",
+          "group",
+          "isLogin",
+        ],
+        where: {
+          isDeleted: false,
+          isActive: true,
+        },
+      });
+      let output;
+      output = listUser.filter((x) => x.username != payload.username);
+      for (let index = 0; index < output.length; index++) {
+        const x = output[index];
+        const lastChat = await this.internalChatRepository.findOne({
+          where: [
+            { room: `${payload.username}-${x.username}` },
+            { room: `${x.username}-${payload.username}` },
+          ],
+          order: {
+            sendDate: "DESC",
+          },
+        });
+        if (lastChat) {
+          output[index].lastChat = lastChat;
+        } else {
+          output[index].lastChat = {};
+        }
+      }
+
+      return {
+        isError: false,
+        data: output,
         statusCode: 200,
       };
     } catch (error) {
