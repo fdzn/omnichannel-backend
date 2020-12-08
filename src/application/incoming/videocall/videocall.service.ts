@@ -79,19 +79,7 @@ export class VideocallService {
 
       //SET GROUP ID
       const groupId = 1;
-
-      let insertSession;
-      insertSession = data;
-      insertSession.priority = priority;
-      insertSession.groupId = groupId;
-      insertSession.agentId = foundAgent[0].agentUsername;
-      await this.sessionService.create(
-        sessionId,
-        this.channelId,
-        custId,
-        insertSession
-      );
-
+      
       let insertInteraction = new InteractionVideoCall();
       insertInteraction.apiKey = data.apiKey;
       insertInteraction.from = data.from;
@@ -105,6 +93,19 @@ export class VideocallService {
       insertInteraction.socketId = data.socketId;
       insertInteraction.token = data.token;
       await this.videoCallRepository.save(insertInteraction);
+      
+      let insertSession;
+      insertSession = data;
+      insertSession.priority = priority;
+      insertSession.groupId = groupId;
+      insertSession.agentId = foundAgent[0].agentUsername;
+      await this.sessionService.create(
+        sessionId,
+        this.channelId,
+        custId,
+        insertSession
+      );
+
       return {
         isError: false,
         data: data,

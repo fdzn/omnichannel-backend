@@ -28,6 +28,9 @@ export class InteractionHeaderSubscriber
   afterInsert(event: InsertEvent<InteractionHeader>) {
     console.log(`AFTER INTERACTION HEADER INSERTED: `, event.entity);
     this.eventsGateway.jumQueueByChannel();
+    if (event.entity.agentUsername != null) {
+      this.eventsGateway.sendWorkOrder(event.entity);
+    }
   }
 
   afterUpdate(event: UpdateEvent<InteractionHeader>) {

@@ -71,14 +71,14 @@ export class InteractionLibService {
   async getLastChat(channelId: string, sessionId: string) {
     let repo;
     repo = this.getRepository(channelId);
-
+    
     const result = await repo.logRepo.findOne({
-      select: ["message", "sendDate", "actionType"],
       where: { sessionId: sessionId },
       order: {
         id: "DESC",
       },
     });
+    console.log(result)
     return result;
   }
 
