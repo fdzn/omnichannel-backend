@@ -1,6 +1,6 @@
 import { IsNotEmpty } from "class-validator";
-
-import { Contact } from "../../../../dto/app.dto";
+import { Customer } from "../../../../entity/customer.entity";
+import { ContactApp } from "../../../../dto/app.dto";
 export class VonagePost {
   @IsNotEmpty()
   name: string;
@@ -16,13 +16,33 @@ export class VonagePost {
 
   @IsNotEmpty()
   roomId: string;
+
+  @IsNotEmpty()
+  sessionId: string;
+
+  @IsNotEmpty()
+  token: string;
+
+  @IsNotEmpty()
+  apiKey: string;
+
+  @IsNotEmpty()
+  library: string;
+
+  @IsNotEmpty()
+  socketId: string;
 }
 
 export class IncomingVideoCall {
   from: string;
   fromName: string;
-  convId: string;
-  message: string;
+  sessionVideo: string;
   roomId: string;
-  sessionId: string;
+  apiKey: string;
+  token: string;
+  library: string;
+  socketId: string;
+  message: string;
+  contact: ContactApp[];
+  customer: Customer;
 }

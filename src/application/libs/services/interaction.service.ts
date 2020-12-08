@@ -4,7 +4,9 @@ import { Repository } from "typeorm";
 
 //ENTITY
 import { InteractionWhatsapp } from "../../../entity/interaction_whatsapp.entity";
+import { InteractionVideoCall } from "../../../entity/interaction_videocall.entity";
 import { InteractionWhatsappHistory } from "../../../entity/interaction_whatsapp_history.entity";
+import { InteractionVideoCallHistory } from "../../../entity/interaction_videocall_history.entity";
 
 //DTO
 import { ActionType } from "src/entity/templates/generalChat";
@@ -14,12 +16,14 @@ import { PostType } from "src/application/interaction/dto/interaction.dto";
 @Injectable()
 export class InteractionLibService {
   constructor(
+    @InjectRepository(InteractionVideoCall)
+    private readonly videoCallRepository: Repository<InteractionVideoCall>,
+    @InjectRepository(InteractionVideoCallHistory)
+    private readonly videoCallHistoryRepository: Repository<InteractionVideoCallHistory>,
     @InjectRepository(InteractionWhatsapp)
     private readonly WhatsappRepository: Repository<InteractionWhatsapp>,
     @InjectRepository(InteractionWhatsappHistory)
-    private readonly WhatsappHistoryRepository: Repository<
-      InteractionWhatsappHistory
-    >
+    private readonly WhatsappHistoryRepository: Repository<InteractionWhatsappHistory>
   ) {}
 
   getRepository(channelId: string) {
@@ -30,6 +34,13 @@ export class InteractionLibService {
           logRepo: this.WhatsappRepository,
           history: InteractionWhatsappHistory,
           historyRepo: this.WhatsappHistoryRepository,
+        };
+      case "videocall":
+        return {
+          log: InteractionVideoCall,
+          logRepo: this.videoCallRepository,
+          history: InteractionVideoCallHistory,
+          historyRepo: this.videoCallHistoryRepository,
         };
 
       default:
@@ -43,7 +54,8 @@ export class InteractionLibService {
   }
 
   async moveToHistory(channelId: string, sessionId: string) {
-    const repo = this.getRepository(channelId);
+    let repo;
+    repo = this.getRepository(channelId);
     const dataInteraction = await repo.logRepo.find({
       where: { sessionId: sessionId },
     });
@@ -57,7 +69,9 @@ export class InteractionLibService {
   }
 
   async getLastChat(channelId: string, sessionId: string) {
-    const repo = this.getRepository(channelId);
+    let repo;
+    repo = this.getRepository(channelId);
+
     const result = await repo.logRepo.findOne({
       select: ["message", "sendDate", "actionType"],
       where: { sessionId: sessionId },
@@ -69,7 +83,8 @@ export class InteractionLibService {
   }
 
   async countCase(channelId: string, sessionId: string) {
-    const repo = this.getRepository(channelId);
+    let repo;
+    repo = this.getRepository(channelId);
     const caseIn = await repo.logRepo.count({
       sessionId: sessionId,
       actionType: ActionType.IN,
@@ -147,7 +162,8 @@ export class InteractionLibService {
     sessionId: string,
     type: PostType
   ) {
-    const repo = this.getRepository(channelId);
+    let repo;
+    repo = this.getRepository(channelId);
     if (type == PostType.INTERACTION) {
       return await repo.logRepo.find({
         where: { sessionId: sessionId },
@@ -166,7 +182,8 @@ export class InteractionLibService {
     skip: number,
     take: number
   ) {
-    const repo = this.getRepository(channelId);
+    let repo;
+    repo = this.getRepository(channelId);
     let repoUse;
     if (type == PostType.INTERACTION) {
       repoUse = repo.logRepo;

@@ -35,10 +35,10 @@ export class InteractionHeader {
   @JoinColumn()
   customer: Customer;
 
-  @Column({ length: 50 })
+  @Column({ length: 100 })
   from: string;
 
-  @Column({ length: 50, nullable: true })
+  @Column({ length: 100, nullable: true })
   fromName: string;
 
   @Column({ length: 20, nullable: true })
@@ -73,6 +73,9 @@ export class InteractionHeader {
 
   @Column({ nullable: true })
   caseOut: number;
+
+  @Column({ default: false })
+  isAbandon: boolean;
 
   @CreateDateColumn({ type: "timestamp", select: false })
   createdAt: Date;

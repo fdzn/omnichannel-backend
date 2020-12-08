@@ -19,7 +19,7 @@ export class Customer {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 50, nullable: false })
+  @Column({ length: 100, nullable: false })
   name: string;
 
   @Column({
