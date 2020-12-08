@@ -53,7 +53,7 @@ export class SessionService {
   async findAgentAvailable(channelId: string) {
     const entityManager = getManager();
     let data = await entityManager.query(
-      "SELECT agentUsername,slot,`limit` FROM work_order WHERE slot < `limit` and channelId = ? ORDER BY slot ASC, lastDist ASC LIMIT 1",
+      "SELECT a.agentUsername,a.slot,a.`limit` FROM work_order a LEFT JOIN user b on a.agentUsername = b.username WHERE a.slot < `limit` and a.channelId = ? and isAux = 0 ORDER BY slot ASC, lastDist ASC LIMIT 1",
       [channelId]
     );
 
