@@ -80,7 +80,7 @@ export class InternalChatService {
           { room: `${data.to}-${payload.username}` },
         ],
         order: {
-          id: "DESC",
+          id: "ASC",
         },
       });
       return {
