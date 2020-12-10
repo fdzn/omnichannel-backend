@@ -56,6 +56,9 @@ export class InteractionVideoCall {
   @Column({ nullable: true })
   sendDate: Date;
 
+  @Column({ nullable: true })
+  endDate: Date;
+
   @CreateDateColumn({ type: "timestamp", select: false })
   createdAt: Date;
 

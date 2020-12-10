@@ -4,7 +4,6 @@ import { Repository } from "typeorm";
 import { JwtService } from "@nestjs/jwt";
 
 import { User } from "../../entity/user.entity";
-import { mGroupSkill } from "../../entity/m_group_skill.entity";
 import { InteractionHeader } from "../../entity/interaction_header.entity";
 import { WorkOrder } from "../../entity/work_order.entity";
 
@@ -13,8 +12,6 @@ export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    @InjectRepository(mGroupSkill)
-    private readonly mGroupSkillRepository: Repository<mGroupSkill>,
     @InjectRepository(InteractionHeader)
     private readonly sessionRepository: Repository<InteractionHeader>,
     @InjectRepository(WorkOrder)
@@ -85,13 +82,8 @@ export class AuthService {
       },
     });
 
-    const groupSkill = await this.mGroupSkillRepository.findOne({
-      select: ["channelId"],
-      where: { agentUsername: foundUser.username },
-    });
     let detailUser;
     detailUser = foundUser;
-    detailUser.skill = groupSkill ? groupSkill : null;
 
     let output = { ...detailUser };
     return output;

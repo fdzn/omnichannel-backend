@@ -71,7 +71,7 @@ export class EventsGateway
       data.sessionId
     );
     this.sendData(`agent:${data.agentUsername}`, "newQueue", workOrder);
-    if (data.channelId === "videocall") {
+    if (data.channelId === "videocall" && data.submitCwcDate === null) {
       let newData = workOrder.lastChat;
       newData["customerId"] = data.customerId;
       this.sendData(`agent:${data.agentUsername}`, "newVideoCall", newData);
