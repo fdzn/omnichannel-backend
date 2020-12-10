@@ -9,7 +9,7 @@ import { AutoInModule } from "./autoin/autoin.module";
 import { CustomerModule } from "./customer/customer.module";
 import { InternalChatModule } from "./internalChat/internalChat.module";
 import { MasterDataModule } from "./masterData/masterData.module";
-import { ReportModule } from './report/report.module';
+import { ReportModule } from "./report/report.module";
 @Module({
   imports: [
     AuthModule,

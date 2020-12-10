@@ -54,6 +54,9 @@ export class InteractionLibService {
   }
 
   async moveToHistory(channelId: string, sessionId: string) {
+    if (channelId === "voice") {
+      return;
+    }
     let repo;
     repo = this.getRepository(channelId);
     const dataInteraction = await repo.logRepo.find({
@@ -69,20 +72,25 @@ export class InteractionLibService {
   }
 
   async getLastChat(channelId: string, sessionId: string) {
+    if (channelId === "voice") {
+      return null;
+    }
     let repo;
     repo = this.getRepository(channelId);
-    
+
     const result = await repo.logRepo.findOne({
       where: { sessionId: sessionId },
       order: {
         id: "DESC",
       },
     });
-    console.log(result)
     return result;
   }
 
   async countCase(channelId: string, sessionId: string) {
+    if (channelId === "voice") {
+      return null;
+    }
     let repo;
     repo = this.getRepository(channelId);
     const caseIn = await repo.logRepo.count({

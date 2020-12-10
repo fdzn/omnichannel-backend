@@ -5,7 +5,10 @@ import { Repository } from "typeorm";
 import { VonagePost, IncomingVideoCall } from "./dto/incoming-videocall.dto";
 import { SessionService } from "../../libs/services/session.service";
 import { CustomerService } from "../../libs/services/customer.service";
-import { InteractionVideoCall } from "../../../entity/interaction_videocall.entity";
+import {
+  InteractionVideoCall,
+  ActionType,
+} from "../../../entity/interaction_videocall.entity";
 import { Customer } from "../../../entity/customer.entity";
 
 import { ContactApp } from "../../../dto/app.dto";
@@ -79,7 +82,7 @@ export class VideocallService {
 
       //SET GROUP ID
       const groupId = 1;
-      
+
       let insertInteraction = new InteractionVideoCall();
       insertInteraction.apiKey = data.apiKey;
       insertInteraction.from = data.from;
@@ -92,8 +95,9 @@ export class VideocallService {
       insertInteraction.sessionVideo = data.sessionVideo;
       insertInteraction.socketId = data.socketId;
       insertInteraction.token = data.token;
+      insertInteraction.actionType = ActionType.IN;
       await this.videoCallRepository.save(insertInteraction);
-      
+
       let insertSession;
       insertSession = data;
       insertSession.priority = priority;

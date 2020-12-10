@@ -11,7 +11,7 @@ import { LibsService } from "../libs/services/lib.service";
 @Injectable()
 export class ReportService {
   constructor(private readonly libsService: LibsService) {}
-  
+
   async getDashboardSummaryAgent(payload) {
     try {
       const todayDate = new Date();

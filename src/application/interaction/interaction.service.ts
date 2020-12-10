@@ -28,9 +28,7 @@ export class InteractionService {
     @InjectRepository(InteractionHeader)
     private readonly sessionRepository: Repository<InteractionHeader>,
     @InjectRepository(InteractionHeaderHistory)
-    private readonly sessionHistoryRepository: Repository<
-      InteractionHeaderHistory
-    >,
+    private readonly sessionHistoryRepository: Repository<InteractionHeaderHistory>,
     @InjectRepository(Cwc)
     private readonly cwcRepository: Repository<Cwc>,
     @InjectRepository(WorkOrder)
@@ -270,7 +268,7 @@ export class InteractionService {
       );
 
       this.updateWorkOrder(data.channelId, payload.username);
-      
+
       //INSERT CWC
       let insertCwc = new Cwc();
       insertCwc.agentUsername = payload.username;

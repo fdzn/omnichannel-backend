@@ -63,7 +63,10 @@ export class InternalChatController {
   ) {
     let params = new GetChatPost();
     params.to = to;
-    const result = await this.internalChatService.getChatAll(params, payload.user);
+    const result = await this.internalChatService.getChatAll(
+      params,
+      payload.user
+    );
     res.status(result.statusCode).send(result);
   }
 
