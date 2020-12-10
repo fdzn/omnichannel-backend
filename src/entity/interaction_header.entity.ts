@@ -74,7 +74,7 @@ export class InteractionHeader {
   @Column({ nullable: true })
   caseOut: number;
 
-  @Column({ default: false })
+  @Column({ nullable: true })
   isAbandon: boolean;
 
   @CreateDateColumn({ type: "timestamp", select: false })

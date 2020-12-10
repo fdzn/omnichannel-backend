@@ -24,6 +24,7 @@ import {
   GetInteractionPost,
   loadWorkOrderPost,
   JourneyPost,
+  IsAbandonPut,
 } from "./dto/interaction.dto";
 
 import { CwcPost } from "./dto/cwc.dto";
@@ -121,6 +122,13 @@ export class InteractionController {
   @HttpCode(200)
   async loadWorkOrder(@Request() payload, @Res() res: Response) {
     const result = await this.interactionService.loadWorkOrder(payload.user);
+    res.status(result.statusCode).send(result);
+  }
+
+  @Post("updateAbandon")
+  @HttpCode(200)
+  async updateAbandon(@Body() postData: IsAbandonPut, @Res() res: Response) {
+    const result = await this.interactionService.updateAbandon(postData);
     res.status(result.statusCode).send(result);
   }
 }

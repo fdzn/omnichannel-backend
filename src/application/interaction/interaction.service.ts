@@ -19,6 +19,7 @@ import {
   GetInteractionSpecific,
   loadWorkOrderPost,
   JourneyPost,
+  IsAbandonPut,
 } from "./dto/interaction.dto";
 import { CwcPost } from "./dto/cwc.dto";
 
@@ -36,6 +37,24 @@ export class InteractionService {
     private readonly interactionLibService: InteractionLibService
   ) {}
 
+  async updateAbandon(data: IsAbandonPut) {
+    try {
+      let updateData = new InteractionHeader();
+      updateData.isAbandon = data.isAbandon;
+
+      const resultUpdate = await this.sessionRepository.update(
+        {
+          sessionId: data.sessionId,
+        },
+        updateData
+      );
+
+      return { isError: false, data: resultUpdate, statusCode: 200 };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
   async pickupManual(data: pickupManualPost, payload) {
     try {
       const foundSession = await this.sessionRepository.findOne({

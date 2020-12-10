@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsInt, IsEnum } from "class-validator";
+import { IsNotEmpty, IsInt, IsEnum, IsBoolean } from "class-validator";
 
 export class pickupManualPost {
   @IsNotEmpty()
@@ -74,4 +74,13 @@ export class JourneyPost {
   @IsNotEmpty()
   @IsInt()
   page: number;
+}
+
+export class IsAbandonPut {
+  @IsNotEmpty()
+  sessionId: string;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  isAbandon: boolean;
 }
