@@ -17,7 +17,7 @@ import { JwtAuthGuard } from "../auth/guards/jwt.auth.guard";
 import { MasterDataService } from "./masterData.service";
 
 //DTO
-import { GetSubCategoryPost } from "./dto/masterData.dto";
+import { GetSubCategoryPost, GeneralTablePost } from "./dto/masterData.dto";
 
 @ApiBearerAuth()
 @ApiTags("Master")
@@ -26,18 +26,18 @@ export class MasterDataController {
   constructor(private readonly masterDataService: MasterDataService) {}
 
   @UseGuards(JwtAuthGuard)
-  @Get("getCategory")
-  @HttpCode(200)
-  async getCategory(@Res() res: Response) {
-    const result = await this.masterDataService.getCategory();
-    res.status(result.statusCode).send(result);
-  }
-
-  @UseGuards(JwtAuthGuard)
   @Get("getUser")
   @HttpCode(200)
   async getUser(@Res() res: Response) {
     const result = await this.masterDataService.getUser();
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get("getCategory")
+  @HttpCode(200)
+  async getCategory(@Res() res: Response) {
+    const result = await this.masterDataService.getCategory();
     res.status(result.statusCode).send(result);
   }
 
@@ -51,6 +51,27 @@ export class MasterDataController {
     let params = new GetSubCategoryPost();
     params.categoryId = categoryId;
     const result = await this.masterDataService.getSubCategory(params);
+    res.status(result.statusCode).send(result);
+  }
+
+  // @UseGuards(JwtAuthGuard)
+  @Post("getCategory")
+  @HttpCode(200)
+  async getCategoryPost(
+    @Body() payload: GeneralTablePost,
+    @Res() res: Response
+  ) {
+    const result = await this.masterDataService.getCategoryPost(payload);
+    res.status(result.statusCode).send(result);
+  }
+
+  @Post("getSubCategory")
+  @HttpCode(200)
+  async getSubCategoryPost(
+    @Body() payload: GeneralTablePost,
+    @Res() res: Response
+  ) {
+    const result = await this.masterDataService.getSubCategoryPost(payload);
     res.status(result.statusCode).send(result);
   }
 }

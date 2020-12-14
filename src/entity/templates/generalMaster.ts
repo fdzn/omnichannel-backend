@@ -22,9 +22,9 @@ export abstract class generalMaster {
   })
   isDeleted: boolean;
 
-  @CreateDateColumn({ type: "timestamp", select: false })
+  @CreateDateColumn({ type: "timestamp" })
   createdAt: Date;
 
-  @UpdateDateColumn({ type: "timestamp", select: false })
+  @UpdateDateColumn({ type: "timestamp" })
   updatedAt: Date;
 }
