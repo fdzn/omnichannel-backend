@@ -31,12 +31,6 @@ export class InteractionWebchatSubscriber
         "newInteractionWebchat",
         event.entity
       );
-    } else {
-      this.eventsGateway.sendData(
-        `agent`,
-        "newInteractionWebchat",
-        event.entity
-      );
     }
   }
 

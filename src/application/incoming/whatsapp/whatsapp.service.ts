@@ -69,6 +69,7 @@ export class WhatsappService {
   async incoming(data: IncomingWhatsapp) {
     try {
       let sessionId;
+      let agentId = null;
       data.fromName = data.fromName ? data.fromName : "-";
 
       //CHECK SESSION
@@ -78,6 +79,7 @@ export class WhatsappService {
       );
       if (foundSession) {
         sessionId = foundSession.sessionId;
+        agentId = foundSession.agentUsername;
       } else if (!foundSession) {
         let custId;
         //GENERATE SESSION
@@ -130,6 +132,7 @@ export class WhatsappService {
       insertInteraction.sessionId = sessionId;
       insertInteraction.sendDate = new Date();
       insertInteraction.sendStatus = true;
+      insertInteraction.agentUsername = agentId;
       await this.whatsappRepository.save(insertInteraction);
       return {
         isError: false,
