@@ -44,7 +44,7 @@ export class WebchatService {
     const dataPost = {
       token: data.convId,
       message: data.media ? data.media : data.message,
-      from: payload.username,
+      fromName: payload.username,
     };
     if (!data.media) {
       url = `${urlBase}/agent/reply/text`;
