@@ -8,11 +8,11 @@ export class GetSubCategoryPost {
 
 export class GeneralTablePost {
   @IsNotEmpty()
-  // @IsInt()
+  @IsInt()
   page: number;
 
   @IsNotEmpty()
-  // @IsInt()
+  @IsInt()
   limit: number;
 
   // @IsOptional()
