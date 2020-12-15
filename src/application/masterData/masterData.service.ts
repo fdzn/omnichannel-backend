@@ -31,7 +31,7 @@ export class MasterDataService {
 
   async getCategoryPost(payload: GeneralTablePost) {
     try {
-      const page = payload.page - 1;
+      const page = payload.page - 1 * payload.limit;
       let keyword = "";
       if (payload.keyword) {
         if (payload.keyword.trim() !== "") {
@@ -82,7 +82,7 @@ export class MasterDataService {
 
   async getSubCategoryPost(payload: GeneralTablePost) {
     try {
-      const page = payload.page - 1;
+      const page = payload.page - 1 * payload.limit;
       let keyword = "";
       if (payload.keyword) {
         if (payload.keyword.trim() !== "") {
