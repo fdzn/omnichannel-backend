@@ -31,7 +31,7 @@ export class MasterDataService {
 
   async getCategoryPost(payload: GeneralTablePost) {
     try {
-      const page = payload.page - 1 * payload.limit;
+      const page = (payload.page - 1) * payload.limit;
       let keyword = "";
       if (payload.keyword) {
         if (payload.keyword.trim() !== "") {
@@ -61,8 +61,8 @@ export class MasterDataService {
       }
       const count = await sql.getCount();
       sql.skip(page);
-      sql.limit(payload.limit);
-
+      sql.take(payload.limit);
+      
       const result = await sql.getMany();
 
       const output = {
@@ -82,7 +82,7 @@ export class MasterDataService {
 
   async getSubCategoryPost(payload: GeneralTablePost) {
     try {
-      const page = payload.page - 1 * payload.limit;
+      const page = (payload.page - 1) * payload.limit;
       let keyword = "";
       if (payload.keyword) {
         if (payload.keyword.trim() !== "") {
@@ -119,10 +119,9 @@ export class MasterDataService {
       }
       const count = await sql.getCount();
       sql.skip(page);
-      sql.limit(payload.limit);
+      sql.take(payload.limit);
 
       const result = await sql.getMany();
-
       const output = {
         totalData: count,
         listData: result,
