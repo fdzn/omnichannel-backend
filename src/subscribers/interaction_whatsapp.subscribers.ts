@@ -38,12 +38,9 @@ export class InteractionWhatsappSubscriber
         event.entity
       );
     }
-
-    console.log(`AFTER INTERACTION WHATSAPP INSERTED: `, event.entity);
   }
 
   afterUpdate(event: UpdateEvent<InteractionWhatsapp>) {
-    console.log(`AFTER INTERACTION WHATSAPP UPDATE: `, event.entity);
     const { agentUsername } = event.entity;
     const data = {
       id: event.entity.id,

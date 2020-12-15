@@ -26,7 +26,6 @@ export class InteractionHeaderSubscriber
   }
 
   afterInsert(event: InsertEvent<InteractionHeader>) {
-    console.log(`AFTER INTERACTION HEADER INSERTED: `, event.entity);
     this.eventsGateway.jumQueueByChannel();
     if (event.entity.agentUsername != null) {
       this.eventsGateway.sendWorkOrder(event.entity);
@@ -34,14 +33,12 @@ export class InteractionHeaderSubscriber
   }
 
   afterUpdate(event: UpdateEvent<InteractionHeader>) {
-    console.log(`AFTER INTERACTION HEADER UPDATE: `, event.entity);
     if (event.entity) {
       this.eventsGateway.sendWorkOrder(event.entity);
     }
   }
 
   afterRemove(event: RemoveEvent<InteractionHeader>) {
-    console.log(`AFTER INTERACTION HEADER REMOVE: `, event);
     this.eventsGateway.jumQueueByChannel();
   }
 }

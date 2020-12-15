@@ -38,12 +38,9 @@ export class InteractionWebchatSubscriber
         event.entity
       );
     }
-
-    console.log(`AFTER INTERACTION WEBCHAT INSERTED: `, event.entity);
   }
 
   afterUpdate(event: UpdateEvent<InteractionWebchat>) {
-    console.log(`AFTER INTERACTION WEBCHAT UPDATE: `, event.entity);
     const { agentUsername } = event.entity;
     const data = {
       id: event.entity.id,

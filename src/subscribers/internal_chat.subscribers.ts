@@ -28,6 +28,5 @@ export class InternalChatSubscribers
       "newInteractionInternalChat",
       event.entity
     );
-    console.log(`AFTER INTERACTION INTERNAL CHAT INSERTED: `, event.entity);
   }
 }

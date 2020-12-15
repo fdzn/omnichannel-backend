@@ -36,38 +36,39 @@ export class WebchatService {
   }
 
   async octopushChat(data: OutgoingWebchat, resultSave, payload) {
+    const { id } = resultSave;
+
+    const urlBase = process.env.WEBCHAT_OUTGOING_URL;
+    let url = urlBase;
+
+    const dataPost = {
+      token: data.convId,
+      message: data.media ? data.media : data.message,
+      from: payload.username,
+    };
+    if (!data.media) {
+      url = `${urlBase}/agent/reply/text`;
+    } else {
+      url = `${urlBase}/agent/reply/media`;
+    }
+    const result = await this.libsService.postOutgoing(url, dataPost);
+    const resultDetail = result.data;
+
     try {
-      const { id } = resultSave;
-
-      const urlBase = process.env.WEBCHAT_OUTGOING_URL;
-      let url = urlBase;
-
-      const dataPost = {
-        token: data.convId,
-        message: data.media ? data.media : data.message,
-        fromName: payload.username,
-      };
-      if (!data.media) {
-        url = `${urlBase}/agent/reply/text`;
+      if (resultDetail == "Abandon" || resultDetail.error) {
+        const updateInteraction = new InteractionWebchat();
+        updateInteraction.id = id;
+        updateInteraction.sessionId = data.sessionId;
+        updateInteraction.sendStatus = false;
+        updateInteraction.systemMessage = JSON.stringify(resultDetail.message);
+        updateInteraction.agentUsername = payload.username;
+        await this.webchatRepository.save(updateInteraction);
       } else {
-        url = `${urlBase}/agent/reply/media`;
-      }
-      const result = await this.libsService.postHTTP(url, dataPost);
-      const resultDetail = result.data;
-      if (!resultDetail.error) {
         const updateInteraction = new InteractionWebchat();
         updateInteraction.id = id;
         updateInteraction.sessionId = data.sessionId;
         updateInteraction.sendDate = new Date();
         updateInteraction.sendStatus = true;
-        updateInteraction.systemMessage = JSON.stringify(resultDetail.message);
-        updateInteraction.agentUsername = payload.username;
-        const result = await this.webchatRepository.save(updateInteraction);
-      } else {
-        const updateInteraction = new InteractionWebchat();
-        updateInteraction.id = id;
-        updateInteraction.sessionId = data.sessionId;
-        updateInteraction.sendStatus = false;
         updateInteraction.systemMessage = JSON.stringify(resultDetail.message);
         updateInteraction.agentUsername = payload.username;
         await this.webchatRepository.save(updateInteraction);

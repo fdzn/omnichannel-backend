@@ -180,6 +180,32 @@ export class LibsService {
     }
   }
 
+  async postOutgoing(url, dataPost, config = null) {
+    try {
+      const date = new Date();
+      console.log("POST Outgoing", date, url, dataPost);
+      const result = await this.http.post(url, dataPost, config).toPromise();
+      return {
+        isError: false,
+        data: result.data,
+        statusCode: 200,
+      };
+    } catch (e) {
+      try {
+        if (e.isAxiosError) {
+          return {
+            isError: true,
+            data: e.response.data,
+            statusCode: 500,
+          };
+          // return e.response.data;
+        }
+      } catch (error) {
+        return this.parseError(e);
+      }
+    }
+  }
+
   async getHTTP(url, config = null) {
     try {
       const date = new Date();

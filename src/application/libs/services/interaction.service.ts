@@ -10,6 +10,7 @@ import { InteractionVideoCallHistory } from "../../../entity/interaction_videoca
 import { InteractionWebchat } from "../../../entity/interaction_webchat.entity";
 import { InteractionWebchatHistory } from "../../../entity/interaction_webchat_history.entity";
 
+import { LibsService } from "./lib.service";
 //DTO
 import { ActionType } from "src/entity/templates/generalChat";
 import { PostType } from "src/application/interaction/dto/interaction.dto";
@@ -18,6 +19,7 @@ import { PostType } from "src/application/interaction/dto/interaction.dto";
 @Injectable()
 export class InteractionLibService {
   constructor(
+    private readonly libsService: LibsService,
     @InjectRepository(InteractionVideoCall)
     private readonly videoCallRepository: Repository<InteractionVideoCall>,
     @InjectRepository(InteractionVideoCallHistory)
@@ -176,6 +178,32 @@ export class InteractionLibService {
       fromName: fromName,
       messages: messages,
     };
+  }
+
+  async endSessionWebchat(sessionId: string) {
+    try {
+      const getConvId = await this.webchatRepository.findOne({
+        select: ["convId"],
+        where: {
+          sessionId: sessionId,
+        },
+        order: {
+          id: "DESC",
+        },
+      });
+
+      if (getConvId) {
+        const convId = getConvId.convId;
+        const postData = {
+          token: convId,
+          fromName: "SYSTEM",
+        };
+        const url = `${process.env.WEBCHAT_OUTGOING_URL}/agent/endSession`;
+        await this.libsService.postHTTP(url, postData);
+      }
+    } catch (e) {
+      return this.libsService.parseError(e);
+    }
   }
 
   async getInteractionBySession(
