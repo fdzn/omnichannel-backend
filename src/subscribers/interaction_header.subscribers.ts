@@ -26,6 +26,9 @@ export class InteractionHeaderSubscriber
   }
 
   afterInsert(event: InsertEvent<InteractionHeader>) {
+    if(event.metadata.target !== "InteractionHeader"){
+      return;
+    }
     this.eventsGateway.jumQueueByChannel();
     if (event.entity.agentUsername != null) {
       this.eventsGateway.sendWorkOrder(event.entity);
@@ -33,12 +36,18 @@ export class InteractionHeaderSubscriber
   }
 
   afterUpdate(event: UpdateEvent<InteractionHeader>) {
+    if(event.metadata.target !== "InteractionHeader"){
+      return;
+    }
     if (event.entity) {
       this.eventsGateway.sendWorkOrder(event.entity);
     }
   }
 
   afterRemove(event: RemoveEvent<InteractionHeader>) {
+    if(event.metadata.target !== "InteractionHeader"){
+      return;
+    }
     this.eventsGateway.jumQueueByChannel();
   }
 }

@@ -24,6 +24,9 @@ export class InteractionWhatsappSubscriber
   }
 
   afterInsert(event: InsertEvent<InteractionWhatsapp>) {
+    if(event.metadata.target !== "InteractionWhatsapp"){
+      return;
+    }
     const username = event.entity.agentUsername;
     if (username) {
       this.eventsGateway.sendData(
@@ -35,6 +38,9 @@ export class InteractionWhatsappSubscriber
   }
 
   afterUpdate(event: UpdateEvent<InteractionWhatsapp>) {
+    if(event.metadata.target !== "InteractionWhatsapp"){
+      return;
+    }
     const { agentUsername } = event.entity;
     const data = {
       id: event.entity.id,

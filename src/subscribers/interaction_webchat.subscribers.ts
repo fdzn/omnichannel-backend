@@ -12,18 +12,16 @@ import { InteractionWebchat } from "../entity/interaction_webchat.entity";
 @EventSubscriber()
 export class InteractionWebchatSubscriber
   implements EntitySubscriberInterface<InteractionWebchat> {
-  constructor(
-    connection: Connection,
-    private readonly eventsGateway: EventsGateway
-  ) {
-    connection.subscribers.push(this);
-  }
+  constructor(private readonly eventsGateway: EventsGateway) {}
 
   listenTo() {
     return InteractionWebchat;
   }
 
   afterInsert(event: InsertEvent<InteractionWebchat>) {
+    if(event.metadata.target !== "InteractionWebchat"){
+      return;
+    }
     const username = event.entity.agentUsername;
     if (username) {
       this.eventsGateway.sendData(
@@ -35,6 +33,9 @@ export class InteractionWebchatSubscriber
   }
 
   afterUpdate(event: UpdateEvent<InteractionWebchat>) {
+    if(event.metadata.target !== "InteractionWebchat"){
+      return;
+    }
     const { agentUsername } = event.entity;
     const data = {
       id: event.entity.id,

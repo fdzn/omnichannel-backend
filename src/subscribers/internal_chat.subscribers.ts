@@ -23,6 +23,9 @@ export class InternalChatSubscribers
   }
 
   afterInsert(event: InsertEvent<InternalChat>) {
+    if (event.metadata.target !== "InternalChat") {
+      return;
+    }
     this.eventsGateway.sendData(
       "agent",
       "newInteractionInternalChat",
