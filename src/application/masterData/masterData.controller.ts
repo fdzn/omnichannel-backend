@@ -5,8 +5,10 @@ import {
   Param,
   Res,
   Body,
+  Request,
   HttpCode,
   UseGuards,
+  Put,
 } from "@nestjs/common";
 import { Response } from "express";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
@@ -17,7 +19,15 @@ import { JwtAuthGuard } from "../auth/guards/jwt.auth.guard";
 import { MasterDataService } from "./masterData.service";
 
 //DTO
-import { GetSubCategoryPost, GeneralTablePost } from "./dto/masterData.dto";
+import {
+  GetSubCategoryPost,
+  GeneralTablePost,
+  AddCategoryPost,
+  EditCategoryPut,
+  DeleteGeneralPut,
+  AddSubCategoryPost,
+  EditSubCategoryPut,
+} from "./dto/masterData.dto";
 
 @ApiBearerAuth()
 @ApiTags("Master")
@@ -72,6 +82,96 @@ export class MasterDataController {
     @Res() res: Response
   ) {
     const result = await this.masterDataService.getSubCategoryPost(payload);
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post("category/add")
+  @HttpCode(200)
+  async addCategory(
+    @Request() authData,
+    @Body() payload: AddCategoryPost,
+    @Res() res: Response
+  ) {
+    const result = await this.masterDataService.addCategory(
+      payload,
+      authData.user
+    );
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put("category/edit")
+  @HttpCode(200)
+  async editCategory(
+    @Request() authData,
+    @Body() payload: EditCategoryPut,
+    @Res() res: Response
+  ) {
+    const result = await this.masterDataService.editCategory(
+      payload,
+      authData.user
+    );
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put("category/delete")
+  @HttpCode(200)
+  async deleteCategory(
+    @Request() authData,
+    @Body() payload: DeleteGeneralPut,
+    @Res() res: Response
+  ) {
+    const result = await this.masterDataService.deleteCategory(
+      payload,
+      authData.user
+    );
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post("subCategory/add")
+  @HttpCode(200)
+  async subCategory(
+    @Request() authData,
+    @Body() payload: AddSubCategoryPost,
+    @Res() res: Response
+  ) {
+    const result = await this.masterDataService.addSubCategory(
+      payload,
+      authData.user
+    );
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put("subCategory/edit")
+  @HttpCode(200)
+  async editSubCategory(
+    @Request() authData,
+    @Body() payload: EditSubCategoryPut,
+    @Res() res: Response
+  ) {
+    const result = await this.masterDataService.editSubCategory(
+      payload,
+      authData.user
+    );
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put("subCategory/delete")
+  @HttpCode(200)
+  async deleteSubCategory(
+    @Request() authData,
+    @Body() payload: DeleteGeneralPut,
+    @Res() res: Response
+  ) {
+    const result = await this.masterDataService.deleteSubCategory(
+      payload,
+      authData.user
+    );
     res.status(result.statusCode).send(result);
   }
 }

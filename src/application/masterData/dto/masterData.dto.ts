@@ -19,6 +19,37 @@ export class GeneralTablePost {
   keyword: string;
 }
 
+export class AddCategoryPost {
+  @IsNotEmpty()
+  name: string;
+}
+
+export class AddSubCategoryPost extends AddCategoryPost {
+  @IsNotEmpty()
+  @IsInt()
+  categoryId: number;
+}
+
+export class EditCategoryPut {
+  @IsNotEmpty()
+  @IsInt()
+  id: number;
+  @IsNotEmpty()
+  name: string;
+}
+
+export class EditSubCategoryPut extends EditCategoryPut {
+  @IsNotEmpty()
+  @IsInt()
+  categoryId: number;
+}
+
+export class DeleteGeneralPut {
+  @IsNotEmpty()
+  @IsInt()
+  id: number;
+}
+
 export class GetSubCategoryPostV2 extends GeneralTablePost {
   @IsNotEmpty()
   @IsInt()

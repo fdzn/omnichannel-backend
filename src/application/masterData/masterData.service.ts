@@ -8,7 +8,16 @@ import { mSubCategory } from "../../entity/m_sub_category.entity";
 import { User } from "../../entity/user.entity";
 
 //DTO
-import { GetSubCategoryPost, GeneralTablePost } from "./dto/masterData.dto";
+import {
+  GetSubCategoryPost,
+  GeneralTablePost,
+  AddCategoryPost,
+  EditCategoryPut,
+  AddSubCategoryPost,
+  EditSubCategoryPut,
+  DeleteGeneralPut,
+} from "./dto/masterData.dto";
+
 @Injectable()
 export class MasterDataService {
   constructor(
@@ -198,10 +207,10 @@ export class MasterDataService {
     }
   }
 
-  async addCategory(data, user) {
+  async addCategory(data: AddCategoryPost, user) {
     try {
       let newCategory = new mCategory();
-      newCategory.name = data.category;
+      newCategory.name = data.name;
       newCategory.updaterUsername = user.username;
       const result = await this.mCategoryRepository.save(newCategory);
       return {
@@ -215,14 +224,14 @@ export class MasterDataService {
     }
   }
 
-  async editCategory(data, user) {
+  async editCategory(data: EditCategoryPut, user) {
     try {
       let newCategory = new mCategory();
-      newCategory.name = data.category;
+      newCategory.name = data.name;
       newCategory.updaterUsername = user.username;
       const result = await this.mCategoryRepository.update(
         {
-          id: data.categoryId,
+          id: data.id,
         },
         newCategory
       );
@@ -237,14 +246,14 @@ export class MasterDataService {
     }
   }
 
-  async deleteCategory(data, user) {
+  async deleteCategory(data: DeleteGeneralPut, user) {
     try {
       let newCategory = new mCategory();
       newCategory.isDeleted = true;
       newCategory.updaterUsername = user.username;
       const result = await this.mCategoryRepository.update(
         {
-          id: data.categoryId,
+          id: data.id,
         },
         newCategory
       );
@@ -259,11 +268,11 @@ export class MasterDataService {
     }
   }
 
-  async addSubCategory(data, user) {
+  async addSubCategory(data: AddSubCategoryPost, user) {
     try {
       let newSubCategory = new mSubCategory();
       newSubCategory.categoryId = data.categoryId;
-      newSubCategory.name = data.subCategory;
+      newSubCategory.name = data.name;
       newSubCategory.updaterUsername = user.username;
       const result = await this.mSubCategoryRepository.save(newSubCategory);
       return {
@@ -277,15 +286,15 @@ export class MasterDataService {
     }
   }
 
-  async editSubCategory(data, user) {
+  async editSubCategory(data: EditSubCategoryPut, user) {
     try {
       let newSubCategory = new mSubCategory();
       newSubCategory.categoryId = data.categoryId;
-      newSubCategory.name = data.subCategory;
+      newSubCategory.name = data.name;
       newSubCategory.updaterUsername = user.username;
       const result = await this.mSubCategoryRepository.update(
         {
-          id: data.subCategoryId,
+          id: data.id,
         },
         newSubCategory
       );
@@ -300,14 +309,14 @@ export class MasterDataService {
     }
   }
 
-  async deleteSubCategory(data, user) {
+  async deleteSubCategory(data: DeleteGeneralPut, user) {
     try {
       let newSubCategory = new mSubCategory();
       newSubCategory.isDeleted = true;
       newSubCategory.updaterUsername = user.username;
-      const result = await this.mCategoryRepository.update(
+      const result = await this.mSubCategoryRepository.update(
         {
-          id: data.subCategoryId,
+          id: data.id,
         },
         newSubCategory
       );

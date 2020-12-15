@@ -4,9 +4,11 @@ import { Repository } from "typeorm";
 
 //ENTITY
 import { InteractionWhatsapp } from "../../../entity/interaction_whatsapp.entity";
-import { InteractionVideoCall } from "../../../entity/interaction_videocall.entity";
 import { InteractionWhatsappHistory } from "../../../entity/interaction_whatsapp_history.entity";
+import { InteractionVideoCall } from "../../../entity/interaction_videocall.entity";
 import { InteractionVideoCallHistory } from "../../../entity/interaction_videocall_history.entity";
+import { InteractionWebchat } from "../../../entity/interaction_webchat.entity";
+import { InteractionWebchatHistory } from "../../../entity/interaction_webchat_history.entity";
 
 //DTO
 import { ActionType } from "src/entity/templates/generalChat";
@@ -23,7 +25,11 @@ export class InteractionLibService {
     @InjectRepository(InteractionWhatsapp)
     private readonly WhatsappRepository: Repository<InteractionWhatsapp>,
     @InjectRepository(InteractionWhatsappHistory)
-    private readonly WhatsappHistoryRepository: Repository<InteractionWhatsappHistory>
+    private readonly WhatsappHistoryRepository: Repository<InteractionWhatsappHistory>,
+    @InjectRepository(InteractionWebchat)
+    private readonly webchatRepository: Repository<InteractionWebchat>,
+    @InjectRepository(InteractionWebchatHistory)
+    private readonly webchatHistoryRepository: Repository<InteractionWebchatHistory>
   ) {}
 
   getRepository(channelId: string) {
@@ -41,6 +47,13 @@ export class InteractionLibService {
           logRepo: this.videoCallRepository,
           history: InteractionVideoCallHistory,
           historyRepo: this.videoCallHistoryRepository,
+        };
+      case "webchat":
+        return {
+          log: InteractionWebchat,
+          logRepo: this.webchatRepository,
+          history: InteractionWebchatHistory,
+          historyRepo: this.webchatHistoryRepository,
         };
 
       default:
