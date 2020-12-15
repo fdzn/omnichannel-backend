@@ -31,12 +31,6 @@ export class InteractionWhatsappSubscriber
         "newInteractionWhatsapp",
         event.entity
       );
-    } else {
-      this.eventsGateway.sendData(
-        `agent`,
-        "newInteractionWhatsapp",
-        event.entity
-      );
     }
   }
 
