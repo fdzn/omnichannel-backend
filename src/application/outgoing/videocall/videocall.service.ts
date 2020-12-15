@@ -4,6 +4,7 @@ import { Repository } from "typeorm";
 
 //SERVICE GLOBAL
 import { LibsService } from "../../libs/services/lib.service";
+import { InteractionLibService } from "../../libs/services/interaction.service";
 
 //ENTITY
 import { InteractionVideoCall } from "../../../entity/interaction_videocall.entity";
@@ -18,6 +19,7 @@ import {
 export class VideocallService {
   constructor(
     private readonly libsService: LibsService,
+    private readonly interactionService: InteractionLibService,
     @InjectRepository(InteractionVideoCall)
     private readonly videoCallRepository: Repository<InteractionVideoCall>,
     @InjectRepository(InteractionHeader)
@@ -26,7 +28,7 @@ export class VideocallService {
 
   async vonage(data: OutgoingVideoCall) {
     try {
-        let result;
+      let result;
       if (data.action === ActionVideoType.ACCEPT) {
         let updateData = new InteractionHeader();
         updateData.isAbandon = false;
@@ -37,7 +39,7 @@ export class VideocallService {
       }
 
       if (data.action === ActionVideoType.HANGUP) {
-        let updateData = new InteractionVideoCall;
+        let updateData = new InteractionVideoCall();
         updateData.endDate = new Date();
         result = await this.sessionRepository.update(
           { sessionId: data.sessionId },
@@ -51,6 +53,11 @@ export class VideocallService {
         result = await this.sessionRepository.update(
           { sessionId: data.sessionId },
           updateData
+        );
+
+        await this.interactionService.moveToHistory(
+          "videocall",
+          data.sessionId
         );
       }
       return {
