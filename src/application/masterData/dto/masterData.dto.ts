@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsInt, IsOptional } from "class-validator";
+import { IsNotEmpty, IsInt, IsOptional, Min } from "class-validator";
 
 export class GetSubCategoryPost {
   @IsNotEmpty()
@@ -9,13 +9,14 @@ export class GetSubCategoryPost {
 export class GeneralTablePost {
   @IsNotEmpty()
   @IsInt()
+  @Min(1)
   page: number;
 
   @IsNotEmpty()
   @IsInt()
   limit: number;
 
-  // @IsOptional()
+  @IsOptional()
   keyword: string;
 }
 
