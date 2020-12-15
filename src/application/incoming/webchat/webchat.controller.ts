@@ -11,16 +11,14 @@ export class WebchatController {
 
   @Post()
   @HttpCode(201)
-  async capiwha(@Body() dataIncoming: any, @Res() res: Response) {
+  async webchat(@Body() dataIncoming: any, @Res() res: Response) {
     console.log("WEBCHAT", JSON.stringify(dataIncoming));
-    const normalizationData = await this.webchatService.octopushChat(
-      dataIncoming
-    );
-    if (normalizationData) {
-      const result = await this.webchatService.incoming(normalizationData);
-      res.status(result.statusCode).send(result);
+    const resultParse = await this.webchatService.octopushChat(dataIncoming);
+    if (resultParse.isError) {
+      res.status(resultParse.statusCode).send(resultParse);
     } else {
-      res.status(500).send("Undefined Type Data");
+      const result = await this.webchatService.incoming(resultParse.data);
+      res.status(result.statusCode).send(result);
     }
   }
 }

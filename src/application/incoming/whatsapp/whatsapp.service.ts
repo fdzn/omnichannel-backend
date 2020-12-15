@@ -2,12 +2,14 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
+import { MinioNestService } from "../../../minio/minio.service";
 import { SessionService } from "../../libs/services/session.service";
 import { CustomerService } from "../../libs/services/customer.service";
 import { InteractionWhatsapp } from "../../../entity/interaction_whatsapp.entity";
 import { ActionType } from "src/entity/templates/generalChat";
 
 import { IncomingWhatsapp } from "./dto/incoming-whatsapp.dto";
+import { UploadURLPost } from "../../../minio/dto/minio.dto";
 @Injectable()
 export class WhatsappService {
   private channelId: string;
@@ -15,7 +17,8 @@ export class WhatsappService {
     @InjectRepository(InteractionWhatsapp)
     private readonly whatsappRepository: Repository<InteractionWhatsapp>,
     private readonly sessionService: SessionService,
-    private readonly customerService: CustomerService
+    private readonly customerService: CustomerService,
+    private readonly minioService: MinioNestService
   ) {
     this.channelId = "whatsapp";
   }
@@ -41,17 +44,29 @@ export class WhatsappService {
     output.fromName = "No Name";
     output.account = data.to;
     if (this.validURL(data.text)) {
-      output.media = data.text;
+      let mediaPost = new UploadURLPost();
+      mediaPost.directory = `whatsapp/${output.from}`;
+      mediaPost.folder = "singlechannel";
+      mediaPost.url = [data.text];
+      const mediaResult = await this.minioService.uploadURL(mediaPost);
+      if (mediaResult.isError) {
+        return mediaResult;
+      }
+
+      output.media = JSON.stringify(mediaResult.data);
       output.messageType = "media";
     } else {
       output.message = data.text;
       output.messageType = "text";
     }
-    console.log("NORMALIZATION", output);
-    return output;
+    return {
+      isError: false,
+      data: output,
+      statusCode: 200,
+    };
   }
 
-  async createIncoming(data: IncomingWhatsapp) {
+  async incoming(data: IncomingWhatsapp) {
     try {
       let sessionId;
       data.fromName = data.fromName ? data.fromName : "-";

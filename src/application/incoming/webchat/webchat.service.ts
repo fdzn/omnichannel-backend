@@ -2,12 +2,14 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
+import { MinioNestService } from "../../../minio/minio.service";
 import { SessionService } from "../../libs/services/session.service";
 import { CustomerService } from "../../libs/services/customer.service";
 import { InteractionWebchat } from "../../../entity/interaction_webchat.entity";
 
 import { ActionType } from "src/entity/templates/generalChat";
 
+import { UploadURLPost } from "../../../minio/dto/minio.dto";
 import { IncomingWebchat } from "./dto/incoming-webchat.dto";
 import { Customer } from "src/entity/customer.entity";
 import { Contact } from "src/entity/contact.entity";
@@ -20,7 +22,8 @@ export class WebchatService {
     @InjectRepository(InteractionWebchat)
     private readonly webchatRepository: Repository<InteractionWebchat>,
     private readonly sessionService: SessionService,
-    private readonly customerService: CustomerService
+    private readonly customerService: CustomerService,
+    private readonly minioService: MinioNestService
   ) {
     this.channelId = "webchat";
   }
@@ -86,12 +89,22 @@ export class WebchatService {
 
       dataApp.contact = [contact1, contact2];
     } else if (data.action == "clientReplyMedia") {
-      dataApp.message = data.message.message.fileName;
-      dataApp.messageType = "media";
-      dataApp.media = [data.message.message.url];
-
       dataApp.from = data.message.user.email;
       dataApp.fromName = data.message.user.username;
+
+      dataApp.message = data.message.message.fileName;
+      dataApp.messageType = "media";
+
+      let mediaPost = new UploadURLPost();
+      mediaPost.directory = `webchat/${dataApp.from}`;
+      mediaPost.folder = "singlechannel";
+      mediaPost.url = [data.message.message.url];
+      const mediaResult = await this.minioService.uploadURL(mediaPost);
+      if (mediaResult.isError) {
+        return mediaResult;
+      }
+
+      dataApp.media = JSON.stringify(mediaResult.data);
 
       dataApp.customer = new Customer();
       dataApp.customer.name = data.message.user.username;
@@ -127,10 +140,17 @@ export class WebchatService {
 
       dataApp.contact = [contact1, contact2];
     } else {
-      return false;
+      return {
+        isError: true,
+        data: "Undefined Type Webchat",
+        statusCode: 500,
+      };
     }
-
-    return dataApp;
+    return {
+      isError: false,
+      data: dataApp,
+      statusCode: 200,
+    };
   }
 
   async incoming(data: IncomingWebchat) {

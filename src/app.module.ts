@@ -9,6 +9,9 @@ import { ApplicationModule } from "./application/application.module";
 //Socket
 import { EventsModule } from "./sockets/events.module";
 
+//minio
+import { MinioNestModule } from "./minio/minio.module";
+
 //Subscribers
 import { SubscribersModule } from "./subscribers/subscribes.module";
 @Module({
@@ -31,6 +34,7 @@ import { SubscribersModule } from "./subscribers/subscribes.module";
     ApplicationModule,
     EventsModule,
     SubscribersModule,
+    MinioNestModule,
   ],
   controllers: [AppController],
 })

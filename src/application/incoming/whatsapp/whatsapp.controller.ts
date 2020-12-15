@@ -8,19 +8,17 @@ import { CapiwhaPost } from "./dto/incoming-whatsapp.dto";
 export class WhatsappController {
   constructor(private readonly whatsappService: WhatsappService) {}
 
-  // @Post()
-  // @HttpCode(201)
-  // async incoming(@Body() dataIncoming: IncomingWhatsapp, @Res() res: Response) {
-  //   const result = await this.whatsappService.createIncoming(dataIncoming);
-  //   res.status(result.statusCode).send(result);
-  // }
   @ApiTags("Incoming")
   @Post("capiwha")
   @HttpCode(201)
   async capiwha(@Body() dataIncoming: CapiwhaPost, @Res() res: Response) {
     console.log("WHATSAPP CAPIWHA", JSON.stringify(dataIncoming));
-    const normalizationData = await this.whatsappService.capiwha(dataIncoming);
-    const result = await this.whatsappService.createIncoming(normalizationData);
-    res.status(result.statusCode).send(result);
+    const resultParse = await this.whatsappService.capiwha(dataIncoming);
+    if (resultParse.isError) {
+      res.status(resultParse.statusCode).send(resultParse);
+    } else {
+      const result = await this.whatsappService.incoming(resultParse.data);
+      res.status(result.statusCode).send(result);
+    }
   }
 }
