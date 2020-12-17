@@ -23,9 +23,10 @@ export class WebchatService {
     insertInteraction.fromName = payload.username;
     insertInteraction.media = data.media;
     insertInteraction.message = data.message;
-    if (!data.media) {
+
+    if(!data.media && data.media != ""){
       insertInteraction.messageType = "text";
-    } else if (data.media.length < 10) {
+    }else{
       insertInteraction.messageType = "media";
     }
 

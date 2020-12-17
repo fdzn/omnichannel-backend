@@ -23,7 +23,7 @@ export class InternalChatSubscribers
   }
 
   afterInsert(event: InsertEvent<InternalChat>) {
-    if (event.metadata.target !== "InternalChat") {
+    if (event.metadata.targetName !== "InternalChat") {
       return;
     }
     this.eventsGateway.sendData(
