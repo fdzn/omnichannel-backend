@@ -166,9 +166,8 @@ export class LibsService {
 
   async postHTTP(url, dataPost, config = null) {
     try {
-      const date = new Date();
-      console.log("POST URL", `${date} : ${url}`);
-      console.log("POST HTTP", `${date} : ${JSON.stringify(dataPost)}`);
+      console.log("POST HTTP", new Date(), url, JSON.stringify(dataPost));
+
       const result = await this.http.post(url, dataPost, config).toPromise();
       return {
         isError: false,
@@ -183,7 +182,7 @@ export class LibsService {
   async postOutgoing(url, dataPost, config = null) {
     try {
       const date = new Date();
-      console.log("POST Outgoing", date, url, dataPost);
+      console.log("POST OUTGOING", new Date(), url, JSON.stringify(dataPost));
       const result = await this.http.post(url, dataPost, config).toPromise();
       return {
         isError: false,
@@ -209,7 +208,7 @@ export class LibsService {
   async getHTTP(url, config = null) {
     try {
       const date = new Date();
-      console.log("GET URL", `${date} : ${url}`);
+      console.log("GET HTTP", new Date(), url);
       const result = await this.http.get(url, config).toPromise();
       return {
         isError: false,
@@ -224,8 +223,7 @@ export class LibsService {
   async putHTTP(url, dataPost, config = null) {
     try {
       const date = new Date();
-      console.log("PUT URL", `${date} : ${url}`);
-      console.log("PUT HTTP", `${date} : ${JSON.stringify(dataPost)}`);
+      console.log("PUT HTTP", new Date(), url, JSON.stringify(dataPost));
 
       const result = await this.http.put(url, dataPost, config).toPromise();
       return {
@@ -241,7 +239,7 @@ export class LibsService {
   async deleteHTTP(url, config) {
     try {
       const date = new Date();
-      console.log("DELETE URL", `${date} : ${url}`);
+      console.log("DELETE HTTP", new Date(), url);
       const result = await this.http.delete(url, config).toPromise();
       return {
         isError: false,

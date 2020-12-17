@@ -273,7 +273,7 @@ export class InteractionService {
       if (data.channelId == "webchat") {
         this.interactionLibService.endSessionWebchat(data.sessionId);
       }
-      
+
       //GET SESSION ID
       const foundSession = await this.sessionRepository.findOne({
         where: { sessionId: data.sessionId },

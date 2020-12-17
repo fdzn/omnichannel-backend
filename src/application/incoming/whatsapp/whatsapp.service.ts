@@ -37,7 +37,6 @@ export class WhatsappService {
   }
 
   async capiwha(post) {
-    console.log("INCOMING WHATSAPP", post);
     const data = JSON.parse(post.data);
     let output = new IncomingWhatsapp();
     output.from = data.from;

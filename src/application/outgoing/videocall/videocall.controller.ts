@@ -17,7 +17,7 @@ export class VideocallController {
   @Post()
   @HttpCode(200)
   async outgoing(@Body() dataPost: OutgoingVideoCall, @Res() res: Response) {
-    console.log("OUTGOING VIDEO CALL", JSON.stringify(dataPost));
+    console.log("OUTGOING VIDEO CALL", new Date(), JSON.stringify(dataPost));
 
     const resultSave = await this.videocallService.vonage(dataPost);
     res.status(200).send(resultSave);

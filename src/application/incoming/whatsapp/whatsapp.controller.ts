@@ -12,7 +12,7 @@ export class WhatsappController {
   @Post("capiwha")
   @HttpCode(201)
   async capiwha(@Body() dataIncoming: CapiwhaPost, @Res() res: Response) {
-    console.log("WHATSAPP CAPIWHA", JSON.stringify(dataIncoming));
+    console.log("WHATSAPP CAPIWHA", new Date(), JSON.stringify(dataIncoming));
     const resultParse = await this.whatsappService.capiwha(dataIncoming);
     if (resultParse.isError) {
       res.status(resultParse.statusCode).send(resultParse);

@@ -12,7 +12,7 @@ export class VoiceController {
   @Post("asterisk")
   @HttpCode(201)
   async vonage(@Body() dataIncoming: AsteriskPost, @Res() res: Response) {
-    console.log("Voice Asterisk", JSON.stringify(dataIncoming));
+    console.log("Voice Asterisk", new Date(), JSON.stringify(dataIncoming));
     const normalizeData = this.voiceService.asterisk(dataIncoming);
     const result = await this.voiceService.incoming(normalizeData);
     res.status(result.statusCode).send(result);

@@ -24,7 +24,7 @@ export class InteractionWhatsappSubscriber
   }
 
   afterInsert(event: InsertEvent<InteractionWhatsapp>) {
-    if(event.metadata.targetName !== "InteractionWhatsapp"){
+    if (event.metadata.targetName !== "InteractionWhatsapp") {
       return;
     }
     const username = event.entity.agentUsername;
@@ -38,7 +38,7 @@ export class InteractionWhatsappSubscriber
   }
 
   afterUpdate(event: UpdateEvent<InteractionWhatsapp>) {
-    if(event.metadata.targetName !== "InteractionWhatsapp"){
+    if (event.metadata.targetName !== "InteractionWhatsapp") {
       return;
     }
     const { agentUsername } = event.entity;

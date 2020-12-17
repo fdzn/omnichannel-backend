@@ -31,7 +31,7 @@ export class WebchatController {
     @Body() payload: OutgoingWebchat,
     @Res() res: Response
   ) {
-    console.log("OUTGOING Webchat", JSON.stringify(payload));
+    console.log("OUTGOING Webchat", new Date(), JSON.stringify(payload));
 
     const resultSave = await this.webchatService.saveInteraction(
       payload,

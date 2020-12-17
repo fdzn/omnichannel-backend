@@ -26,7 +26,7 @@ export class InteractionHeaderSubscriber
   }
 
   afterInsert(event: InsertEvent<InteractionHeader>) {
-    if(event.metadata.targetName !== "InteractionHeader"){
+    if (event.metadata.targetName !== "InteractionHeader") {
       return;
     }
     this.eventsGateway.jumQueueByChannel();
@@ -36,7 +36,7 @@ export class InteractionHeaderSubscriber
   }
 
   afterUpdate(event: UpdateEvent<InteractionHeader>) {
-    if(event.metadata.targetName !== "InteractionHeader"){
+    if (event.metadata.targetName !== "InteractionHeader") {
       return;
     }
     if (event.entity) {
@@ -45,7 +45,7 @@ export class InteractionHeaderSubscriber
   }
 
   afterRemove(event: RemoveEvent<InteractionHeader>) {
-    if(event.metadata.targetName !== "InteractionHeader"){
+    if (event.metadata.targetName !== "InteractionHeader") {
       return;
     }
     this.eventsGateway.jumQueueByChannel();

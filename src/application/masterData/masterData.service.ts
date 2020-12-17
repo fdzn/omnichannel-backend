@@ -62,7 +62,7 @@ export class MasterDataService {
       const count = await sql.getCount();
       sql.skip(page);
       sql.take(payload.limit);
-      
+
       const result = await sql.getMany();
 
       const output = {

@@ -12,7 +12,7 @@ export class WebchatController {
   @Post()
   @HttpCode(201)
   async webchat(@Body() dataIncoming: any, @Res() res: Response) {
-    console.log("WEBCHAT", JSON.stringify(dataIncoming));
+    console.log("WEBCHAT", new Date(), JSON.stringify(dataIncoming));
     const resultParse = await this.webchatService.octopushChat(dataIncoming);
     if (resultParse.isError) {
       res.status(resultParse.statusCode).send(resultParse);

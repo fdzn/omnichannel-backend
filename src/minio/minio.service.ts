@@ -61,15 +61,11 @@ export class MinioNestService {
   async uploadSingle(file: BufferedFile, data: UploadPost) {
     data.folder = data.folder.replace("_", "").replace(" ", "");
     const baseBucket = data.folder;
-    console.log("DATA", data);
-    console.log("FILE", file);
 
     const checkBucket = await this.client.bucketExists(baseBucket);
-    console.log("FAUZAN", checkBucket);
     if (!checkBucket) {
       await this.client.makeBucket(baseBucket, "us-east-1");
     }
-    
 
     let temp_filename = Date.now().toString();
     let hashedFileName = crypto
@@ -145,7 +141,7 @@ export class MinioNestService {
         const resultUpload = await this.uploadSingle(files[index], data);
         output.push(resultUpload);
       }
-      // console.log(files);
+
       return {
         isError: false,
         data: output,
@@ -193,7 +189,7 @@ export class MinioNestService {
         );
         output.push(resultUpload);
       }
-      // console.log(files);
+
       return {
         isError: false,
         data: output,
@@ -217,7 +213,6 @@ export class MinioNestService {
         );
         output.push(resultUpload);
       }
-      console.log("RESULT UPLOAD", output);
       let postimage = {
         vonageId: data.vonageId,
         sessionId: data.sessionId,

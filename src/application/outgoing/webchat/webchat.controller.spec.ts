@@ -1,7 +1,7 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { WebchatController } from './webchat.controller';
+import { Test, TestingModule } from "@nestjs/testing";
+import { WebchatController } from "./webchat.controller";
 
-describe('WebchatController', () => {
+describe("WebchatController", () => {
   let controller: WebchatController;
 
   beforeEach(async () => {
@@ -12,7 +12,7 @@ describe('WebchatController', () => {
     controller = module.get<WebchatController>(WebchatController);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(controller).toBeDefined();
   });
 });

@@ -16,7 +16,7 @@ export class VideocallController {
   @Post("vonage")
   @HttpCode(201)
   async vonage(@Body() dataIncoming: VonagePost, @Res() res: Response) {
-    console.log("VideoCall", JSON.stringify(dataIncoming));
+    console.log("VideoCall", new Date(), JSON.stringify(dataIncoming));
     const normalizeData = this.videocallService.vonage(dataIncoming);
     const result = await this.videocallService.incoming(normalizeData);
     res.status(result.statusCode).send(result);
@@ -24,7 +24,7 @@ export class VideocallController {
   @Post("test")
   @HttpCode(201)
   async test(@Body() dataIncoming: any, @Res() res: Response) {
-    console.log("VideoCall", JSON.stringify(dataIncoming));
+    console.log("VideoCall Test", new Date(), JSON.stringify(dataIncoming));
     this.eventsGateway.sendData("agent", "newVideoCall", dataIncoming);
     // const result = await this.videocallService.vonage(dataIncoming);
     res.status(200).send(dataIncoming);

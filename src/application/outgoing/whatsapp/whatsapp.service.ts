@@ -62,8 +62,7 @@ export class WhatsappService {
         updateInteraction.sendStatus = true;
         updateInteraction.systemMessage = JSON.stringify(resultDetail);
         updateInteraction.agentUsername = payload.username;
-        const result = await this.whatsappRepository.save(updateInteraction);
-        console.log("UPDATE STATUS", result);
+        await this.whatsappRepository.save(updateInteraction);
       } else {
         const updateInteraction = new InteractionWhatsapp();
         updateInteraction.id = id;
@@ -73,19 +72,6 @@ export class WhatsappService {
         updateInteraction.agentUsername = payload.username;
         await this.whatsappRepository.save(updateInteraction);
       }
-    } catch (error) {
-      return this.libsService.parseError(error);
-    }
-  }
-
-  async createOutgoing(data: OutgoingWhatsapp, payload) {
-    try {
-      this.saveInteraction(data, payload);
-      return {
-        isError: false,
-        data: "outgoing success",
-        statusCode: 201,
-      };
     } catch (error) {
       return this.libsService.parseError(error);
     }
