@@ -24,10 +24,14 @@ export class WebchatService {
     insertInteraction.media = data.media;
     insertInteraction.message = data.message;
 
-    if(!data.media && data.media != ""){
+    if (!data.media) {
       insertInteraction.messageType = "text";
-    }else{
-      insertInteraction.messageType = "media";
+    } else {
+      if (data.media == "") {
+        insertInteraction.messageType = "text";
+      } else {
+        insertInteraction.messageType = "media";
+      }
     }
 
     insertInteraction.actionType = ActionType.OUT;
