@@ -67,6 +67,7 @@ export class VoiceService {
         insertSession
       );
 
+      data.customer = await this.customerService.getById(custId);
       return {
         isError: false,
         data: data,

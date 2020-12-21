@@ -125,4 +125,10 @@ export class CustomerService {
 
     return custId;
   }
+
+  async getById(custId: number) {
+    return this.customerRepository.findOne({
+      where: { id: custId },
+    });
+  }
 }
