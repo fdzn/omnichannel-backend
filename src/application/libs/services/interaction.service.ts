@@ -88,7 +88,10 @@ export class InteractionLibService {
 
   async getLastChat(channelId: string, sessionId: string) {
     if (channelId === "voice") {
-      return null;
+      return {
+        caseIn: 0,
+        caseOut: 0,
+      };
     }
     let repo;
     repo = this.getRepository(channelId);
