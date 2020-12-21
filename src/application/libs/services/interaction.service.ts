@@ -88,10 +88,7 @@ export class InteractionLibService {
 
   async getLastChat(channelId: string, sessionId: string) {
     if (channelId === "voice") {
-      return {
-        caseIn: 0,
-        caseOut: 0,
-      };
+      return null;
     }
     let repo;
     repo = this.getRepository(channelId);
@@ -107,7 +104,10 @@ export class InteractionLibService {
 
   async countCase(channelId: string, sessionId: string) {
     if (channelId === "voice") {
-      return null;
+      return {
+        caseIn: 0,
+        caseOut: 0,
+      };
     }
     let repo;
     repo = this.getRepository(channelId);
