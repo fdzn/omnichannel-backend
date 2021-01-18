@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsInt, IsOptional, Min, IsString } from "class-validator";
+import { IsNotEmpty, IsInt, IsOptional, Min, IsString, IsBoolean } from "class-validator";
 
 export class GetSubCategoryPost {
   @IsNotEmpty()
@@ -34,6 +34,19 @@ export class AddSubCategoryPost extends AddCategoryPost {
   categoryId: number;
 }
 
+export class AddTemplatePost {
+  @IsNotEmpty()
+  message: string;
+  @IsNotEmpty()
+  @IsInt()
+  order: number;
+  @IsNotEmpty()
+  template_type: string;
+  @IsNotEmpty()
+  @IsBoolean()
+  isActive: boolean;
+}
+
 export class EditCategoryPut {
   @IsNotEmpty()
   @IsInt()
@@ -46,6 +59,26 @@ export class EditSubCategoryPut extends EditCategoryPut {
   @IsNotEmpty()
   @IsInt()
   categoryId: number;
+}
+
+export class EdiTemplatePut {
+  @IsNotEmpty()
+  @IsInt()
+  id: number;
+  @IsOptional()
+  @IsNotEmpty()
+  message: string;
+  @IsOptional()
+  @IsNotEmpty()
+  @IsInt()
+  order: number;
+  @IsOptional()
+  @IsNotEmpty()
+  template_type: string;
+  @IsOptional()
+  @IsNotEmpty()
+  @IsBoolean()
+  isActive: boolean;
 }
 
 export class DeleteGeneralPut {

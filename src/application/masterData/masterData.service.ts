@@ -13,11 +13,13 @@ import {
   GetSubCategoryPost,
   GeneralTablePost,
   AddCategoryPost,
+  AddTemplatePost,
   EditCategoryPut,
   AddSubCategoryPost,
   EditSubCategoryPut,
   DeleteGeneralPut,
-  GetTemplate
+  GetTemplate,
+  EdiTemplatePut
 } from "./dto/masterData.dto";
 
 @Injectable()
@@ -407,6 +409,74 @@ export class MasterDataService {
       return {
         isError: false,
         data: output,
+        statusCode: 200
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async addMessageTemplate(data: AddTemplatePost, user) {
+    try {
+      let newTemplate = new mTemplate();
+      newTemplate.message = data.message;
+      newTemplate.order = data.order;
+      newTemplate.template_type = data.template_type;
+      newTemplate.isActive = data.isActive;
+      newTemplate.updaterUsername = user.username;
+      const result = await this.mTemplateRepository.save(newTemplate);
+      return {
+        isError: false,
+        data: result,
+        statusCode: 200
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async editMessageTemplate(data: EdiTemplatePut, user) {
+    try {
+      let updatedTemplate = new mTemplate();
+      for (const key in data) {
+        if (Object.prototype.hasOwnProperty.call(data, key)) {
+          updatedTemplate[key] = data[key];
+        }
+      }
+      updatedTemplate.updaterUsername = user.username;
+      const result = await this.mTemplateRepository.update(
+        {
+          id: data.id
+        },
+        updatedTemplate
+      );
+      return {
+        isError: false,
+        data: result,
+        statusCode: 200
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async deleteMessageTemplate(data: DeleteGeneralPut, user) {
+    try {
+      let deletedTemplate = new mTemplate();
+      deletedTemplate.isDeleted = true;
+      deletedTemplate.updaterUsername = user.username;
+      const result = await this.mTemplateRepository.update(
+        {
+          id: data.id
+        },
+        deletedTemplate
+      );
+      return {
+        isError: false,
+        data: result,
         statusCode: 200
       };
     } catch (error) {
