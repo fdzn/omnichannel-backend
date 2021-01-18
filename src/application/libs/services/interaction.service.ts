@@ -7,6 +7,8 @@ import { InteractionChat } from "../../../entity/interaction_chat.entity";
 import { InteractionChatHistory } from "../../../entity/interaction_chat_history.entity";
 import { InteractionVideoCall } from "../../../entity/interaction_videocall.entity";
 import { InteractionVideoCallHistory } from "../../../entity/interaction_videocall_history.entity";
+import { InteractionHeaderHistoryToday } from "../../../entity/interaction_header_history_today.entity";
+import { InteractionHeaderHistory } from "../../../entity/interaction_header_history.entity";
 
 import { LibsService } from "./lib.service";
 //DTO
@@ -25,7 +27,9 @@ export class InteractionLibService {
     @InjectRepository(InteractionChat)
     private readonly chatRepository: Repository<InteractionChat>,
     @InjectRepository(InteractionChatHistory)
-    private readonly chatHistoryRepository: Repository<InteractionChatHistory>
+    private readonly chatHistoryRepository: Repository<InteractionChatHistory>,
+    @InjectRepository(InteractionHeaderHistoryToday)
+    private readonly headerTodayRepository: Repository<InteractionHeaderHistoryToday>
   ) {}
 
   getRepository(channelId: string) {
@@ -62,6 +66,10 @@ export class InteractionLibService {
 
     await repo.historyRepo.insert(dataInteraction);
     return await repo.logRepo.delete({ sessionId: sessionId });
+  }
+
+  async moveToTableToday(data: InteractionHeaderHistory) {
+    return this.headerTodayRepository.save(data);
   }
 
   async getLastChat(channelId: string, sessionId: string) {

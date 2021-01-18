@@ -9,6 +9,8 @@ import { InteractionLibService } from "./services/interaction.service";
 
 //ENTITY
 import { InteractionHeader } from "../../entity/interaction_header.entity";
+import { InteractionHeaderHistory } from "../../entity/interaction_header_history.entity";
+import { InteractionHeaderHistoryToday } from "../../entity/interaction_header_history_today.entity";
 import { InteractionVideoCall } from "../../entity/interaction_videocall.entity";
 import { InteractionVideoCallHistory } from "../../entity/interaction_videocall_history.entity";
 import { InteractionChat } from "../../entity/interaction_chat.entity";
@@ -22,6 +24,8 @@ import { Customer } from "../../entity/customer.entity";
     HttpModule,
     TypeOrmModule.forFeature([
       InteractionHeader,
+      InteractionHeaderHistory,
+      InteractionHeaderHistoryToday,
       InteractionVideoCall,
       InteractionVideoCallHistory,
       InteractionChat,

@@ -116,7 +116,7 @@ export class InteractionService {
       const limit = 10;
       const entityManager = getManager();
       const journey = await entityManager.query(
-        `SELECT a.sessionId,a.startDate,a.agentUsername,c.name as category,d.name as subCategory,a.channelId,b.sentiment,e.id as custId, e.name 
+        `SELECT a.sessionId,a.startDate,a.agentUsername,c.name as category,d.name as subCategory,a.channelId,b.sentiment,e.id as custId, e.name,b.remark,b.feedback 
         FROM interaction_header_history a 
         LEFT JOIN cwc b on a.sessionId=b.sessionId 
         LEFT JOIN m_category c on b.categoryId = c.id

@@ -6,9 +6,10 @@ import { InteractionChatSubscriber } from "./interaction_chat.subscribers";
 import { InternalChatSubscribers } from "./internal_chat.subscribers";
 
 import { EventsModule } from "../sockets/events.module";
+import { LibsModule } from "../application/libs/libs.module";
 
 @Module({
-  imports: [EventsModule],
+  imports: [EventsModule, LibsModule],
   providers: [
     InteractionHeaderSubscriber,
     InternalChatSubscribers,
