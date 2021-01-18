@@ -5,6 +5,7 @@ import { Repository, Brackets } from "typeorm";
 //ENTITY
 import { mCategory } from "../../entity/m_category.entity";
 import { mSubCategory } from "../../entity/m_sub_category.entity";
+import { mTemplate } from "../../entity/m_template.entity";
 import { User } from "../../entity/user.entity";
 
 //DTO
@@ -16,6 +17,7 @@ import {
   AddSubCategoryPost,
   EditSubCategoryPut,
   DeleteGeneralPut,
+  GetTemplate
 } from "./dto/masterData.dto";
 
 @Injectable()
@@ -25,6 +27,8 @@ export class MasterDataService {
     private readonly mCategoryRepository: Repository<mCategory>,
     @InjectRepository(mSubCategory)
     private readonly mSubCategoryRepository: Repository<mSubCategory>,
+    @InjectRepository(mTemplate)
+    private readonly mTemplateRepository: Repository<mTemplate>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>
   ) {}
@@ -45,7 +49,7 @@ export class MasterDataService {
           "category.id",
           "category.name",
           "category.updaterUsername",
-          "category.updatedAt",
+          "category.updatedAt"
         ])
         .where("category.isActive = true")
         .andWhere("category.isDeleted = false");
@@ -54,7 +58,7 @@ export class MasterDataService {
         sql.andWhere(
           new Brackets((qb) => {
             qb.where("category.name LIKE :keyword", {
-              keyword: `%${keyword}%`,
+              keyword: `%${keyword}%`
             });
           })
         );
@@ -67,12 +71,12 @@ export class MasterDataService {
 
       const output = {
         totalData: count,
-        listData: result,
+        listData: result
       };
       return {
         isError: false,
         data: output,
-        statusCode: 200,
+        statusCode: 200
       };
     } catch (error) {
       console.error(error);
@@ -98,7 +102,7 @@ export class MasterDataService {
           "subCategory.id",
           "subCategory.name",
           "subCategory.updaterUsername",
-          "subCategory.updatedAt",
+          "subCategory.updatedAt"
         ])
         .leftJoin("subCategory.category", "category")
         .where("subCategory.isActive = true")
@@ -110,9 +114,9 @@ export class MasterDataService {
         sql.andWhere(
           new Brackets((qb) => {
             qb.where("subCategory.name LIKE :keyword", {
-              keyword: `%${keyword}%`,
+              keyword: `%${keyword}%`
             }).orWhere("category.name LIKE :keyword", {
-              keyword: `%${keyword}%`,
+              keyword: `%${keyword}%`
             });
           })
         );
@@ -124,12 +128,12 @@ export class MasterDataService {
       const result = await sql.getMany();
       const output = {
         totalData: count,
-        listData: result,
+        listData: result
       };
       return {
         isError: false,
         data: output,
-        statusCode: 200,
+        statusCode: 200
       };
     } catch (error) {
       console.error(error);
@@ -141,12 +145,12 @@ export class MasterDataService {
     try {
       const result = await this.mCategoryRepository.find({
         select: ["id", "name"],
-        where: { isDeleted: false, isActive: true },
+        where: { isDeleted: false, isActive: true }
       });
       return {
         isError: false,
         data: result,
-        statusCode: 200,
+        statusCode: 200
       };
     } catch (error) {
       console.error(error);
@@ -161,13 +165,13 @@ export class MasterDataService {
         where: {
           categoryId: data.categoryId,
           isDeleted: false,
-          isActive: true,
-        },
+          isActive: true
+        }
       });
       return {
         isError: false,
         data: result,
-        statusCode: 201,
+        statusCode: 201
       };
     } catch (error) {
       console.error(error);
@@ -187,18 +191,18 @@ export class MasterDataService {
           "email",
           "unit",
           "group",
-          "isLogin",
+          "isLogin"
         ],
         where: {
           isDeleted: false,
-          isActive: true,
-        },
+          isActive: true
+        }
       });
 
       return {
         isError: false,
         data: result,
-        statusCode: 200,
+        statusCode: 200
       };
     } catch (error) {
       console.error(error);
@@ -215,7 +219,7 @@ export class MasterDataService {
       return {
         isError: false,
         data: result,
-        statusCode: 200,
+        statusCode: 200
       };
     } catch (error) {
       console.error(error);
@@ -230,14 +234,14 @@ export class MasterDataService {
       newCategory.updaterUsername = user.username;
       const result = await this.mCategoryRepository.update(
         {
-          id: data.id,
+          id: data.id
         },
         newCategory
       );
       return {
         isError: false,
         data: result,
-        statusCode: 200,
+        statusCode: 200
       };
     } catch (error) {
       console.error(error);
@@ -252,14 +256,14 @@ export class MasterDataService {
       newCategory.updaterUsername = user.username;
       const result = await this.mCategoryRepository.update(
         {
-          id: data.id,
+          id: data.id
         },
         newCategory
       );
       return {
         isError: false,
         data: result,
-        statusCode: 200,
+        statusCode: 200
       };
     } catch (error) {
       console.error(error);
@@ -277,7 +281,7 @@ export class MasterDataService {
       return {
         isError: false,
         data: result,
-        statusCode: 200,
+        statusCode: 200
       };
     } catch (error) {
       console.error(error);
@@ -293,14 +297,14 @@ export class MasterDataService {
       newSubCategory.updaterUsername = user.username;
       const result = await this.mSubCategoryRepository.update(
         {
-          id: data.id,
+          id: data.id
         },
         newSubCategory
       );
       return {
         isError: false,
         data: result,
-        statusCode: 200,
+        statusCode: 200
       };
     } catch (error) {
       console.error(error);
@@ -315,14 +319,46 @@ export class MasterDataService {
       newSubCategory.updaterUsername = user.username;
       const result = await this.mSubCategoryRepository.update(
         {
-          id: data.id,
+          id: data.id
         },
         newSubCategory
       );
       return {
         isError: false,
         data: result,
-        statusCode: 200,
+        statusCode: 200
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async getMessageTemplate(data: GetTemplate) {
+    try {
+      const result = await this.mTemplateRepository.find({
+        select: [
+          "id",
+          "message",
+          "order",
+          "template_type",
+          "isActive",
+          "isDeleted",
+          "updaterUsername",
+          "createdAt",
+          "updatedAt"
+        ],
+        where: {
+          isDeleted: false,
+          isActive: true,
+          template_type: data.templateType
+        },
+        take: data.limit === 0 ? 100000 : data.limit
+      });
+      return {
+        isError: false,
+        data: result,
+        statusCode: 200
       };
     } catch (error) {
       console.error(error);

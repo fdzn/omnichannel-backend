@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsInt, IsOptional, Min } from "class-validator";
+import { IsNotEmpty, IsInt, IsOptional, Min, IsString } from "class-validator";
 
 export class GetSubCategoryPost {
   @IsNotEmpty()
@@ -55,4 +55,11 @@ export class GetSubCategoryPostV2 extends GeneralTablePost {
   @IsNotEmpty()
   @IsInt()
   categoryId: number;
+}
+
+export class GetTemplate {
+  @IsNotEmpty()
+  @IsString()
+  templateType: string;
+  limit: number;
 }

@@ -27,6 +27,7 @@ import {
   DeleteGeneralPut,
   AddSubCategoryPost,
   EditSubCategoryPut,
+  GetTemplate
 } from "./dto/masterData.dto";
 
 @ApiBearerAuth()
@@ -172,6 +173,21 @@ export class MasterDataController {
       payload,
       authData.user
     );
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get("getMessageTemplate/:templateType/:limit")
+  @HttpCode(200)
+  async getMessageTemplate(
+    @Param("templateType") templateType: string,
+    @Param("limit") limit: number,
+    @Res() res: Response
+  ) {
+    let params = new GetTemplate();
+    params.templateType = templateType;
+    params.limit = limit;
+    const result = await this.masterDataService.getMessageTemplate(params);
     res.status(result.statusCode).send(result);
   }
 }
