@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsInt, IsOptional, Min } from "class-validator";
+import { IsNotEmpty, IsInt, IsOptional, Min, IsString, IsBoolean } from "class-validator";
 
 export class GetSubCategoryPost {
   @IsNotEmpty()
@@ -18,6 +18,9 @@ export class GeneralTablePost {
 
   @IsOptional()
   keyword: string;
+
+  @IsOptional()
+  keywords: { key: string; value }[];
 }
 
 export class AddCategoryPost {
@@ -29,6 +32,19 @@ export class AddSubCategoryPost extends AddCategoryPost {
   @IsNotEmpty()
   @IsInt()
   categoryId: number;
+}
+
+export class AddTemplatePost {
+  @IsNotEmpty()
+  message: string;
+  @IsNotEmpty()
+  @IsInt()
+  order: number;
+  @IsNotEmpty()
+  template_type: string;
+  @IsNotEmpty()
+  @IsBoolean()
+  isActive: boolean;
 }
 
 export class EditCategoryPut {
@@ -45,6 +61,26 @@ export class EditSubCategoryPut extends EditCategoryPut {
   categoryId: number;
 }
 
+export class EdiTemplatePut {
+  @IsNotEmpty()
+  @IsInt()
+  id: number;
+  @IsOptional()
+  @IsNotEmpty()
+  message: string;
+  @IsOptional()
+  @IsNotEmpty()
+  @IsInt()
+  order: number;
+  @IsOptional()
+  @IsNotEmpty()
+  template_type: string;
+  @IsOptional()
+  @IsNotEmpty()
+  @IsBoolean()
+  isActive: boolean;
+}
+
 export class DeleteGeneralPut {
   @IsNotEmpty()
   @IsInt()
@@ -55,4 +91,11 @@ export class GetSubCategoryPostV2 extends GeneralTablePost {
   @IsNotEmpty()
   @IsInt()
   categoryId: number;
+}
+
+export class GetTemplate {
+  @IsNotEmpty()
+  @IsString()
+  templateType: string;
+  limit: number;
 }

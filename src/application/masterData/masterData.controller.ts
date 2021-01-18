@@ -8,7 +8,7 @@ import {
   Request,
   HttpCode,
   UseGuards,
-  Put,
+  Put
 } from "@nestjs/common";
 import { Response } from "express";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
@@ -27,6 +27,9 @@ import {
   DeleteGeneralPut,
   AddSubCategoryPost,
   EditSubCategoryPut,
+  GetTemplate,
+  AddTemplatePost,
+  EdiTemplatePut
 } from "./dto/masterData.dto";
 
 @ApiBearerAuth()
@@ -169,6 +172,76 @@ export class MasterDataController {
     @Res() res: Response
   ) {
     const result = await this.masterDataService.deleteSubCategory(
+      payload,
+      authData.user
+    );
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get("getMessageTemplate/:templateType/:limit")
+  @HttpCode(200)
+  async getMessageTemplate(
+    @Param("templateType") templateType: string,
+    @Param("limit") limit: number,
+    @Res() res: Response
+  ) {
+    let params = new GetTemplate();
+    params.templateType = templateType;
+    params.limit = limit;
+    const result = await this.masterDataService.getMessageTemplate(params);
+    res.status(result.statusCode).send(result);
+  }
+
+  @Post("getMessageTemplate")
+  @HttpCode(200)
+  async getMessageTemplatePost(
+    @Body() payload: GeneralTablePost,
+    @Res() res: Response
+  ) {
+    const result = await this.masterDataService.getMessageTemplatePost(payload);
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post("messageTemplate/add")
+  @HttpCode(200)
+  async addMessageTemplate(
+    @Request() authData,
+    @Body() payload: AddTemplatePost,
+    @Res() res: Response
+  ) {
+    const result = await this.masterDataService.addMessageTemplate(
+      payload,
+      authData.user
+    );
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put("messageTemplate/edit")
+  @HttpCode(200)
+  async editMessageTemplate(
+    @Request() authData,
+    @Body() payload: EdiTemplatePut,
+    @Res() res: Response
+  ) {
+    const result = await this.masterDataService.editMessageTemplate(
+      payload,
+      authData.user
+    );
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put("messageTemplate/delete")
+  @HttpCode(200)
+  async deleteMessageTemplate(
+    @Request() authData,
+    @Body() payload: DeleteGeneralPut,
+    @Res() res: Response
+  ) {
+    const result = await this.masterDataService.deleteMessageTemplate(
       payload,
       authData.user
     );
