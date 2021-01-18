@@ -4,7 +4,7 @@ import { Repository } from "typeorm";
 import * as FormData from "form-data";
 import { LibsService } from "../../libs/services/lib.service";
 //ENTITY
-import { InteractionWhatsapp } from "../../../entity/interaction_whatsapp.entity";
+import { InteractionChat } from "../../../entity/interaction_chat.entity";
 import { ActionType } from "src/entity/templates/generalChat";
 
 //DTO
@@ -13,12 +13,12 @@ import { OutgoingWhatsapp } from "./dto/outgoing-whatsapp.dto";
 export class WhatsappService {
   constructor(
     private readonly libsService: LibsService,
-    @InjectRepository(InteractionWhatsapp)
-    private readonly whatsappRepository: Repository<InteractionWhatsapp>
+    @InjectRepository(InteractionChat)
+    private readonly whatsappRepository: Repository<InteractionChat>
   ) {}
 
   async saveInteraction(data: OutgoingWhatsapp, payload) {
-    let insertInteraction = new InteractionWhatsapp();
+    let insertInteraction = new InteractionChat();
     insertInteraction.convId = data.convId;
     insertInteraction.from = data.from;
     insertInteraction.fromName = payload.username;
@@ -55,7 +55,7 @@ export class WhatsappService {
       const result = await this.libsService.postHTTP(url, dataPost, config);
       const resultDetail = result.data;
       if (resultDetail.success) {
-        const updateInteraction = new InteractionWhatsapp();
+        const updateInteraction = new InteractionChat();
         updateInteraction.id = id;
         updateInteraction.sessionId = data.sessionId;
         updateInteraction.sendDate = new Date();
@@ -64,7 +64,7 @@ export class WhatsappService {
         updateInteraction.agentUsername = payload.username;
         await this.whatsappRepository.save(updateInteraction);
       } else {
-        const updateInteraction = new InteractionWhatsapp();
+        const updateInteraction = new InteractionChat();
         updateInteraction.id = id;
         updateInteraction.sessionId = data.sessionId;
         updateInteraction.sendStatus = false;

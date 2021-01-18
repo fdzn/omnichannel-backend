@@ -9,10 +9,10 @@ import { LibsModule } from "../../libs/libs.module";
 import { MinioNestModule } from "../../../minio/minio.module";
 
 //ENTITY
-import { InteractionWebchat } from "../../../entity/interaction_webchat.entity";
+import { InteractionChat } from "../../../entity/interaction_chat.entity";
 @Module({
   imports: [
-    TypeOrmModule.forFeature([InteractionWebchat]),
+    TypeOrmModule.forFeature([InteractionChat]),
     LibsModule,
     MinioNestModule,
   ],

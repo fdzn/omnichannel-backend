@@ -5,7 +5,7 @@ import { Repository } from "typeorm";
 import { MinioNestService } from "../../../minio/minio.service";
 import { SessionService } from "../../libs/services/session.service";
 import { CustomerService } from "../../libs/services/customer.service";
-import { InteractionWebchat } from "../../../entity/interaction_webchat.entity";
+import { InteractionChat } from "../../../entity/interaction_chat.entity";
 
 import { ActionType } from "src/entity/templates/generalChat";
 
@@ -19,8 +19,8 @@ import { LocationApp, RatingApp } from "src/dto/app.dto";
 export class WebchatService {
   private channelId: string;
   constructor(
-    @InjectRepository(InteractionWebchat)
-    private readonly webchatRepository: Repository<InteractionWebchat>,
+    @InjectRepository(InteractionChat)
+    private readonly webchatRepository: Repository<InteractionChat>,
     private readonly sessionService: SessionService,
     private readonly customerService: CustomerService,
     private readonly minioService: MinioNestService
@@ -193,7 +193,8 @@ export class WebchatService {
         );
       }
 
-      let insertInteraction = new InteractionWebchat();
+      let insertInteraction = new InteractionChat();
+      insertInteraction.channelId = "webchat";
       insertInteraction.actionType = ActionType.IN;
       insertInteraction.convId = data.convId;
       insertInteraction.from = data.from;

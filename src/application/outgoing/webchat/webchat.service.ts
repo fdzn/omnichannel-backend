@@ -3,7 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { LibsService } from "../../libs/services/lib.service";
 //ENTITY
-import { InteractionWebchat } from "../../../entity/interaction_webchat.entity";
+import { InteractionChat } from "../../../entity/interaction_chat.entity";
 import { ActionType } from "src/entity/templates/generalChat";
 
 //DTO
@@ -12,12 +12,13 @@ import { OutgoingWebchat } from "./dto/outgoing-webchat.dto";
 export class WebchatService {
   constructor(
     private readonly libsService: LibsService,
-    @InjectRepository(InteractionWebchat)
-    private readonly webchatRepository: Repository<InteractionWebchat>
+    @InjectRepository(InteractionChat)
+    private readonly webchatRepository: Repository<InteractionChat>
   ) {}
 
   async saveInteraction(data: OutgoingWebchat, payload) {
-    let insertInteraction = new InteractionWebchat();
+    let insertInteraction = new InteractionChat();
+    insertInteraction.channelId = "webchat";
     insertInteraction.convId = data.convId;
     insertInteraction.from = data.from;
     insertInteraction.fromName = payload.username;
@@ -61,7 +62,7 @@ export class WebchatService {
 
     try {
       if (resultDetail == "Abandon" || resultDetail.error) {
-        const updateInteraction = new InteractionWebchat();
+        const updateInteraction = new InteractionChat();
         updateInteraction.id = id;
         updateInteraction.sessionId = data.sessionId;
         updateInteraction.sendStatus = false;
@@ -69,7 +70,7 @@ export class WebchatService {
         updateInteraction.agentUsername = payload.username;
         await this.webchatRepository.save(updateInteraction);
       } else {
-        const updateInteraction = new InteractionWebchat();
+        const updateInteraction = new InteractionChat();
         updateInteraction.id = id;
         updateInteraction.sessionId = data.sessionId;
         updateInteraction.sendDate = new Date();

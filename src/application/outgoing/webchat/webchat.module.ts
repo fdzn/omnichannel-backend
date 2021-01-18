@@ -7,9 +7,9 @@ import { WebchatService } from "./webchat.service";
 import { WebchatController } from "./webchat.controller";
 
 //ENTITY
-import { InteractionWebchat } from "../../../entity/interaction_webchat.entity";
+import { InteractionChat } from "../../../entity/interaction_chat.entity";
 @Module({
-  imports: [LibsModule, TypeOrmModule.forFeature([InteractionWebchat])],
+  imports: [LibsModule, TypeOrmModule.forFeature([InteractionChat])],
   providers: [WebchatService],
   controllers: [WebchatController],
 })

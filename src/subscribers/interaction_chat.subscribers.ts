@@ -8,10 +8,10 @@ import {
 import { EventsGateway } from "../sockets/events.gateway";
 
 //ENTITY
-import { InteractionWebchat } from "../entity/interaction_webchat.entity";
+import { InteractionChat } from "../entity/interaction_chat.entity";
 @EventSubscriber()
-export class InteractionWebchatSubscriber
-  implements EntitySubscriberInterface<InteractionWebchat> {
+export class InteractionChatSubscriber
+  implements EntitySubscriberInterface<InteractionChat> {
   constructor(
     connection: Connection,
     private readonly eventsGateway: EventsGateway
@@ -20,25 +20,28 @@ export class InteractionWebchatSubscriber
   }
 
   listenTo() {
-    return InteractionWebchat;
+    return InteractionChat;
   }
 
-  afterInsert(event: InsertEvent<InteractionWebchat>) {
-    if (event.metadata.targetName !== "InteractionWebchat") {
+  afterInsert(event: InsertEvent<InteractionChat>) {
+    if (event.metadata.targetName !== "InteractionChat") {
       return;
     }
     const username = event.entity.agentUsername;
     if (username) {
+      const channelId = event.entity.channelId;
+      const nameCapitalized =
+        channelId.charAt(0).toUpperCase() + channelId.slice(1);
       this.eventsGateway.sendData(
         `agent:${username}`,
-        "newInteractionWebchat",
+        `newInteraction${nameCapitalized}`,
         event.entity
       );
     }
   }
 
-  afterUpdate(event: UpdateEvent<InteractionWebchat>) {
-    if (event.metadata.targetName !== "InteractionWebchat") {
+  afterUpdate(event: UpdateEvent<InteractionChat>) {
+    if (event.metadata.targetName !== "InteractionChat") {
       return;
     }
     const { agentUsername } = event.entity;

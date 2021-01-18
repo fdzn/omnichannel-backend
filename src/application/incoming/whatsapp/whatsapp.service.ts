@@ -5,7 +5,7 @@ import { Repository } from "typeorm";
 import { MinioNestService } from "../../../minio/minio.service";
 import { SessionService } from "../../libs/services/session.service";
 import { CustomerService } from "../../libs/services/customer.service";
-import { InteractionWhatsapp } from "../../../entity/interaction_whatsapp.entity";
+import { InteractionChat } from "../../../entity/interaction_chat.entity";
 import { ActionType } from "src/entity/templates/generalChat";
 
 import { IncomingWhatsapp } from "./dto/incoming-whatsapp.dto";
@@ -14,8 +14,8 @@ import { UploadURLPost } from "../../../minio/dto/minio.dto";
 export class WhatsappService {
   private channelId: string;
   constructor(
-    @InjectRepository(InteractionWhatsapp)
-    private readonly whatsappRepository: Repository<InteractionWhatsapp>,
+    @InjectRepository(InteractionChat)
+    private readonly whatsappRepository: Repository<InteractionChat>,
     private readonly sessionService: SessionService,
     private readonly customerService: CustomerService,
     private readonly minioService: MinioNestService
@@ -120,7 +120,8 @@ export class WhatsappService {
         );
       }
 
-      let insertInteraction = new InteractionWhatsapp();
+      let insertInteraction = new InteractionChat();
+      insertInteraction.channelId = "whatsapp";
       insertInteraction.convId = data.convId;
       insertInteraction.from = data.from;
       insertInteraction.fromName = data.fromName;

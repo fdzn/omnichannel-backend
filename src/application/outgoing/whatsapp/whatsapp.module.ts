@@ -7,10 +7,10 @@ import { WhatsappService } from "./whatsapp.service";
 import { WhatsappController } from "./whatsapp.controller";
 
 //ENTITY
-import { InteractionWhatsapp } from "../../../entity/interaction_whatsapp.entity";
+import { InteractionChat } from "../../../entity/interaction_chat.entity";
 
 @Module({
-  imports: [LibsModule, TypeOrmModule.forFeature([InteractionWhatsapp])],
+  imports: [LibsModule, TypeOrmModule.forFeature([InteractionChat])],
   providers: [WhatsappService],
   controllers: [WhatsappController],
 })

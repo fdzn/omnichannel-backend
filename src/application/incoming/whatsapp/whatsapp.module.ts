@@ -10,11 +10,11 @@ import { LibsModule } from "../../libs/libs.module";
 import { MinioNestModule } from "../../../minio/minio.module";
 
 //ENTITY
-import { InteractionWhatsapp } from "../../../entity/interaction_whatsapp.entity";
+import { InteractionChat } from "../../../entity/interaction_chat.entity";
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([InteractionWhatsapp]),
+    TypeOrmModule.forFeature([InteractionChat]),
     LibsModule,
     MinioNestModule,
   ],

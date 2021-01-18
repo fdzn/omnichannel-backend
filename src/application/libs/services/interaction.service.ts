@@ -3,12 +3,10 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
 //ENTITY
-import { InteractionWhatsapp } from "../../../entity/interaction_whatsapp.entity";
-import { InteractionWhatsappHistory } from "../../../entity/interaction_whatsapp_history.entity";
+import { InteractionChat } from "../../../entity/interaction_chat.entity";
+import { InteractionChatHistory } from "../../../entity/interaction_chat_history.entity";
 import { InteractionVideoCall } from "../../../entity/interaction_videocall.entity";
 import { InteractionVideoCallHistory } from "../../../entity/interaction_videocall_history.entity";
-import { InteractionWebchat } from "../../../entity/interaction_webchat.entity";
-import { InteractionWebchatHistory } from "../../../entity/interaction_webchat_history.entity";
 
 import { LibsService } from "./lib.service";
 //DTO
@@ -24,47 +22,27 @@ export class InteractionLibService {
     private readonly videoCallRepository: Repository<InteractionVideoCall>,
     @InjectRepository(InteractionVideoCallHistory)
     private readonly videoCallHistoryRepository: Repository<InteractionVideoCallHistory>,
-    @InjectRepository(InteractionWhatsapp)
-    private readonly WhatsappRepository: Repository<InteractionWhatsapp>,
-    @InjectRepository(InteractionWhatsappHistory)
-    private readonly WhatsappHistoryRepository: Repository<InteractionWhatsappHistory>,
-    @InjectRepository(InteractionWebchat)
-    private readonly webchatRepository: Repository<InteractionWebchat>,
-    @InjectRepository(InteractionWebchatHistory)
-    private readonly webchatHistoryRepository: Repository<InteractionWebchatHistory>
+    @InjectRepository(InteractionChat)
+    private readonly chatRepository: Repository<InteractionChat>,
+    @InjectRepository(InteractionChatHistory)
+    private readonly chatHistoryRepository: Repository<InteractionChatHistory>
   ) {}
 
   getRepository(channelId: string) {
-    switch (channelId) {
-      case "whatsapp":
-        return {
-          log: InteractionWhatsapp,
-          logRepo: this.WhatsappRepository,
-          history: InteractionWhatsappHistory,
-          historyRepo: this.WhatsappHistoryRepository,
-        };
-      case "videocall":
-        return {
-          log: InteractionVideoCall,
-          logRepo: this.videoCallRepository,
-          history: InteractionVideoCallHistory,
-          historyRepo: this.videoCallHistoryRepository,
-        };
-      case "webchat":
-        return {
-          log: InteractionWebchat,
-          logRepo: this.webchatRepository,
-          history: InteractionWebchatHistory,
-          historyRepo: this.webchatHistoryRepository,
-        };
-
-      default:
-        return {
-          log: null,
-          logRepo: null,
-          history: null,
-          historyRepo: null,
-        };
+    if (channelId == "videocall") {
+      return {
+        log: InteractionVideoCall,
+        logRepo: this.videoCallRepository,
+        history: InteractionVideoCallHistory,
+        historyRepo: this.videoCallHistoryRepository,
+      };
+    } else {
+      return {
+        log: InteractionChat,
+        logRepo: this.chatRepository,
+        history: InteractionChatHistory,
+        historyRepo: this.chatHistoryRepository,
+      };
     }
   }
 
@@ -127,65 +105,9 @@ export class InteractionLibService {
   }
 
   //FUNCTION INTERACTION
-  async getInteractionWhatsapp(sessionId: string, type: PostType) {
-    let messages;
-    let from;
-    let fromName;
-    if (type == PostType.INTERACTION) {
-      messages = await this.WhatsappRepository.find({
-        select: [
-          "id",
-          "from",
-          "fromName",
-          "messageType",
-          "message",
-          "media",
-          "sendDate",
-          "actionType",
-          "agentUsername",
-          "convId",
-        ],
-        where: { sessionId: sessionId },
-      });
-    } else if (type == PostType.HISTORY) {
-      messages = await this.WhatsappHistoryRepository.find({
-        select: [
-          "id",
-          "from",
-          "fromName",
-          "messageType",
-          "message",
-          "media",
-          "sendDate",
-          "actionType",
-          "agentUsername",
-          "convId",
-        ],
-        where: { sessionId: sessionId },
-      });
-    }
-
-    if (messages.length > 0) {
-      const found = messages.find(
-        (element) => element.actionType == ActionType.IN
-      );
-      if (found) {
-        from = found.from;
-        fromName = found.fromName;
-      }
-    }
-
-    return {
-      sessionId: sessionId,
-      from: from,
-      fromName: fromName,
-      messages: messages,
-    };
-  }
-
   async endSessionWebchat(sessionId: string) {
     try {
-      const getConvId = await this.webchatRepository.findOne({
+      const getConvId = await this.chatRepository.findOne({
         select: ["convId"],
         where: {
           sessionId: sessionId,
