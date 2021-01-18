@@ -4,6 +4,7 @@ import { Repository, getManager } from "typeorm";
 
 //ENTITY
 import { InteractionLibService } from "../libs/services/interaction.service";
+import { CustomerService } from "../libs/services/customer.service";
 import { InteractionHeader } from "../../entity/interaction_header.entity";
 import { InteractionHeaderHistory } from "../../entity/interaction_header_history.entity";
 import { Cwc } from "../../entity/cwc.entity";
@@ -34,7 +35,8 @@ export class InteractionService {
     private readonly cwcRepository: Repository<Cwc>,
     @InjectRepository(WorkOrder)
     private readonly workOrderRepository: Repository<WorkOrder>,
-    private readonly interactionLibService: InteractionLibService
+    private readonly interactionLibService: InteractionLibService,
+    private readonly customerService: CustomerService
   ) {}
 
   async updateAbandon(data: IsAbandonPut) {
@@ -122,7 +124,17 @@ export class InteractionService {
         WHERE a.customerId=? LIMIT ?,?`,
         [data.customerId, data.page * limit, limit]
       );
-      return { isError: false, data: journey, statusCode: 200 };
+      const detailCustomer = await this.customerService.getById(
+        data.customerId
+      );
+      return {
+        isError: false,
+        data: {
+          journey: journey,
+          customer: detailCustomer,
+        },
+        statusCode: 200,
+      };
     } catch (error) {
       console.error(error);
       return { isError: true, data: error.message, statusCode: 500 };

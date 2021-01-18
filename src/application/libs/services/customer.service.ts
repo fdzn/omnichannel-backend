@@ -127,8 +127,35 @@ export class CustomerService {
   }
 
   async getById(custId: number) {
-    return this.customerRepository.findOne({
-      where: { id: custId },
-    });
+    try {
+      const customerDetail = await this.customerRepository.findOne({
+        where: { id: custId },
+      });
+
+      if (!customerDetail) {
+        return {
+          isError: true,
+          data: "customer with that id is not found",
+          statusCode: 404,
+        };
+      }
+
+      const contactDetail = await this.contactRepository.find({
+        select: ["id", "type", "value", "avatar"],
+        where: { customerId: customerDetail.id },
+      });
+
+      let output;
+      output = customerDetail;
+      output.contact = contactDetail;
+      return {
+        isError: false,
+        data: output,
+        statusCode: 200,
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
   }
 }
