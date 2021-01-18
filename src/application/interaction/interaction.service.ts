@@ -131,7 +131,7 @@ export class InteractionService {
         isError: false,
         data: {
           journey: journey,
-          customer: detailCustomer,
+          customer: detailCustomer.data,
         },
         statusCode: 200,
       };
