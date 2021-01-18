@@ -41,7 +41,7 @@ export class VideocallService {
       if (data.action === ActionVideoType.HANGUP) {
         let updateData = new InteractionVideoCall();
         updateData.endDate = new Date();
-        result = await this.sessionRepository.update(
+        result = await this.videoCallRepository.update(
           { sessionId: data.sessionId },
           updateData
         );
