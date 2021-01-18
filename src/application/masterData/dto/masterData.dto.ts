@@ -18,6 +18,9 @@ export class GeneralTablePost {
 
   @IsOptional()
   keyword: string;
+
+  @IsOptional()
+  keywords: { key: string; value }[];
 }
 
 export class AddCategoryPost {

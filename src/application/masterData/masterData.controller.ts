@@ -190,4 +190,14 @@ export class MasterDataController {
     const result = await this.masterDataService.getMessageTemplate(params);
     res.status(result.statusCode).send(result);
   }
+
+  @Post("getMessageTemplate")
+  @HttpCode(200)
+  async getMessageTemplatePost(
+    @Body() payload: GeneralTablePost,
+    @Res() res: Response
+  ) {
+    const result = await this.masterDataService.getMessageTemplatePost(payload);
+    res.status(result.statusCode).send(result);
+  }
 }

@@ -365,4 +365,53 @@ export class MasterDataService {
       return { isError: true, data: error.message, statusCode: 500 };
     }
   }
+
+  async getMessageTemplatePost(payload: GeneralTablePost) {
+    try {
+      const page = (payload.page - 1) * payload.limit;
+      let keywords = payload.keywords || [];
+
+      let sql = this.mTemplateRepository
+        .createQueryBuilder("m_template")
+        .select([
+          "m_template.id",
+          "m_template.message",
+          "m_template.order",
+          "m_template.template_type",
+          "m_template.isActive",
+          "m_template.isDeleted",
+          "m_template.updaterUsername",
+          "m_template.createdAt",
+          "m_template.updatedAt"
+        ]);
+
+      keywords.forEach((keyword) => {
+        const keywordKey = keyword.key.trim();
+        const keywordValue = keyword.value;
+        // console.log(`m_template.${keywordKey} LIKE ${keywordValue}`);
+        sql.andWhere(`m_template.${keywordKey} LIKE :${keywordKey}`, {
+          [keywordKey]: `%${keywordValue}%`
+        });
+      });
+
+      const count = await sql.getCount();
+      sql.skip(page);
+      sql.take(payload.limit);
+
+      const result = await sql.getMany();
+
+      const output = {
+        totalData: count,
+        listData: result
+      };
+      return {
+        isError: false,
+        data: output,
+        statusCode: 200
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
 }
