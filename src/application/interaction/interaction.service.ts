@@ -116,23 +116,18 @@ export class InteractionService {
       const limit = 10;
       const entityManager = getManager();
       const journey = await entityManager.query(
-        `SELECT a.sessionId,a.startDate,a.agentUsername,c.name as category,d.name as subCategory,a.channelId,b.sentiment 
+        `SELECT a.sessionId,a.startDate,a.agentUsername,c.name as category,d.name as subCategory,a.channelId,b.sentiment,e.id as custId, e.name 
         FROM interaction_header_history a 
         LEFT JOIN cwc b on a.sessionId=b.sessionId 
         LEFT JOIN m_category c on b.categoryId = c.id
         LEFT JOIN m_sub_category d on b.subcategoryId = d.id
+        LEFT JOIN customer e on a.customerId = e.id
         WHERE a.customerId=? LIMIT ?,?`,
         [data.customerId, data.page * limit, limit]
       );
-      const detailCustomer = await this.customerService.getById(
-        data.customerId
-      );
       return {
         isError: false,
-        data: {
-          journey: journey,
-          customer: detailCustomer.data,
-        },
+        data: journey,
         statusCode: 200,
       };
     } catch (error) {
