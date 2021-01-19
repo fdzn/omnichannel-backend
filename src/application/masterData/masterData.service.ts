@@ -21,7 +21,8 @@ import {
   GetTemplate,
   AddUserPost,
   EditTemplatePut,
-  EditUserPut
+  EditUserPut,
+  DeleteUser
 } from "./dto/masterData.dto";
 
 @Injectable()
@@ -271,6 +272,30 @@ export class MasterDataService {
     }
   }
 
+  async addUser(data: AddUserPost, user) {
+    try {
+      let newUser = new User();
+      newUser.username = data.username;
+      newUser.name = data.name;
+      newUser.password = data.password;
+      newUser.level = data.level;
+      newUser.phone = data.phone;
+      newUser.email = data.email;
+      newUser.unitId = data.unitId;
+      newUser.groupId = data.groupId;
+      newUser.updater = user.username;
+      const result = await this.userRepository.save(newUser);
+      return {
+        isError: false,
+        data: result,
+        statusCode: 200
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
   async editUser(data: EditUserPut, user) {
     try {
       let updatedUser = new User();
@@ -302,19 +327,18 @@ export class MasterDataService {
     }
   }
 
-  async addUser(data: AddUserPost, user) {
+  async deleteUser(data: DeleteUser, user) {
     try {
-      let newUser = new User();
-      newUser.username = data.username;
-      newUser.name = data.name;
-      newUser.password = data.password;
-      newUser.level = data.level;
-      newUser.phone = data.phone;
-      newUser.email = data.email;
-      newUser.unitId = data.unitId;
-      newUser.groupId = data.groupId;
-      newUser.updater = user.username;
-      const result = await this.userRepository.save(newUser);
+      let deletedUser = new User();
+      deletedUser.isDeleted = true;
+      deletedUser.isLogin = false;
+      deletedUser.updater = user.username;
+      const result = await this.userRepository.update(
+        {
+          username: data.username
+        },
+        deletedUser
+      );
       return {
         isError: false,
         data: result,

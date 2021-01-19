@@ -31,7 +31,8 @@ import {
   AddTemplatePost,
   EditTemplatePut,
   AddUserPost,
-  EditUserPut
+  EditUserPut,
+  DeleteUser
 } from "./dto/masterData.dto";
 
 @ApiBearerAuth()
@@ -76,6 +77,21 @@ export class MasterDataController {
     @Res() res: Response
   ) {
     const result = await this.masterDataService.editUser(
+      payload,
+      authData.user
+    );
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put("user/delete")
+  @HttpCode(200)
+  async deleteUser(
+    @Request() authData,
+    @Body() payload: DeleteUser,
+    @Res() res: Response
+  ) {
+    const result = await this.masterDataService.deleteUser(
       payload,
       authData.user
     );

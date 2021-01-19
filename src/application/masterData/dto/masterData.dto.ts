@@ -149,6 +149,11 @@ export class DeleteGeneralPut {
   id: number;
 }
 
+export class DeleteUser {
+  @IsNotEmpty()
+  username: string;
+}
+
 export class GetSubCategoryPostV2 extends GeneralTablePost {
   @IsNotEmpty()
   @IsInt()
