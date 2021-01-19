@@ -14,6 +14,7 @@ import { MinioNestModule } from "./minio/minio.module";
 
 //Subscribers
 import { SubscribersModule } from "./subscribers/subscribes.module";
+import { ExportModule } from './export/export.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -35,6 +36,7 @@ import { SubscribersModule } from "./subscribers/subscribes.module";
     EventsModule,
     SubscribersModule,
     MinioNestModule,
+    ExportModule,
   ],
   controllers: [AppController],
 })
