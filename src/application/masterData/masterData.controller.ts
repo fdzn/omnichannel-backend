@@ -29,7 +29,8 @@ import {
   EditSubCategoryPut,
   GetTemplate,
   AddTemplatePost,
-  EdiTemplatePut
+  EditTemplatePut,
+  AddUserPost
 } from "./dto/masterData.dto";
 
 @ApiBearerAuth()
@@ -48,11 +49,23 @@ export class MasterDataController {
 
   @Post("getUser")
   @HttpCode(200)
-  async getUserPost(
-    @Body() payload: GeneralTablePost,
+  async getUserPost(@Body() payload: GeneralTablePost, @Res() res: Response) {
+    const result = await this.masterDataService.getUserPost(payload);
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post("user/add")
+  @HttpCode(200)
+  async addUser(
+    @Request() authData,
+    @Body() payload: AddUserPost,
     @Res() res: Response
   ) {
-    const result = await this.masterDataService.getUserPost(payload);
+    const result = await this.masterDataService.addUser(
+      payload,
+      authData.user
+    );
     res.status(result.statusCode).send(result);
   }
 
@@ -233,7 +246,7 @@ export class MasterDataController {
   @HttpCode(200)
   async editMessageTemplate(
     @Request() authData,
-    @Body() payload: EdiTemplatePut,
+    @Body() payload: EditTemplatePut,
     @Res() res: Response
   ) {
     const result = await this.masterDataService.editMessageTemplate(

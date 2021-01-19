@@ -1,4 +1,6 @@
-import { IsNotEmpty, IsInt, IsOptional, Min, IsString, IsBoolean } from "class-validator";
+import { IsNotEmpty, IsInt, IsOptional, Min, IsString, IsBoolean, IsEmail, IsIn } from "class-validator";
+
+import { UserLevel } from "../../../entity/user.entity";
 
 export class GetSubCategoryPost {
   @IsNotEmpty()
@@ -34,6 +36,32 @@ export class AddSubCategoryPost extends AddCategoryPost {
   categoryId: number;
 }
 
+export class AddUserPost {
+  @IsNotEmpty()
+  username: string;
+  @IsNotEmpty()
+  name: string;
+  @IsNotEmpty()
+  password: string;
+  @IsNotEmpty()
+  level: UserLevel;
+  @IsOptional()
+  @IsNotEmpty()
+  phone: string;
+  @IsOptional()
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+  @IsOptional()
+  @IsNotEmpty()
+  @IsInt()
+  unitId: number;
+  @IsOptional()
+  @IsNotEmpty()
+  @IsInt()
+  groupId: number;
+}
+
 export class AddTemplatePost {
   @IsNotEmpty()
   message: string;
@@ -61,7 +89,7 @@ export class EditSubCategoryPut extends EditCategoryPut {
   categoryId: number;
 }
 
-export class EdiTemplatePut {
+export class EditTemplatePut {
   @IsNotEmpty()
   @IsInt()
   id: number;

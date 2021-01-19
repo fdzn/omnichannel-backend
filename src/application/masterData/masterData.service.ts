@@ -19,7 +19,8 @@ import {
   EditSubCategoryPut,
   DeleteGeneralPut,
   GetTemplate,
-  EdiTemplatePut
+  AddUserPost,
+  EditTemplatePut
 } from "./dto/masterData.dto";
 
 @Injectable()
@@ -269,6 +270,30 @@ export class MasterDataService {
     }
   }
 
+  async addUser(data: AddUserPost, user) {
+    try {
+      let newUser = new User();
+      newUser.username = data.username;
+      newUser.name = data.name;
+      newUser.password = data.password;
+      newUser.level = data.level;
+      newUser.phone = data.phone;
+      newUser.email = data.email;
+      newUser.unitId = data.unitId;
+      newUser.groupId = data.groupId;
+      newUser.updater = user.username;
+      const result = await this.userRepository.save(newUser);
+      return {
+        isError: false,
+        data: result,
+        statusCode: 200
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
   async addCategory(data: AddCategoryPost, user) {
     try {
       let newCategory = new mCategory();
@@ -494,7 +519,7 @@ export class MasterDataService {
     }
   }
 
-  async editMessageTemplate(data: EdiTemplatePut, user) {
+  async editMessageTemplate(data: EditTemplatePut, user) {
     try {
       let updatedTemplate = new mTemplate();
       for (const key in data) {
