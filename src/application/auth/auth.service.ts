@@ -1,17 +1,20 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { IsNull, Repository } from "typeorm";
 import { JwtService } from "@nestjs/jwt";
 
 import { User } from "../../entity/user.entity";
 import { InteractionHeader } from "../../entity/interaction_header.entity";
 import { WorkOrder } from "../../entity/work_order.entity";
+import { AgentLog } from "../../entity/agent_log.entity";
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(AgentLog)
+    private readonly agentLogRepository: Repository<AgentLog>,
     @InjectRepository(InteractionHeader)
     private readonly sessionRepository: Repository<InteractionHeader>,
     @InjectRepository(WorkOrder)
@@ -27,27 +30,27 @@ export class AuthService {
           username: username,
           isDeleted: false,
           isLogin: false,
-          isActive: true,
-        },
+          isActive: true
+        }
       });
 
       if (!foundUser) {
         return {
           isError: true,
-          data: "username is not found",
+          data: "username is not found"
         };
       }
 
       if (password !== foundUser.password) {
         return {
           isError: true,
-          data: "password incorrect",
+          data: "password incorrect"
         };
       }
 
       return {
         isError: false,
-        data: "authentication success",
+        data: "authentication success"
       };
     } catch (error) {
       console.error(error);
@@ -55,9 +58,60 @@ export class AuthService {
     }
   }
 
+  async agentLogLogin(username) {
+    try {
+      // Insert Agent Log
+      let newAgentLog = new AgentLog();
+
+      newAgentLog.username = username;
+      newAgentLog.reason = "login";
+      newAgentLog.timeStart = new Date();
+      newAgentLog.updater = username;
+
+      return await this.agentLogRepository.save(newAgentLog);
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
+  async agentLogLogout(username) {
+    try {
+      // Update Agent Log
+      const foundUser = await this.agentLogRepository.findOne({
+        select: ["id"],
+        where: {
+          username,
+          timeEnd: IsNull()
+        }
+      });
+      console.log("foundUser", foundUser);
+      if (foundUser) {
+        let updateAgentLog = new AgentLog();
+
+        updateAgentLog.logoutReason = "logout";
+        updateAgentLog.timeEnd = new Date();
+        updateAgentLog.updater = username;
+
+        return await this.agentLogRepository.update(
+          {
+            id: foundUser.id
+          },
+          updateAgentLog
+        );
+      }
+
+      return;
+
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
   async updateLoginData(username: string) {
     const updateData = {
-      isLogin: true,
+      isLogin: true
     };
 
     return await this.userRepository.update({ username: username }, updateData);
@@ -75,11 +129,11 @@ export class AuthService {
         "passwordPBX",
         "unitId",
         "groupId",
-        "isAux",
+        "isAux"
       ],
       where: {
-        username: username,
-      },
+        username: username
+      }
     });
 
     let detailUser;
@@ -94,10 +148,12 @@ export class AuthService {
       const resultUpdate = await this.updateLoginData(username);
       const detailUser = await this.getDetailUser(username);
       const accessToken = this.jwtService.sign(detailUser);
+      const agentLog = await this.agentLogLogin(username);
+
       return {
         isError: false,
         data: accessToken,
-        statusCode: 200,
+        statusCode: 200
       };
     } catch (error) {
       console.error(error);
@@ -109,7 +165,7 @@ export class AuthService {
     try {
       //UPDATE INTERACTION HEADER
       const updateHeader = {
-        agentUsername: null,
+        agentUsername: null
       };
       await this.sessionRepository.update(
         { agentUsername: payload.username },
@@ -127,16 +183,19 @@ export class AuthService {
       //UPDATE STATUS AGENT
       const updateUser = {
         isLogin: false,
-        isAux: true,
+        isAux: true
       };
       await this.userRepository.update(
         { username: payload.username },
         updateUser
       );
+
+      await this.agentLogLogout(payload.username);
+
       return {
         isError: false,
         data: "logout Success",
-        statusCode: 201,
+        statusCode: 201
       };
     } catch (error) {
       console.error(error);

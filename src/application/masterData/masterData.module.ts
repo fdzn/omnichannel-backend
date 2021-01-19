@@ -11,6 +11,7 @@ import { mSubCategory } from "../../entity/m_sub_category.entity";
 import { mTemplate } from "../../entity/m_template.entity";
 import { WorkOrder } from "../../entity/work_order.entity";
 import { User } from "../../entity/user.entity";
+import { AgentLog } from "../../entity/agent_log.entity";
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { User } from "../../entity/user.entity";
       mSubCategory,
       mTemplate,
       User,
-      WorkOrder
+      WorkOrder,
+      AgentLog
     ])
   ],
   providers: [MasterDataService],

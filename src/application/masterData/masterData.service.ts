@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository, Brackets } from "typeorm";
+import { Repository, Brackets, IsNull } from "typeorm";
 
 //ENTITY
 import { mCategory } from "../../entity/m_category.entity";
@@ -8,6 +8,7 @@ import { mSubCategory } from "../../entity/m_sub_category.entity";
 import { mTemplate } from "../../entity/m_template.entity";
 import { WorkOrder } from "../../entity/work_order.entity";
 import { User } from "../../entity/user.entity";
+import { AgentLog } from "../../entity/agent_log.entity";
 
 //DTO
 import {
@@ -37,6 +38,8 @@ export class MasterDataService {
     private readonly mSubCategoryRepository: Repository<mSubCategory>,
     @InjectRepository(mTemplate)
     private readonly mTemplateRepository: Repository<mTemplate>,
+    @InjectRepository(AgentLog)
+    private readonly agentLogRepository: Repository<AgentLog>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     @InjectRepository(WorkOrder)
@@ -304,6 +307,7 @@ export class MasterDataService {
   async editUser(data: EditUserPut, user) {
     try {
       let updatedUser = new User();
+
       for (const key in data) {
         if (Object.prototype.hasOwnProperty.call(data, key)) {
           if (key === "newUsername") {
@@ -314,13 +318,30 @@ export class MasterDataService {
           }
         }
       }
+
       updatedUser.updater = user.username;
+
       const result = await this.userRepository.update(
         {
           username: data.username
         },
         updatedUser
       );
+
+      if (data.hasOwnProperty("newUsername")) {
+        await this.agentLogRelease(
+          updatedUser["username"],
+          user.username,
+          "Release because Username Changed"
+        );
+      }
+      if (!data.hasOwnProperty("newUsername") && updatedUser.hasOwnProperty("isLogin")) {
+        await this.agentLogRelease(
+          updatedUser["username"],
+          user.username
+        );
+      }
+
       return {
         isError: false,
         data: result,
@@ -732,6 +753,41 @@ export class MasterDataService {
     } catch (error) {
       console.error(error);
       return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async agentLogRelease(username, updater, info = null) {
+    try {
+      // Update Agent Log
+      const foundUser = await this.agentLogRepository.findOne({
+        select: ["id"],
+        where: {
+          username,
+          timeEnd: IsNull()
+        }
+      });
+
+      console.log("foundUser release", foundUser);
+
+      if (foundUser) {
+        let updateAgentLog = new AgentLog();
+
+        updateAgentLog.logoutReason = "release";
+        updateAgentLog.info = info;
+        updateAgentLog.timeEnd = new Date();
+        updateAgentLog.updater = updater;
+
+        return await this.agentLogRepository.update(
+          {
+            id: foundUser.id
+          },
+          updateAgentLog
+        );
+      }
+
+      return;
+    } catch (error) {
+      throw error;
     }
   }
 }
