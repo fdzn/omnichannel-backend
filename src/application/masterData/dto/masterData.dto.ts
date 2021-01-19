@@ -109,6 +109,40 @@ export class EditTemplatePut {
   isActive: boolean;
 }
 
+export class EditUserPut extends AddUserPost {
+  @IsNotEmpty()
+  username: string;
+  @IsOptional()
+  @IsNotEmpty()
+  newUsername: string;
+  @IsOptional()
+  @IsNotEmpty()
+  name: string;
+  @IsOptional()
+  @IsNotEmpty()
+  password: string;
+  @IsOptional()
+  @IsNotEmpty()
+  level: UserLevel;
+  @IsOptional()
+  @IsNotEmpty()
+  hostPbx: string;
+  @IsOptional()
+  @IsNotEmpty()
+  loginPBX: string;
+  @IsOptional()
+  @IsNotEmpty()
+  @IsBoolean()
+  isLogin: boolean;
+  @IsOptional()
+  @IsNotEmpty()
+  passwordPBX: string;
+  @IsOptional()
+  @IsNotEmpty()
+  @IsBoolean()
+  isActive: boolean;
+}
+
 export class DeleteGeneralPut {
   @IsNotEmpty()
   @IsInt()

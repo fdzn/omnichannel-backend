@@ -20,7 +20,8 @@ import {
   DeleteGeneralPut,
   GetTemplate,
   AddUserPost,
-  EditTemplatePut
+  EditTemplatePut,
+  EditUserPut
 } from "./dto/masterData.dto";
 
 @Injectable()
@@ -262,6 +263,37 @@ export class MasterDataService {
       return {
         isError: false,
         data: output,
+        statusCode: 200
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async editUser(data: EditUserPut, user) {
+    try {
+      let updatedUser = new User();
+      for (const key in data) {
+        if (Object.prototype.hasOwnProperty.call(data, key)) {
+          if (key === "newUsername") {
+            updatedUser["username"] = data[key];
+            updatedUser["isLogin"] = false;
+          } else {
+            updatedUser[key] = data[key];
+          }
+        }
+      }
+      updatedUser.updater = user.username;
+      const result = await this.userRepository.update(
+        {
+          username: data.username
+        },
+        updatedUser
+      );
+      return {
+        isError: false,
+        data: result,
         statusCode: 200
       };
     } catch (error) {

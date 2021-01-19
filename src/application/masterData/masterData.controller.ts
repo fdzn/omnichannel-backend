@@ -30,7 +30,8 @@ import {
   GetTemplate,
   AddTemplatePost,
   EditTemplatePut,
-  AddUserPost
+  AddUserPost,
+  EditUserPut
 } from "./dto/masterData.dto";
 
 @ApiBearerAuth()
@@ -62,7 +63,19 @@ export class MasterDataController {
     @Body() payload: AddUserPost,
     @Res() res: Response
   ) {
-    const result = await this.masterDataService.addUser(
+    const result = await this.masterDataService.addUser(payload, authData.user);
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put("user/edit")
+  @HttpCode(200)
+  async editUser(
+    @Request() authData,
+    @Body() payload: EditUserPut,
+    @Res() res: Response
+  ) {
+    const result = await this.masterDataService.editUser(
       payload,
       authData.user
     );
