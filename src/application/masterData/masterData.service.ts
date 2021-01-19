@@ -6,6 +6,7 @@ import { Repository, Brackets } from "typeorm";
 import { mCategory } from "../../entity/m_category.entity";
 import { mSubCategory } from "../../entity/m_sub_category.entity";
 import { mTemplate } from "../../entity/m_template.entity";
+import { WorkOrder } from "../../entity/work_order.entity";
 import { User } from "../../entity/user.entity";
 
 //DTO
@@ -22,7 +23,9 @@ import {
   AddUserPost,
   EditTemplatePut,
   EditUserPut,
-  DeleteUser
+  DeleteUser,
+  AddWorkOrderPost,
+  EditWorkOrderPut
 } from "./dto/masterData.dto";
 
 @Injectable()
@@ -35,7 +38,9 @@ export class MasterDataService {
     @InjectRepository(mTemplate)
     private readonly mTemplateRepository: Repository<mTemplate>,
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>
+    private readonly userRepository: Repository<User>,
+    @InjectRepository(WorkOrder)
+    private readonly workOrderRepository: Repository<WorkOrder>
   ) {}
 
   async getCategoryPost(payload: GeneralTablePost) {
@@ -611,6 +616,113 @@ export class MasterDataService {
           id: data.id
         },
         deletedTemplate
+      );
+      return {
+        isError: false,
+        data: result,
+        statusCode: 200
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async getWorkOrderPost(payload: GeneralTablePost) {
+    try {
+      const page = (payload.page - 1) * payload.limit;
+      let keywords = payload.keywords || [];
+
+      let sql = this.workOrderRepository
+        .createQueryBuilder("work_order")
+        .select([
+          "work_order.agentUsername",
+          "work_order.channelId",
+          "work_order.limit",
+          "work_order.slot",
+          "work_order.lastDist",
+          "work_order.createdAt",
+          "work_order.updatedAt",
+          "work_order.updaterUsername"
+        ]);
+
+      keywords.forEach((keyword) => {
+        const keywordKey = keyword.key.trim();
+        const keywordValue = keyword.value;
+        // console.log(`work_order.${keywordKey} LIKE ${keywordValue}`);
+        sql.andWhere(`work_order.${keywordKey} LIKE :${keywordKey}`, {
+          [keywordKey]: `%${keywordValue}%`
+        });
+      });
+
+      const count = await sql.getCount();
+      sql.skip(page);
+      sql.take(payload.limit);
+      sql.orderBy("work_order.agentUsername", "ASC");
+      sql.addOrderBy("work_order.channelId", "DESC");
+
+      const result = await sql.getMany();
+
+      const output = {
+        totalData: count,
+        listData: result
+      };
+      return {
+        isError: false,
+        data: output,
+        statusCode: 200
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async addWorkOrder(data: AddWorkOrderPost, user) {
+    try {
+      let newWorkOrder = new WorkOrder();
+      newWorkOrder.agentUsername = data.agentUsername;
+      newWorkOrder.channelId = data.channelId;
+      newWorkOrder.limit = data.limit;
+      newWorkOrder.updaterUsername = user.username;
+      if (
+        data.channelId.toLowerCase() === "videocall" ||
+        data.channelId.toLowerCase() === "voice"
+      ) {
+        newWorkOrder.limit = 1;
+      }
+      const result = await this.workOrderRepository.save(newWorkOrder);
+      return {
+        isError: false,
+        data: result,
+        statusCode: 200
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async editWorkOrder(data: EditWorkOrderPut, user) {
+    try {
+      let updatedWorkOrder = new WorkOrder();
+      for (const key in data) {
+        if (Object.prototype.hasOwnProperty.call(data, key)) {
+          updatedWorkOrder[key] = data[key];
+        }
+      }
+      updatedWorkOrder.updaterUsername = user.username;
+      if (
+        data.channelId.toLowerCase() === "videocall" ||
+        data.channelId.toLowerCase() === "voice"
+      ) {
+        updatedWorkOrder.limit = 1;
+      }
+      const result = await this.workOrderRepository.update(
+        {
+          id: data.id
+        },
+        updatedWorkOrder
       );
       return {
         isError: false,

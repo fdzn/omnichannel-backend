@@ -32,7 +32,9 @@ import {
   EditTemplatePut,
   AddUserPost,
   EditUserPut,
-  DeleteUser
+  DeleteUser,
+  AddWorkOrderPost,
+  EditWorkOrderPut
 } from "./dto/masterData.dto";
 
 @ApiBearerAuth()
@@ -294,6 +296,43 @@ export class MasterDataController {
     @Res() res: Response
   ) {
     const result = await this.masterDataService.deleteMessageTemplate(
+      payload,
+      authData.user
+    );
+    res.status(result.statusCode).send(result);
+  }
+
+  @Post("workOrder")
+  @HttpCode(200)
+  async getWorkOrder(@Body() payload: GeneralTablePost, @Res() res: Response) {
+    const result = await this.masterDataService.getWorkOrderPost(payload);
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post("workOrder/add")
+  @HttpCode(200)
+  async addWorkOrder(
+    @Request() authData,
+    @Body() payload: AddWorkOrderPost,
+    @Res() res: Response
+  ) {
+    const result = await this.masterDataService.addWorkOrder(
+      payload,
+      authData.user
+    );
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put("workOrder/edit")
+  @HttpCode(200)
+  async editWorkOrder(
+    @Request() authData,
+    @Body() payload: EditWorkOrderPut,
+    @Res() res: Response
+  ) {
+    const result = await this.masterDataService.editWorkOrder(
       payload,
       authData.user
     );

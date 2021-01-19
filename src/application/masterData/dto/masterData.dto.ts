@@ -61,6 +61,15 @@ export class AddUserPost {
   @IsInt()
   groupId: number;
 }
+export class AddWorkOrderPost {
+  @IsNotEmpty()
+  agentUsername: string;
+  @IsNotEmpty()
+  channelId: string;
+  @IsNotEmpty()
+  @IsInt()
+  limit: number;
+}
 
 export class AddTemplatePost {
   @IsNotEmpty()
@@ -73,6 +82,19 @@ export class AddTemplatePost {
   @IsNotEmpty()
   @IsBoolean()
   isActive: boolean;
+}
+
+export class EditWorkOrderPut {
+  @IsNotEmpty()
+  @IsInt()
+  id: number;
+  @IsOptional()
+  @IsNotEmpty()
+  channelId: string;
+  @IsOptional()
+  @IsNotEmpty()
+  @IsInt()
+  limit: number;
 }
 
 export class EditCategoryPut {
