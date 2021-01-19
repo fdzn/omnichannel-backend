@@ -14,7 +14,7 @@ import { MinioNestModule } from "./minio/minio.module";
 
 //Subscribers
 import { SubscribersModule } from "./subscribers/subscribes.module";
-import { ExportModule } from './export/export.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -29,15 +29,14 @@ import { ExportModule } from './export/export.module';
         password: configService.get("DATABASE_PASS", ""),
         database: configService.get("DATABASE_SCHEMA", "sim_mobile"),
         entities: ["dist/**/*.entity{.ts,.js}"],
-        synchronize: configService.get("DATABASE_SYNC") == "1" ? true : false,
-      }),
+        synchronize: configService.get("DATABASE_SYNC") == "1" ? true : false
+      })
     }),
     ApplicationModule,
     EventsModule,
     SubscribersModule,
-    MinioNestModule,
-    ExportModule,
+    MinioNestModule
   ],
-  controllers: [AppController],
+  controllers: [AppController]
 })
 export class AppModule {}
