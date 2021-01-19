@@ -212,6 +212,63 @@ export class MasterDataService {
     }
   }
 
+  async getUserPost(payload: GeneralTablePost) {
+    try {
+      const page = (payload.page - 1) * payload.limit;
+      let keywords = payload.keywords || [];
+
+      let sql = this.userRepository
+        .createQueryBuilder("user")
+        .select([
+          "user.username",
+          "user.password",
+          "user.level",
+          "user.name",
+          "user.phone",
+          "user.email",
+          "user.hostPBX",
+          "user.loginPBX",
+          "user.passwordPBX",
+          "user.unitId",
+          "user.groupId",
+          "user.isLogin",
+          "user.isActive",
+          "user.isDeleted",
+          "user.updater",
+          "user.createdAt",
+          "user.updatedAt"
+        ]);
+
+      keywords.forEach((keyword) => {
+        const keywordKey = keyword.key.trim();
+        const keywordValue = keyword.value;
+        // console.log(`user.${keywordKey} LIKE ${keywordValue}`);
+        sql.andWhere(`user.${keywordKey} LIKE :${keywordKey}`, {
+          [keywordKey]: `%${keywordValue}%`
+        });
+      });
+
+      const count = await sql.getCount();
+      sql.skip(page);
+      sql.take(payload.limit);
+
+      const result = await sql.getMany();
+
+      const output = {
+        totalData: count,
+        listData: result
+      };
+      return {
+        isError: false,
+        data: output,
+        statusCode: 200
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
   async addCategory(data: AddCategoryPost, user) {
     try {
       let newCategory = new mCategory();

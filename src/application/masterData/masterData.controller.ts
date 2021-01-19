@@ -46,6 +46,16 @@ export class MasterDataController {
     res.status(result.statusCode).send(result);
   }
 
+  @Post("getUser")
+  @HttpCode(200)
+  async getUserPost(
+    @Body() payload: GeneralTablePost,
+    @Res() res: Response
+  ) {
+    const result = await this.masterDataService.getUserPost(payload);
+    res.status(result.statusCode).send(result);
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get("getCategory")
   @HttpCode(200)
