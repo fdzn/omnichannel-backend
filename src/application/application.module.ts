@@ -10,7 +10,7 @@ import { CustomerModule } from "./customer/customer.module";
 import { InternalChatModule } from "./internalChat/internalChat.module";
 import { MasterDataModule } from "./masterData/masterData.module";
 import { ReportModule } from "./report/report.module";
-import { ExportModule } from "./export/export.module";
+import { ExportDataModule } from "./exportdata/exportdata.module";
 @Module({
   imports: [
     AuthModule,
@@ -22,7 +22,7 @@ import { ExportModule } from "./export/export.module";
     MasterDataModule,
     InternalChatModule,
     ReportModule,
-    ExportModule
+    ExportDataModule
   ]
 })
 export class ApplicationModule {}
