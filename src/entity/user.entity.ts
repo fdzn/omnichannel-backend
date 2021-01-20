@@ -76,6 +76,11 @@ export class User {
   @Column({
     default: false,
   })
+  isOnline: boolean;
+
+  @Column({
+    default: false,
+  })
   isAuxPhone: boolean;
 
   @Column({

@@ -14,6 +14,7 @@ import { InteractionLibService } from "../application/libs/services/interaction.
 
 //ENTITY
 import { InteractionHeader } from "../entity/interaction_header.entity";
+import { User } from "../entity/user.entity";
 
 @WebSocketGateway()
 export class EventsGateway
@@ -21,6 +22,8 @@ export class EventsGateway
   constructor(
     @InjectRepository(InteractionHeader)
     private readonly sessionRepository: Repository<InteractionHeader>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
     private readonly interactionLibService: InteractionLibService
   ) {}
 
@@ -38,10 +41,12 @@ export class EventsGateway
     socket.join(`${level}`);
     socket.join(`${level}:${userId}`);
     console.log("client connected", socket.handshake.query);
+    this.updateOnlineStatus(userId, true);
     this.jumQueueByChannel();
   }
 
   handleDisconnect(client: Socket) {
+    console.log(client);
     console.log("Client disconnected", client.id);
   }
 
@@ -76,5 +81,13 @@ export class EventsGateway
       newData["customerId"] = data.customerId;
       this.sendData(`agent:${data.agentUsername}`, "newVideoCall", newData);
     }
+  }
+
+  async updateOnlineStatus(username, isOnline = false) {
+    let dataToUpdate = await this.userRepository.findOne({
+      where: { username: username },
+    });
+    dataToUpdate.isOnline = isOnline;
+    await this.userRepository.save(dataToUpdate);
   }
 }
