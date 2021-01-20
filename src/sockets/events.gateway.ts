@@ -37,17 +37,29 @@ export class EventsGateway
   handleConnection(socket: Socket) {
     let userId = socket.handshake.query.username;
     let level = socket.handshake.query.level;
-    let groupId = socket.handshake.query.groupId;
+    // let groupId = socket.handshake.query.groupId;
+    socket.join(`lobby`);
     socket.join(`${level}`);
     socket.join(`${level}:${userId}`);
     console.log("client connected", socket.handshake.query);
+    this.sendData("lobby", "updateOnlineStatus", {
+      username: userId,
+      IsOnline: true,
+    });
     this.updateOnlineStatus(userId, true);
     this.jumQueueByChannel();
   }
 
-  handleDisconnect(client: Socket) {
-    console.log(client);
-    console.log("Client disconnected", client.id);
+  handleDisconnect(socket: Socket) {
+    let userId = socket.handshake.query.username;
+    // let level = socket.handshake.query.level;
+    // let groupId = socket.handshake.query.groupId;
+    this.updateOnlineStatus(userId, false);
+    this.sendData("lobby", "updateOnlineStatus", {
+      username: userId,
+      IsOnline: false,
+    });
+    console.log("Client disconnected", socket.handshake.query);
   }
 
   sendData(room: string, event: string, data: object) {
@@ -68,6 +80,7 @@ export class EventsGateway
     });
     this.sendData("agent", "countQueue", output);
   }
+
   async sendWorkOrder(data: InteractionHeader) {
     let workOrder;
     workOrder = data;

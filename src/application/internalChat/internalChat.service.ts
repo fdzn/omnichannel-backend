@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Repository, getManager, getRepository } from "typeorm";
 
 //ENTITY
 import { InternalChat } from "../../entity/internal_chat.entity";
@@ -106,7 +106,7 @@ export class InternalChatService {
           "email",
           "unit",
           "group",
-          "isLogin",
+          "isOnline",
         ],
         where: {
           isDeleted: false,
@@ -138,6 +138,22 @@ export class InternalChatService {
         data: output,
         statusCode: 200,
       };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async historyChat(payload) {
+    try {
+      const entityManager = getManager();
+      const query = ""
+      const listChat = await this.internalChatRepository.find({
+        where: [{ from: payload.username }, { to: payload.username }],
+        order: {
+          id: "DESC",
+        },
+      });
     } catch (error) {
       console.error(error);
       return { isError: true, data: error.message, statusCode: 500 };

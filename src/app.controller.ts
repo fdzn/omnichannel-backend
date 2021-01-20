@@ -4,6 +4,7 @@ import { Controller, Get } from "@nestjs/common";
 export class AppController {
   @Get()
   getHello(): string {
-    return "BACKEND SERVICE IS RUNNING";
+    const date = new Date();
+    return `Backend Service is running ${date}`;
   }
 }
