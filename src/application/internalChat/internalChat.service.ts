@@ -147,7 +147,7 @@ export class InternalChatService {
   async historyChat(payload) {
     try {
       const entityManager = getManager();
-      const query = ""
+      const query = "";
       const listChat = await this.internalChatRepository.find({
         where: [{ from: payload.username }, { to: payload.username }],
         order: {

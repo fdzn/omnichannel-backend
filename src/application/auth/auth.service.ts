@@ -30,27 +30,27 @@ export class AuthService {
           username: username,
           isDeleted: false,
           isLogin: false,
-          isActive: true
-        }
+          isActive: true,
+        },
       });
 
       if (!foundUser) {
         return {
           isError: true,
-          data: "username is not found"
+          data: "username is not found",
         };
       }
 
       if (password !== foundUser.password) {
         return {
           isError: true,
-          data: "password incorrect"
+          data: "password incorrect",
         };
       }
 
       return {
         isError: false,
-        data: "authentication success"
+        data: "authentication success",
       };
     } catch (error) {
       console.error(error);
@@ -82,8 +82,8 @@ export class AuthService {
         select: ["id"],
         where: {
           username,
-          timeEnd: IsNull()
-        }
+          timeEnd: IsNull(),
+        },
       });
       console.log("foundUser", foundUser);
       if (foundUser) {
@@ -95,14 +95,13 @@ export class AuthService {
 
         return await this.agentLogRepository.update(
           {
-            id: foundUser.id
+            id: foundUser.id,
           },
           updateAgentLog
         );
       }
 
       return;
-
     } catch (error) {
       console.log(error);
       throw error;
@@ -111,7 +110,7 @@ export class AuthService {
 
   async updateLoginData(username: string) {
     const updateData = {
-      isLogin: true
+      isLogin: true,
     };
 
     return await this.userRepository.update({ username: username }, updateData);
@@ -129,11 +128,11 @@ export class AuthService {
         "passwordPBX",
         "unitId",
         "groupId",
-        "isAux"
+        "isAux",
       ],
       where: {
-        username: username
-      }
+        username: username,
+      },
     });
 
     let detailUser;
@@ -153,7 +152,7 @@ export class AuthService {
       return {
         isError: false,
         data: accessToken,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -165,7 +164,7 @@ export class AuthService {
     try {
       //UPDATE INTERACTION HEADER
       const updateHeader = {
-        agentUsername: null
+        agentUsername: null,
       };
       await this.sessionRepository.update(
         { agentUsername: payload.username },
@@ -183,7 +182,7 @@ export class AuthService {
       //UPDATE STATUS AGENT
       const updateUser = {
         isLogin: false,
-        isAux: true
+        isAux: true,
       };
       await this.userRepository.update(
         { username: payload.username },
@@ -195,7 +194,7 @@ export class AuthService {
       return {
         isError: false,
         data: "logout Success",
-        statusCode: 201
+        statusCode: 201,
       };
     } catch (error) {
       console.error(error);

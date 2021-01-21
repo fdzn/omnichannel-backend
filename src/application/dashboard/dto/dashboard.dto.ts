@@ -31,5 +31,7 @@ export class ParamGeneral {
   @IsOnlyDate()
   dateFrom: string;
   @IsString()
-  username: string;
+  agentUsername: string;
+  @IsString()
+  channelId: string;
 }
