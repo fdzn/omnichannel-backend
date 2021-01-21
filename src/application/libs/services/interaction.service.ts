@@ -64,7 +64,7 @@ export class InteractionLibService {
       return;
     }
 
-    await repo.historyRepo.insert(dataInteraction);
+    await repo.historyRepo.save(dataInteraction);
     return await repo.logRepo.delete({ sessionId: sessionId });
   }
 
