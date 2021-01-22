@@ -1,28 +1,26 @@
 import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { getRepository } from "typeorm";
 
+//SERVICE
 import { MinioNestService } from "../../../minio/minio.service";
-import { SessionService } from "../../libs/services/session.service";
-import { CustomerService } from "../../libs/services/customer.service";
+import { HeaderService } from "../../header/header.service";
+
+//ENTITY & DTO
 import { InteractionChat } from "../../../entity/interaction_chat.entity";
-
+import { InteractionHeader } from "../../../entity/interaction_header.entity";
 import { ActionType } from "src/entity/templates/generalChat";
-
 import { UploadURLPost } from "../../../minio/dto/minio.dto";
 import { IncomingWebchat } from "./dto/incoming-webchat.dto";
 import { Customer } from "src/entity/customer.entity";
 import { Contact } from "src/entity/contact.entity";
 import { LocationApp, RatingApp } from "src/dto/app.dto";
+import { ContactData } from "../../../dto/app.dto";
 
 @Injectable()
 export class WebchatService {
   private channelId: string;
   constructor(
-    @InjectRepository(InteractionChat)
-    private readonly webchatRepository: Repository<InteractionChat>,
-    private readonly sessionService: SessionService,
-    private readonly customerService: CustomerService,
+    private readonly headerService: HeaderService,
     private readonly minioService: MinioNestService
   ) {
     this.channelId = "webchat";
@@ -54,18 +52,16 @@ export class WebchatService {
 
       dataApp.from = data.message.email;
       dataApp.fromName = data.message.username;
+
+      //SET CUSTOMER
       dataApp.customer = new Customer();
       dataApp.customer.name = data.message.username;
       dataApp.customer.gender = data.message.gender;
-      let contact1 = new Contact();
-      contact1.type = "email";
-      contact1.value = data.message.email;
 
-      let contact2 = new Contact();
-      contact1.type = "hp";
-      contact1.value = data.message.mobilePhone;
-
-      dataApp.contact = [contact1, contact2];
+      //SET CONTACT
+      dataApp.contact = new ContactData();
+      dataApp.contact.phone = data.message.mobilePhone;
+      dataApp.contact.email = data.message.email;
     } else if (
       data.action == "clientReplyText" ||
       data.action == "clientEndSession"
@@ -76,18 +72,15 @@ export class WebchatService {
       dataApp.from = data.message.user.email;
       dataApp.fromName = data.message.user.username;
 
+      //SET CUSTOMER
       dataApp.customer = new Customer();
       dataApp.customer.name = data.message.user.username;
       dataApp.customer.gender = data.message.user.gender;
-      let contact1 = new Contact();
-      contact1.type = "email";
-      contact1.value = data.message.user.email;
 
-      let contact2 = new Contact();
-      contact1.type = "hp";
-      contact1.value = data.message.user.mobilePhone;
-
-      dataApp.contact = [contact1, contact2];
+      //SET CONTACT
+      dataApp.contact = new ContactData();
+      dataApp.contact.phone = data.message.user.mobilePhone;
+      dataApp.contact.email = data.message.user.email;
     } else if (data.action == "clientReplyMedia") {
       dataApp.from = data.message.user.email;
       dataApp.fromName = data.message.user.username;
@@ -106,18 +99,15 @@ export class WebchatService {
 
       dataApp.media = JSON.stringify(mediaResult.data);
 
+      //SET CUSTOMER
       dataApp.customer = new Customer();
       dataApp.customer.name = data.message.user.username;
       dataApp.customer.gender = data.message.user.gender;
-      let contact1 = new Contact();
-      contact1.type = "email";
-      contact1.value = data.message.user.email;
 
-      let contact2 = new Contact();
-      contact1.type = "hp";
-      contact1.value = data.message.user.mobilePhone;
-
-      dataApp.contact = [contact1, contact2];
+      //SET CONTACT
+      dataApp.contact = new ContactData();
+      dataApp.contact.phone = data.message.user.mobilePhone;
+      dataApp.contact.email = data.message.user.email;
     } else if (data.action == "clientReplyLocation") {
       const location = this.parseLocation(data.message.message.position);
       dataApp.message = location;
@@ -127,18 +117,15 @@ export class WebchatService {
       dataApp.from = data.message.user.email;
       dataApp.fromName = data.message.user.username;
 
+      //SET CUSTOMER
       dataApp.customer = new Customer();
       dataApp.customer.name = data.message.user.username;
       dataApp.customer.gender = data.message.user.gender;
-      let contact1 = new Contact();
-      contact1.type = "email";
-      contact1.value = data.message.user.email;
 
-      let contact2 = new Contact();
-      contact1.type = "hp";
-      contact1.value = data.message.user.mobilePhone;
-
-      dataApp.contact = [contact1, contact2];
+      //SET CONTACT
+      dataApp.contact = new ContactData();
+      dataApp.contact.phone = data.message.user.mobilePhone;
+      dataApp.contact.email = data.message.user.email;
     } else {
       return {
         isError: true,
@@ -155,60 +142,47 @@ export class WebchatService {
 
   async incoming(data: IncomingWebchat) {
     try {
-      //CHECK SESSION
-      let sessionId;
-      let agentId;
-      //SET PRIORITY
-      const priority = 0;
-
-      //SET GROUP ID
-      const groupId = 1;
-
-      const foundSession = await this.sessionService.check(
+      const generatedData = await this.headerService.generate(
         this.channelId,
-        data.from
+        data.from,
+        data.customer,
+        data.contact
       );
-      if (foundSession) {
-        sessionId = foundSession.sessionId;
-        agentId = foundSession.agentUsername;
-      } else if (!foundSession) {
-        //GENERATE SESSION
-        sessionId = this.sessionService.generate(this.channelId);
-        //CUSTOMER
-        let custId = await this.customerService.generate(
-          data.contact,
-          data.customer
-        );
 
-        //INSERT QUEUE
-        let insertSession;
-        insertSession = data;
-        insertSession.priority = priority;
+      if (generatedData.newInteraction) {
+        //SET PRIORITY
+        const priority = 0;
+
+        //SET GROUP ID
+        const groupId = 1;
+
+        let insertSession = new InteractionHeader();
+        insertSession.channelId = this.channelId;
+        insertSession.customerId = generatedData.customer.id;
+        insertSession.from = data.from;
+        insertSession.fromName = data.fromName;
         insertSession.groupId = groupId;
-        await this.sessionService.create(
-          sessionId,
-          this.channelId,
-          custId,
-          insertSession
-        );
+        insertSession.priority = priority;
+        insertSession.sessionId = generatedData.sessionId;
+        insertSession.startDate = new Date();
+        await this.headerService.save(insertSession);
       }
 
+      const repoChat = getRepository(InteractionChat);
       let insertInteraction = new InteractionChat();
-      insertInteraction.channelId = "webchat";
-      insertInteraction.actionType = ActionType.IN;
+      insertInteraction.channelId = this.channelId;
       insertInteraction.convId = data.convId;
       insertInteraction.from = data.from;
       insertInteraction.fromName = data.fromName;
       insertInteraction.media = data.media;
       insertInteraction.message = data.message;
       insertInteraction.messageType = data.messageType;
+      insertInteraction.actionType = ActionType.IN;
+      insertInteraction.sessionId = generatedData.sessionId;
       insertInteraction.sendDate = data.dateSend;
       insertInteraction.sendStatus = true;
-      insertInteraction.sessionId = sessionId;
-      if (agentId) {
-        insertInteraction.agentUsername = agentId;
-      }
-      await this.webchatRepository.save(insertInteraction);
+      insertInteraction.agentUsername = generatedData.agentUsername;
+      await repoChat.save(insertInteraction);
 
       return {
         isError: false,

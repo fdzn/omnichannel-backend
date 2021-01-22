@@ -2,20 +2,18 @@ import { Injectable } from "@nestjs/common";
 
 //DTO
 import { AsteriskPost, IncomingVoice } from "./dto/incoming-voice.dto";
-import { Customer } from "../../../entity/customer.entity";
-import { ContactApp } from "../../../dto/app.dto";
+import { ContactData } from "../../../dto/app.dto";
 
+//ENTITY
+import { InteractionHeader } from "../../../entity/interaction_header.entity";
+import { Customer } from "src/entity/customer.entity";
 //SERVICE
-import { SessionService } from "../../libs/services/session.service";
-import { CustomerService } from "../../libs/services/customer.service";
+import { HeaderService } from "../../header/header.service";
 
 @Injectable()
 export class VoiceService {
   private channelId: string;
-  constructor(
-    private readonly sessionService: SessionService,
-    private readonly customerService: CustomerService
-  ) {
+  constructor(private readonly headerService: HeaderService) {
     this.channelId = "voice";
   }
 
@@ -26,11 +24,10 @@ export class VoiceService {
     dataApp.agentUsername = data.agentId;
     dataApp.from = data.phone;
     dataApp.fromName = name;
-    let contact = new ContactApp();
-    contact.type = "hp";
-    contact.value = data.phone;
-    dataApp.contact = [contact];
 
+    //SET CONTACT
+    dataApp.contact = new ContactData();
+    dataApp.contact.phone = data.phone;
     //SET CUSTOMER
     dataApp.customer = new Customer();
     dataApp.customer.name = name;
@@ -40,13 +37,11 @@ export class VoiceService {
 
   async incoming(data: IncomingVoice) {
     try {
-      //GENERATE SESSION
-      let sessionId = this.sessionService.generate(this.channelId);
-
-      //CUSTOMER
-      let custId = await this.customerService.generate(
-        data.contact,
-        data.customer
+      const generatedData = await this.headerService.generate(
+        this.channelId,
+        data.from,
+        data.customer,
+        data.contact
       );
 
       //SET PRIORITY
@@ -55,20 +50,21 @@ export class VoiceService {
       //SET GROUP ID
       const groupId = 1;
 
-      let insertSession;
-      insertSession = data;
-      insertSession.priority = priority;
+      let insertSession = new InteractionHeader();
+      insertSession.agentUsername = data.agentUsername;
+      insertSession.channelId = this.channelId;
+      insertSession.customerId = generatedData.customer.id;
+      insertSession.frDate = new Date();
+      insertSession.from = data.from;
+      insertSession.fromName = data.fromName;
       insertSession.groupId = groupId;
-      insertSession.agentId = data.agentUsername;
-      await this.sessionService.create(
-        sessionId,
-        this.channelId,
-        custId,
-        insertSession
-      );
+      insertSession.pickupDate = new Date();
+      insertSession.priority = priority;
+      insertSession.sessionId = generatedData.sessionId;
+      insertSession.startDate = new Date();
+      await this.headerService.save(insertSession);
 
-      const detailCustomer = await this.customerService.getById(custId);
-      data.customer = detailCustomer.data;
+      data.customer = generatedData.customer;
       return {
         isError: false,
         data: data,

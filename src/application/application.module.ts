@@ -11,6 +11,7 @@ import { InternalChatModule } from "./internalChat/internalChat.module";
 import { MasterDataModule } from "./masterData/masterData.module";
 import { ReportModule } from "./report/report.module";
 import { DashboardModule } from "./dashboard/dashboard.module";
+import { HeaderModule } from './header/header.module';
 @Module({
   imports: [
     AuthModule,
@@ -23,6 +24,7 @@ import { DashboardModule } from "./dashboard/dashboard.module";
     InternalChatModule,
     ReportModule,
     DashboardModule,
+    HeaderModule,
   ],
 })
 export class ApplicationModule {}

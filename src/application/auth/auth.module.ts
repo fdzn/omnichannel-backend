@@ -1,5 +1,4 @@
 import { Module } from "@nestjs/common";
-import { TypeOrmModule } from "@nestjs/typeorm";
 import { PassportModule } from "@nestjs/passport";
 import { JwtModule } from "@nestjs/jwt";
 import { LocalStrategy } from "./strategy/local.strategy";
@@ -9,15 +8,8 @@ import { jwtConstants } from "./constants";
 import { AuthService } from "./auth.service";
 import { AuthController } from "./auth.controller";
 
-//ENTITY
-import { User } from "../../entity/user.entity";
-import { InteractionHeader } from "../../entity/interaction_header.entity";
-import { WorkOrder } from "../../entity/work_order.entity";
-import { AgentLog } from "src/entity/agent_log.entity";
-
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, InteractionHeader, WorkOrder, AgentLog]),
     PassportModule,
     JwtModule.register({
       secret: jwtConstants.secret,

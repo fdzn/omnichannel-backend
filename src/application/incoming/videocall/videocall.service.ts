@@ -1,27 +1,25 @@
 import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { getRepository } from "typeorm";
 
+//DTO
 import { VonagePost, IncomingVideoCall } from "./dto/incoming-videocall.dto";
-import { SessionService } from "../../libs/services/session.service";
-import { CustomerService } from "../../libs/services/customer.service";
+import { ContactData } from "../../../dto/app.dto";
+
+//ENTITY
 import {
   InteractionVideoCall,
   ActionType,
 } from "../../../entity/interaction_videocall.entity";
+import { InteractionHeader } from "../../../entity/interaction_header.entity";
+
 import { Customer } from "../../../entity/customer.entity";
 
-import { ContactApp } from "../../../dto/app.dto";
-
+//SERVICE
+import { HeaderService } from "../../header/header.service";
 @Injectable()
 export class VideocallService {
   private channelId: string;
-  constructor(
-    @InjectRepository(InteractionVideoCall)
-    private readonly videoCallRepository: Repository<InteractionVideoCall>,
-    private readonly sessionService: SessionService,
-    private readonly customerService: CustomerService
-  ) {
+  constructor(private readonly headerService: HeaderService) {
     this.channelId = "videocall";
   }
   vonage(dataPost: VonagePost) {
@@ -37,14 +35,9 @@ export class VideocallService {
     dataApp.token = dataPost.token;
 
     //SET CONTACT
-    let contact1 = new ContactApp();
-    contact1.type = "email";
-    contact1.value = dataPost.email;
-
-    let contact2 = new ContactApp();
-    contact2.type = "hp";
-    contact2.value = dataPost.phone;
-    dataApp.contact = [contact1, contact2];
+    dataApp.contact = new ContactData();
+    dataApp.contact.email = dataPost.email;
+    dataApp.contact.phone = dataPost.phone;
 
     //SET CUSTOMER
     dataApp.customer = new Customer();
@@ -56,7 +49,7 @@ export class VideocallService {
   async incoming(data: IncomingVideoCall) {
     try {
       //FIND AGENT
-      const foundAgent = await this.sessionService.findAgentAvailable(
+      const foundAgent = await this.headerService.findAgentAvailable(
         this.channelId
       );
 
@@ -68,13 +61,11 @@ export class VideocallService {
         };
       }
 
-      //GENERATE SESSION
-      let sessionId = this.sessionService.generate(this.channelId);
-
-      //CUSTOMER
-      let custId = await this.customerService.generate(
-        data.contact,
-        data.customer
+      const generatedData = await this.headerService.generate(
+        this.channelId,
+        data.from,
+        data.customer,
+        data.contact
       );
 
       //SET PRIORITY
@@ -83,6 +74,7 @@ export class VideocallService {
       //SET GROUP ID
       const groupId = 1;
 
+      const repoVideo = getRepository(InteractionVideoCall);
       let insertInteraction = new InteractionVideoCall();
       insertInteraction.apiKey = data.apiKey;
       insertInteraction.from = data.from;
@@ -91,25 +83,29 @@ export class VideocallService {
       insertInteraction.message = data.message;
       insertInteraction.roomId = data.roomId;
       insertInteraction.sendDate = new Date();
-      insertInteraction.sessionId = sessionId;
+      insertInteraction.sessionId = generatedData.sessionId;
       insertInteraction.sessionVideo = data.sessionVideo;
       insertInteraction.socketId = data.socketId;
       insertInteraction.token = data.token;
       insertInteraction.actionType = ActionType.IN;
-      await this.videoCallRepository.save(insertInteraction);
+      await repoVideo.save(insertInteraction);
 
-      let insertSession;
-      insertSession = data;
-      insertSession.priority = priority;
+      let insertSession = new InteractionHeader();
+      insertSession.agentUsername = foundAgent[0].agentUsername;
+      insertSession.channelId = this.channelId;
+      insertSession.customerId = generatedData.customer.id;
+      insertSession.frDate = new Date();
+      insertSession.from = data.from;
+      insertSession.fromName = data.fromName;
       insertSession.groupId = groupId;
-      insertSession.agentId = foundAgent[0].agentUsername;
-      await this.sessionService.create(
-        sessionId,
-        this.channelId,
-        custId,
-        insertSession
-      );
+      insertSession.pickupDate = new Date();
+      insertSession.priority = priority;
+      insertSession.sessionId = generatedData.sessionId;
+      insertSession.startDate = new Date();
 
+      await this.headerService.save(insertSession);
+
+      data.customer = generatedData.customer;
       return {
         isError: false,
         data: data,

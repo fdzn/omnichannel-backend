@@ -1,6 +1,6 @@
 import { IsNotEmpty } from "class-validator";
 import { Customer } from "../../../../entity/customer.entity";
-import { ContactApp } from "../../../../dto/app.dto";
+import { ContactData } from "../../../../dto/app.dto";
 
 export class IncomingWebchat {
   from: string;
@@ -12,7 +12,7 @@ export class IncomingWebchat {
   account: string;
   dateSend: Date;
   dateStream: Date;
-  contact: ContactApp[];
+  contact: ContactData;
   customer: Customer;
 }
 
