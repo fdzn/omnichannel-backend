@@ -143,11 +143,18 @@ export class MasterDataService {
       keywords.forEach((keyword) => {
         const keywordKey = keyword.key.trim();
         const keywordValue = keyword.value;
-        // console.log(`work_order.${keywordKey} LIKE ${keywordValue}`);
-        sql.andWhere(`subCategory.${keywordKey} LIKE :${keywordKey}`, {
-          [keywordKey]: `%${keywordValue}%`
-        });
+        if (keywordKey.includes("category.")) {
+          sql.andWhere(`${keywordKey} LIKE :${keywordKey}`, {
+            [keywordKey]: `%${keywordValue}%`
+          });
+        } else {
+          // console.log(`work_order.${keywordKey} LIKE ${keywordValue}`);
+          sql.andWhere(`subCategory.${keywordKey} LIKE :${keywordKey}`, {
+            [keywordKey]: `%${keywordValue}%`
+          });
+        }
       });
+
       const count = await sql.getCount();
       sql.skip(page);
       sql.take(payload.limit);
@@ -779,7 +786,7 @@ export class MasterDataService {
     try {
       // Update Agent Log
       const foundUser = await this.agentLogRepository.findOne({
-        select: ["id"],
+        select: ["id", "username"],
         where: {
           username,
           timeEnd: IsNull()
@@ -798,7 +805,8 @@ export class MasterDataService {
 
         return await this.agentLogRepository.update(
           {
-            id: foundUser.id
+            username: foundUser.username,
+            timeEnd: IsNull()
           },
           updateAgentLog
         );

@@ -71,7 +71,7 @@ export class AuthService {
       // Update Agent Log
       const repoAgentLog = getRepository(AgentLog);
       const foundUser = await repoAgentLog.findOne({
-        select: ["id"],
+        select: ["id","username"],
         where: {
           username,
           timeEnd: IsNull(),
@@ -87,7 +87,8 @@ export class AuthService {
 
         return await repoAgentLog.update(
           {
-            id: foundUser.id,
+            username: foundUser.username,
+            timeEnd: IsNull()
           },
           updateAgentLog
         );
