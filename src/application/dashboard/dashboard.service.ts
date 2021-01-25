@@ -306,11 +306,21 @@ export class DashboardService {
 
       let where = this.generateWhere(payload, "submitCwcDate");
       const limit = 10;
-      const logInteraction = await repoHistory.find({
+      const logInteractionRaw = await repoHistory.find({
         where: where,
         skip: Number(payload.page) * limit,
         take: limit,
       });
+      let logInteraction = [];
+      if (logInteractionRaw.length > 0) {
+        logInteraction = logInteractionRaw.map(function (elem) {
+          let output = elem;
+          const date1 = new Date(elem.submitCwcDate);
+          const date2 = new Date(elem.startDate);
+          output.duration = (date1.getTime() - date2.getTime()) / 1000;
+          return output;
+        });
+      }
 
       return {
         isError: false,
@@ -412,13 +422,20 @@ export class DashboardService {
       let queryHistory = `${select} from ${table} ${where} ${groupBy}`;
 
       let resultHistory = await entityManager.query(queryHistory);
-      let result = 0;
+      let result = {
+        inSLA: 0,
+        outSLA: 0,
+        percentage: 0,
+      };
       if (resultHistory.length > 0) {
         const resultSLA = resultHistory[0];
         if (resultSLA.total != 0) {
-          result =
-            (parseInt(resultSLA.totalSLA) / parseInt(resultSLA.total)) * 100;
-          result = Math.round(result);
+          let percentage =
+            (Number(resultSLA.totalSLA) / Number(resultSLA.total)) * 100;
+          percentage = Math.round(percentage);
+          result.inSLA = Number(resultSLA.totalSLA);
+          result.outSLA = Number(resultSLA.total) - Number(resultSLA.totalSLA);
+          result.percentage = percentage;
         }
       }
 
