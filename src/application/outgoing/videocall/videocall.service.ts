@@ -32,6 +32,7 @@ export class VideocallService {
       if (data.action === ActionVideoType.ACCEPT) {
         let updateData = new InteractionHeader();
         updateData.isAbandon = false;
+        updateData.frDate = new Date();
         result = await this.sessionRepository.update(
           { sessionId: data.sessionId },
           updateData

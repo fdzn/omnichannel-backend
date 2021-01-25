@@ -1,5 +1,6 @@
 import {
   Controller,
+  Request,
   Get,
   Post,
   Put,
@@ -21,9 +22,9 @@ import { CustomerService } from "./customer.service";
 //DTO
 import {
   AddContactPost,
-  GetCustomerDetailPost,
   UpdateContactPut,
   UpdateCustomerPut,
+  UpdateCustomerByKeyPut,
 } from "./dto/customer.dto";
 
 @ApiBearerAuth()
@@ -35,18 +36,32 @@ export class CustomerController {
   @UseGuards(JwtAuthGuard)
   @Get(":custId")
   @HttpCode(200)
-  async getById(@Param("custId") custId: number, @Res() res: Response) {
-    let param = new GetCustomerDetailPost();
-    param.custId = custId;
-    const result = await this.customerService.getById(param);
+  async getById(@Param("custId") custId: string, @Res() res: Response) {
+    const result = await this.customerService.getById(custId);
     res.status(result.statusCode).send(result);
   }
 
   @UseGuards(JwtAuthGuard)
   @Put("update")
   @HttpCode(200)
-  async update(@Body() dataPost: UpdateCustomerPut, @Res() res: Response) {
-    const result = await this.customerService.updateCustomer(dataPost);
+  async update(@Body() dataPost: UpdateCustomerByKeyPut, @Res() res: Response) {
+    const result = await this.customerService.updateCustomerByKey(dataPost);
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put("update/:id")
+  async editAccess(
+    @Param("id") id: string,
+    @Body() payload: UpdateCustomerPut,
+    @Request() jwtData,
+    @Res() res: Response
+  ) {
+    const result = await this.customerService.updateCustomer(
+      id,
+      payload,
+      jwtData.user
+    );
     res.status(result.statusCode).send(result);
   }
 

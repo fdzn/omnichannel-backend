@@ -1,26 +1,19 @@
-import { IsNotEmpty, IsOptional } from "class-validator";
+import { IsNotEmpty } from "class-validator";
+import { Customer } from "../../../../entity/customer.entity";
+import { ContactData } from "../../../../dto/app.dto";
 
 export class IncomingWhatsapp {
-  @IsNotEmpty()
   from: string;
-
-  @IsOptional()
   fromName: string;
-
-  @IsOptional()
   convId: string;
-
-  @IsOptional()
   message: string;
-
-  @IsNotEmpty()
   messageType: string;
-
-  @IsOptional()
   media: string;
-
-  @IsOptional()
   account: string;
+  dateSend: Date;
+  dateStream: Date;
+  contact: ContactData;
+  customer: Customer;
 }
 
 export class CapiwhaPost {

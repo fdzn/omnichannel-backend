@@ -1,0 +1,18 @@
+[
+  {
+    "channelId": "voice",
+    "multiSession": true
+  },
+  {
+    "channelId": "whatsapp",
+    "multiSession": false
+  },
+  {
+    "channelId": "webchat",
+    "multiSession": false
+  },
+  {
+    "channelId": "videocall",
+    "multiSession": true
+  }
+]

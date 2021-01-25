@@ -4,9 +4,10 @@ import { VoiceController } from "./voice.controller";
 import { VoiceService } from "./voice.service";
 
 //MODULE
-import { LibsModule } from "../../libs/libs.module";
+import { HeaderModule } from "../../header/header.module";
+
 @Module({
-  imports: [LibsModule],
+  imports: [HeaderModule],
   controllers: [VoiceController],
   providers: [VoiceService],
 })

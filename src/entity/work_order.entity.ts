@@ -12,7 +12,7 @@ import { User } from "./user.entity";
 import { mChannel } from "./m_channel.entity";
 
 @Entity()
-@Unique("user_channel",["agentUsername", "channelId"])
+@Unique("user_channel", ["agentUsername", "channelId"])
 export class WorkOrder {
   @PrimaryGeneratedColumn()
   id: number;

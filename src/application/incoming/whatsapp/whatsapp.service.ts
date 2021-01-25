@@ -1,23 +1,22 @@
 import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { getRepository } from "typeorm";
 
 import { MinioNestService } from "../../../minio/minio.service";
-import { SessionService } from "../../libs/services/session.service";
-import { CustomerService } from "../../libs/services/customer.service";
+import { InteractionHeader } from "../../../entity/interaction_header.entity";
+import { Customer } from "src/entity/customer.entity";
 import { InteractionChat } from "../../../entity/interaction_chat.entity";
 import { ActionType } from "src/entity/templates/generalChat";
 
 import { IncomingWhatsapp } from "./dto/incoming-whatsapp.dto";
 import { UploadURLPost } from "../../../minio/dto/minio.dto";
+import { ContactData } from "../../../dto/app.dto";
+
+import { HeaderService } from "src/application/header/header.service";
 @Injectable()
 export class WhatsappService {
   private channelId: string;
   constructor(
-    @InjectRepository(InteractionChat)
-    private readonly whatsappRepository: Repository<InteractionChat>,
-    private readonly sessionService: SessionService,
-    private readonly customerService: CustomerService,
+    private readonly headerService: HeaderService,
     private readonly minioService: MinioNestService
   ) {
     this.channelId = "whatsapp";
@@ -42,6 +41,8 @@ export class WhatsappService {
     output.from = data.from;
     output.fromName = "No Name";
     output.account = data.to;
+    output.dateSend = new Date();
+    output.dateStream = new Date();
     if (this.validURL(data.text)) {
       let mediaPost = new UploadURLPost();
       mediaPost.directory = `whatsapp/${output.from}`;
@@ -58,6 +59,14 @@ export class WhatsappService {
       output.message = data.text;
       output.messageType = "text";
     }
+
+    //SET CONTACT
+    output.contact = new ContactData();
+    output.contact.phone = data.phone;
+    //SET CUSTOMER
+    output.customer = new Customer();
+    output.customer.name = "";
+
     return {
       isError: false,
       data: output,
@@ -67,61 +76,35 @@ export class WhatsappService {
 
   async incoming(data: IncomingWhatsapp) {
     try {
-      let sessionId;
-      let agentId = null;
-      data.fromName = data.fromName ? data.fromName : "-";
-
-      //CHECK SESSION
-      const foundSession = await this.sessionService.check(
+      const generatedData = await this.headerService.generate(
         this.channelId,
-        data.from
+        data.from,
+        data.customer,
+        data.contact
       );
-      if (foundSession) {
-        sessionId = foundSession.sessionId;
-        agentId = foundSession.agentUsername;
-      } else if (!foundSession) {
-        let custId;
-        //GENERATE SESSION
-        sessionId = this.sessionService.generate(this.channelId);
-        const contactType = await this.customerService.checkContactType(
-          this.channelId
-        );
-        //CHECK CONTACT
-        const checkContact = await this.customerService.checkContact(
-          contactType,
-          data.from
-        );
-        if (checkContact) {
-          custId = checkContact.customerId;
-        } else if (!checkContact) {
-          //CREATE NEW CUSTOMER
-          const detailCust = await this.customerService.create(
-            contactType,
-            data
-          );
-          custId = detailCust.id;
-        }
+
+      if (generatedData.newInteraction) {
         //SET PRIORITY
         const priority = 0;
 
         //SET GROUP ID
         const groupId = 1;
 
-        //INSERT QUEUE
-        let insertSession;
-        insertSession = data;
-        insertSession.priority = priority;
+        let insertSession = new InteractionHeader();
+        insertSession.channelId = this.channelId;
+        insertSession.customerId = generatedData.customer.id;
+        insertSession.from = data.from;
+        insertSession.fromName = data.fromName;
         insertSession.groupId = groupId;
-        const resultSessionCreate = await this.sessionService.create(
-          sessionId,
-          this.channelId,
-          custId,
-          insertSession
-        );
+        insertSession.priority = priority;
+        insertSession.sessionId = generatedData.sessionId;
+        insertSession.startDate = new Date();
+        await this.headerService.save(insertSession);
       }
 
+      const repoChat = getRepository(InteractionChat);
       let insertInteraction = new InteractionChat();
-      insertInteraction.channelId = "whatsapp";
+      insertInteraction.channelId = this.channelId;
       insertInteraction.convId = data.convId;
       insertInteraction.from = data.from;
       insertInteraction.fromName = data.fromName;
@@ -129,11 +112,12 @@ export class WhatsappService {
       insertInteraction.message = data.message;
       insertInteraction.messageType = data.messageType;
       insertInteraction.actionType = ActionType.IN;
-      insertInteraction.sessionId = sessionId;
-      insertInteraction.sendDate = new Date();
+      insertInteraction.sessionId = generatedData.sessionId;
+      insertInteraction.sendDate = data.dateSend;
       insertInteraction.sendStatus = true;
-      insertInteraction.agentUsername = agentId;
-      await this.whatsappRepository.save(insertInteraction);
+      insertInteraction.agentUsername = generatedData.agentUsername;
+      await repoChat.save(insertInteraction);
+
       return {
         isError: false,
         data: "incoming success",

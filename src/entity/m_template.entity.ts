@@ -5,10 +5,10 @@ import {
   UpdateDateColumn,
   JoinColumn,
   ManyToOne,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
 } from "typeorm";
 import { User } from "./user.entity";
- 
+
 @Entity()
 export class mTemplate {
   @PrimaryGeneratedColumn()
@@ -24,12 +24,12 @@ export class mTemplate {
   template_type: string;
 
   @Column({
-    default: true
+    default: true,
   })
   isActive: boolean;
 
   @Column({
-    default: false
+    default: false,
   })
   isDeleted: boolean;
 

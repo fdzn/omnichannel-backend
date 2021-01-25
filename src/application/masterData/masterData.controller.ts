@@ -8,7 +8,7 @@ import {
   Request,
   HttpCode,
   UseGuards,
-  Put
+  Put,
 } from "@nestjs/common";
 import { Response } from "express";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
@@ -34,7 +34,7 @@ import {
   EditUserPut,
   DeleteUser,
   AddWorkOrderPost,
-  EditWorkOrderPut
+  EditWorkOrderPut,
 } from "./dto/masterData.dto";
 
 @ApiBearerAuth()

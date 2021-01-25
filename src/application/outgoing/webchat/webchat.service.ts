@@ -1,7 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
+
+//SERVICE
 import { LibsService } from "../../libs/services/lib.service";
+import { HeaderService } from "../../header/header.service";
 //ENTITY
 import { InteractionChat } from "../../../entity/interaction_chat.entity";
 import { ActionType } from "src/entity/templates/generalChat";
@@ -12,11 +15,15 @@ import { OutgoingWebchat } from "./dto/outgoing-webchat.dto";
 export class WebchatService {
   constructor(
     private readonly libsService: LibsService,
+    private readonly headerService: HeaderService,
     @InjectRepository(InteractionChat)
     private readonly webchatRepository: Repository<InteractionChat>
   ) {}
 
   async saveInteraction(data: OutgoingWebchat, payload) {
+    const now = new Date();
+    const lastDate = data.lastDate ? new Date(data.lastDate) : now;
+    const responseTime = (now.getTime() - lastDate.getTime()) / 1000;
     let insertInteraction = new InteractionChat();
     insertInteraction.channelId = "webchat";
     insertInteraction.convId = data.convId;
@@ -37,7 +44,9 @@ export class WebchatService {
 
     insertInteraction.actionType = ActionType.OUT;
     insertInteraction.sessionId = data.sessionId;
+    insertInteraction.ResponseTime = responseTime;
     insertInteraction.agentUsername = payload.username;
+    this.headerService.updateFrDate(data.sessionId);
     return this.webchatRepository.save(insertInteraction);
   }
 

@@ -26,7 +26,7 @@ import {
   EditUserPut,
   DeleteUser,
   AddWorkOrderPost,
-  EditWorkOrderPut
+  EditWorkOrderPut,
 } from "./dto/masterData.dto";
 
 @Injectable()
@@ -62,7 +62,7 @@ export class MasterDataService {
           "category.id",
           "category.name",
           "category.updaterUsername",
-          "category.updatedAt"
+          "category.updatedAt",
         ])
         .where("category.isActive = true")
         .andWhere("category.isDeleted = false");
@@ -71,7 +71,7 @@ export class MasterDataService {
         sql.andWhere(
           new Brackets((qb) => {
             qb.where("category.name LIKE :keyword", {
-              keyword: `%${keyword}%`
+              keyword: `%${keyword}%`,
             });
           })
         );
@@ -84,12 +84,12 @@ export class MasterDataService {
 
       const output = {
         totalData: count,
-        listData: result
+        listData: result,
       };
       return {
         isError: false,
         data: output,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -115,7 +115,7 @@ export class MasterDataService {
           "subCategory.id",
           "subCategory.name",
           "subCategory.updaterUsername",
-          "subCategory.updatedAt"
+          "subCategory.updatedAt",
         ])
         .leftJoin("subCategory.category", "category")
         .where("subCategory.isActive = true")
@@ -127,9 +127,9 @@ export class MasterDataService {
         sql.andWhere(
           new Brackets((qb) => {
             qb.where("subCategory.name LIKE :keyword", {
-              keyword: `%${keyword}%`
+              keyword: `%${keyword}%`,
             }).orWhere("category.name LIKE :keyword", {
-              keyword: `%${keyword}%`
+              keyword: `%${keyword}%`,
             });
           })
         );
@@ -141,12 +141,12 @@ export class MasterDataService {
       const result = await sql.getMany();
       const output = {
         totalData: count,
-        listData: result
+        listData: result,
       };
       return {
         isError: false,
         data: output,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -158,12 +158,12 @@ export class MasterDataService {
     try {
       const result = await this.mCategoryRepository.find({
         select: ["id", "name"],
-        where: { isDeleted: false, isActive: true }
+        where: { isDeleted: false, isActive: true },
       });
       return {
         isError: false,
         data: result,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -178,13 +178,13 @@ export class MasterDataService {
         where: {
           categoryId: data.categoryId,
           isDeleted: false,
-          isActive: true
-        }
+          isActive: true,
+        },
       });
       return {
         isError: false,
         data: result,
-        statusCode: 201
+        statusCode: 201,
       };
     } catch (error) {
       console.error(error);
@@ -204,18 +204,18 @@ export class MasterDataService {
           "email",
           "unit",
           "group",
-          "isLogin"
+          "isLogin",
         ],
         where: {
           isDeleted: false,
-          isActive: true
-        }
+          isActive: true,
+        },
       });
 
       return {
         isError: false,
         data: result,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -247,7 +247,7 @@ export class MasterDataService {
           "user.isDeleted",
           "user.updater",
           "user.createdAt",
-          "user.updatedAt"
+          "user.updatedAt",
         ]);
 
       keywords.forEach((keyword) => {
@@ -255,7 +255,7 @@ export class MasterDataService {
         const keywordValue = keyword.value;
         // console.log(`user.${keywordKey} LIKE ${keywordValue}`);
         sql.andWhere(`user.${keywordKey} LIKE :${keywordKey}`, {
-          [keywordKey]: `%${keywordValue}%`
+          [keywordKey]: `%${keywordValue}%`,
         });
       });
 
@@ -267,12 +267,12 @@ export class MasterDataService {
 
       const output = {
         totalData: count,
-        listData: result
+        listData: result,
       };
       return {
         isError: false,
         data: output,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -296,7 +296,7 @@ export class MasterDataService {
       return {
         isError: false,
         data: result,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -323,7 +323,7 @@ export class MasterDataService {
 
       const result = await this.userRepository.update(
         {
-          username: data.username
+          username: data.username,
         },
         updatedUser
       );
@@ -335,17 +335,17 @@ export class MasterDataService {
           "Release because Username Changed"
         );
       }
-      if (!data.hasOwnProperty("newUsername") && updatedUser.hasOwnProperty("isLogin")) {
-        await this.agentLogRelease(
-          updatedUser["username"],
-          user.username
-        );
+      if (
+        !data.hasOwnProperty("newUsername") &&
+        updatedUser.hasOwnProperty("isLogin")
+      ) {
+        await this.agentLogRelease(updatedUser["username"], user.username);
       }
 
       return {
         isError: false,
         data: result,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -361,14 +361,14 @@ export class MasterDataService {
       deletedUser.updater = user.username;
       const result = await this.userRepository.update(
         {
-          username: data.username
+          username: data.username,
         },
         deletedUser
       );
       return {
         isError: false,
         data: result,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -385,7 +385,7 @@ export class MasterDataService {
       return {
         isError: false,
         data: result,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -400,14 +400,14 @@ export class MasterDataService {
       newCategory.updaterUsername = user.username;
       const result = await this.mCategoryRepository.update(
         {
-          id: data.id
+          id: data.id,
         },
         newCategory
       );
       return {
         isError: false,
         data: result,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -422,14 +422,14 @@ export class MasterDataService {
       newCategory.updaterUsername = user.username;
       const result = await this.mCategoryRepository.update(
         {
-          id: data.id
+          id: data.id,
         },
         newCategory
       );
       return {
         isError: false,
         data: result,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -447,7 +447,7 @@ export class MasterDataService {
       return {
         isError: false,
         data: result,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -463,14 +463,14 @@ export class MasterDataService {
       newSubCategory.updaterUsername = user.username;
       const result = await this.mSubCategoryRepository.update(
         {
-          id: data.id
+          id: data.id,
         },
         newSubCategory
       );
       return {
         isError: false,
         data: result,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -485,14 +485,14 @@ export class MasterDataService {
       newSubCategory.updaterUsername = user.username;
       const result = await this.mSubCategoryRepository.update(
         {
-          id: data.id
+          id: data.id,
         },
         newSubCategory
       );
       return {
         isError: false,
         data: result,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -512,19 +512,19 @@ export class MasterDataService {
           "isDeleted",
           "updaterUsername",
           "createdAt",
-          "updatedAt"
+          "updatedAt",
         ],
         where: {
           isDeleted: false,
           isActive: true,
-          template_type: data.templateType
+          template_type: data.templateType,
         },
-        take: data.limit === 0 ? 100000 : data.limit
+        take: data.limit === 0 ? 100000 : data.limit,
       });
       return {
         isError: false,
         data: result,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -548,7 +548,7 @@ export class MasterDataService {
           "m_template.isDeleted",
           "m_template.updaterUsername",
           "m_template.createdAt",
-          "m_template.updatedAt"
+          "m_template.updatedAt",
         ]);
 
       keywords.forEach((keyword) => {
@@ -556,7 +556,7 @@ export class MasterDataService {
         const keywordValue = keyword.value;
         // console.log(`m_template.${keywordKey} LIKE ${keywordValue}`);
         sql.andWhere(`m_template.${keywordKey} LIKE :${keywordKey}`, {
-          [keywordKey]: `%${keywordValue}%`
+          [keywordKey]: `%${keywordValue}%`,
         });
       });
 
@@ -568,12 +568,12 @@ export class MasterDataService {
 
       const output = {
         totalData: count,
-        listData: result
+        listData: result,
       };
       return {
         isError: false,
         data: output,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -593,7 +593,7 @@ export class MasterDataService {
       return {
         isError: false,
         data: result,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -612,14 +612,14 @@ export class MasterDataService {
       updatedTemplate.updaterUsername = user.username;
       const result = await this.mTemplateRepository.update(
         {
-          id: data.id
+          id: data.id,
         },
         updatedTemplate
       );
       return {
         isError: false,
         data: result,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -634,14 +634,14 @@ export class MasterDataService {
       deletedTemplate.updaterUsername = user.username;
       const result = await this.mTemplateRepository.update(
         {
-          id: data.id
+          id: data.id,
         },
         deletedTemplate
       );
       return {
         isError: false,
         data: result,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -664,7 +664,7 @@ export class MasterDataService {
           "work_order.lastDist",
           "work_order.createdAt",
           "work_order.updatedAt",
-          "work_order.updaterUsername"
+          "work_order.updaterUsername",
         ]);
 
       keywords.forEach((keyword) => {
@@ -672,7 +672,7 @@ export class MasterDataService {
         const keywordValue = keyword.value;
         // console.log(`work_order.${keywordKey} LIKE ${keywordValue}`);
         sql.andWhere(`work_order.${keywordKey} LIKE :${keywordKey}`, {
-          [keywordKey]: `%${keywordValue}%`
+          [keywordKey]: `%${keywordValue}%`,
         });
       });
 
@@ -686,12 +686,12 @@ export class MasterDataService {
 
       const output = {
         totalData: count,
-        listData: result
+        listData: result,
       };
       return {
         isError: false,
         data: output,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -716,7 +716,7 @@ export class MasterDataService {
       return {
         isError: false,
         data: result,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -741,14 +741,14 @@ export class MasterDataService {
       }
       const result = await this.workOrderRepository.update(
         {
-          id: data.id
+          id: data.id,
         },
         updatedWorkOrder
       );
       return {
         isError: false,
         data: result,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -763,8 +763,8 @@ export class MasterDataService {
         select: ["id"],
         where: {
           username,
-          timeEnd: IsNull()
-        }
+          timeEnd: IsNull(),
+        },
       });
 
       console.log("foundUser release", foundUser);
@@ -779,7 +779,7 @@ export class MasterDataService {
 
         return await this.agentLogRepository.update(
           {
-            id: foundUser.id
+            id: foundUser.id,
           },
           updateAgentLog
         );

@@ -1,12 +1,6 @@
 import { IsNotEmpty, IsInt, IsString } from "class-validator";
 
-export class GetCustomerDetailPost {
-  @IsNotEmpty()
-  @IsInt()
-  custId: number;
-}
-
-export class UpdateCustomerPut {
+export class UpdateCustomerByKeyPut {
   @IsNotEmpty()
   @IsInt()
   customerId: number;
@@ -18,6 +12,18 @@ export class UpdateCustomerPut {
   @IsNotEmpty()
   @IsString()
   value: string;
+}
+
+export class UpdateCustomerPut {
+  name: string;
+  gender: string;
+  address: string;
+  city: string;
+  company: string;
+  phone: string;
+  email: string;
+  telegram: string;
+  priority: number;
 }
 
 export class UpdateContactPut {

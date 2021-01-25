@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
-import { v4 as uuid } from "uuid";
+import { nanoid } from "nanoid";
 import { Repository, getManager } from "typeorm";
 
 //ENTITY
@@ -18,7 +18,7 @@ export class SessionService {
   ) {}
 
   generate(channelId: string): string {
-    const sessionId = `${channelId}-${uuid()}`;
+    const sessionId = `${channelId}-${nanoid()}`;
     return sessionId;
   }
 
@@ -51,24 +51,5 @@ export class SessionService {
     insertHeader.account = account;
     insertHeader.startDate = new Date();
     return await this.sessionRepository.save(insertHeader);
-  }
-
-  async findAgentAvailable(channelId: string) {
-    const entityManager = getManager();
-    let data = await entityManager.query(
-      "SELECT a.agentUsername,a.slot,a.`limit` FROM work_order a LEFT JOIN user b on a.agentUsername = b.username WHERE a.slot < `limit` and a.channelId = ? and isAux = 0 ORDER BY slot ASC, lastDist ASC LIMIT 1",
-      [channelId]
-    );
-
-    if (data.length > 0) {
-      let updateWorkOrder = new WorkOrder();
-      updateWorkOrder.slot = data[0].slot + 1;
-      updateWorkOrder.lastDist = new Date();
-      this.workOrderRepository.update(
-        { channelId: channelId, agentUsername: data[0].agentUsername },
-        updateWorkOrder
-      );
-    }
-    return data;
   }
 }

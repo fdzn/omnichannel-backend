@@ -1,5 +1,6 @@
 import {
   Connection,
+  getRepository,
   EntitySubscriberInterface,
   EventSubscriber,
   InsertEvent,
@@ -7,14 +8,12 @@ import {
 
 //ENTITY
 import { InteractionHeaderHistory } from "../entity/interaction_header_history.entity";
-import { InteractionLibService } from "../application/libs/services/interaction.service";
+import { InteractionHeaderHistoryToday } from "../entity/interaction_header_history_today.entity";
+
 @EventSubscriber()
 export class InteractionHeaderHistorySubscriber
   implements EntitySubscriberInterface<InteractionHeaderHistory> {
-  constructor(
-    connection: Connection,
-    private readonly InteractionLibService: InteractionLibService
-  ) {
+  constructor(connection: Connection) {
     connection.subscribers.push(this);
   }
 
@@ -26,6 +25,8 @@ export class InteractionHeaderHistorySubscriber
     if (event.metadata.targetName !== "InteractionHeaderHistory") {
       return;
     }
-    this.InteractionLibService.moveToTableToday(event.entity);
+
+    const repoToday = getRepository(InteractionHeaderHistoryToday);
+    repoToday.save(event.entity);
   }
 }

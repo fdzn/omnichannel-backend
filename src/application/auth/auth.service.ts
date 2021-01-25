@@ -1,6 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { IsNull, Repository } from "typeorm";
+import { getRepository, IsNull } from "typeorm";
 import { JwtService } from "@nestjs/jwt";
 
 import { User } from "../../entity/user.entity";
@@ -10,47 +9,38 @@ import { AgentLog } from "../../entity/agent_log.entity";
 
 @Injectable()
 export class AuthService {
-  constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-    @InjectRepository(AgentLog)
-    private readonly agentLogRepository: Repository<AgentLog>,
-    @InjectRepository(InteractionHeader)
-    private readonly sessionRepository: Repository<InteractionHeader>,
-    @InjectRepository(WorkOrder)
-    private readonly workOrderRepository: Repository<WorkOrder>,
-    private readonly jwtService: JwtService
-  ) {}
+  constructor(private readonly jwtService: JwtService) {}
 
   async validateUser(username: string, password: string) {
     try {
-      const foundUser = await this.userRepository.findOne({
+      const repoUser = getRepository(User);
+      const foundUser = await repoUser.findOne({
         select: ["username", "password"],
         where: {
           username: username,
           isDeleted: false,
           isLogin: false,
-          isActive: true
-        }
+          isActive: true,
+        },
       });
 
       if (!foundUser) {
         return {
           isError: true,
-          data: "username is not found"
+          data: "username is not found",
         };
       }
 
       if (password !== foundUser.password) {
         return {
           isError: true,
-          data: "password incorrect"
+          data: "password incorrect",
         };
       }
 
       return {
         isError: false,
-        data: "authentication success"
+        data: "authentication success",
       };
     } catch (error) {
       console.error(error);
@@ -68,7 +58,8 @@ export class AuthService {
       newAgentLog.timeStart = new Date();
       newAgentLog.updater = username;
 
-      return await this.agentLogRepository.save(newAgentLog);
+      const repoAgentLog = getRepository(AgentLog);
+      return await repoAgentLog.save(newAgentLog);
     } catch (error) {
       console.log(error);
       throw error;
@@ -78,12 +69,13 @@ export class AuthService {
   async agentLogLogout(username) {
     try {
       // Update Agent Log
-      const foundUser = await this.agentLogRepository.findOne({
+      const repoAgentLog = getRepository(AgentLog);
+      const foundUser = await repoAgentLog.findOne({
         select: ["id"],
         where: {
           username,
-          timeEnd: IsNull()
-        }
+          timeEnd: IsNull(),
+        },
       });
       console.log("foundUser", foundUser);
       if (foundUser) {
@@ -93,16 +85,15 @@ export class AuthService {
         updateAgentLog.timeEnd = new Date();
         updateAgentLog.updater = username;
 
-        return await this.agentLogRepository.update(
+        return await repoAgentLog.update(
           {
-            id: foundUser.id
+            id: foundUser.id,
           },
           updateAgentLog
         );
       }
 
       return;
-
     } catch (error) {
       console.log(error);
       throw error;
@@ -111,14 +102,15 @@ export class AuthService {
 
   async updateLoginData(username: string) {
     const updateData = {
-      isLogin: true
+      isLogin: true,
     };
-
-    return await this.userRepository.update({ username: username }, updateData);
+    const repoUser = getRepository(User);
+    return await repoUser.update({ username: username }, updateData);
   }
 
   async getDetailUser(username: string) {
-    const foundUser = await this.userRepository.findOne({
+    const repoUser = getRepository(User);
+    const foundUser = await repoUser.findOne({
       select: [
         "username",
         "name",
@@ -129,11 +121,11 @@ export class AuthService {
         "passwordPBX",
         "unitId",
         "groupId",
-        "isAux"
+        "isAux",
       ],
       where: {
-        username: username
-      }
+        username: username,
+      },
     });
 
     let detailUser;
@@ -153,7 +145,7 @@ export class AuthService {
       return {
         isError: false,
         data: accessToken,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -163,11 +155,16 @@ export class AuthService {
 
   async logout(payload) {
     try {
+      const repoHeader = getRepository(InteractionHeader);
+      const repoWorkOrder = getRepository(WorkOrder);
+      const repoUser = getRepository(User);
+
       //UPDATE INTERACTION HEADER
       const updateHeader = {
-        agentUsername: null
+        agentUsername: null,
       };
-      await this.sessionRepository.update(
+
+      await repoHeader.update(
         { agentUsername: payload.username },
         updateHeader
       );
@@ -175,7 +172,8 @@ export class AuthService {
       //UPDATE WORK ORDER
       let updateWorkOrder = new WorkOrder();
       updateWorkOrder.slot = 0;
-      await this.workOrderRepository.update(
+
+      await repoWorkOrder.update(
         { agentUsername: payload.username },
         updateWorkOrder
       );
@@ -183,19 +181,16 @@ export class AuthService {
       //UPDATE STATUS AGENT
       const updateUser = {
         isLogin: false,
-        isAux: true
+        isAux: true,
       };
-      await this.userRepository.update(
-        { username: payload.username },
-        updateUser
-      );
+      await repoUser.update({ username: payload.username }, updateUser);
 
       await this.agentLogLogout(payload.username);
 
       return {
         isError: false,
         data: "logout Success",
-        statusCode: 201
+        statusCode: 201,
       };
     } catch (error) {
       console.error(error);

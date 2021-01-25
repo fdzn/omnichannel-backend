@@ -2,7 +2,11 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import * as FormData from "form-data";
+
+//SERVICE
 import { LibsService } from "../../libs/services/lib.service";
+import { HeaderService } from "../../header/header.service";
+
 //ENTITY
 import { InteractionChat } from "../../../entity/interaction_chat.entity";
 import { ActionType } from "src/entity/templates/generalChat";
@@ -13,11 +17,15 @@ import { OutgoingWhatsapp } from "./dto/outgoing-whatsapp.dto";
 export class WhatsappService {
   constructor(
     private readonly libsService: LibsService,
+    private readonly headerService: HeaderService,
     @InjectRepository(InteractionChat)
     private readonly whatsappRepository: Repository<InteractionChat>
   ) {}
 
   async saveInteraction(data: OutgoingWhatsapp, payload) {
+    const now = new Date();
+    const lastDate = data.lastDate ? new Date(data.lastDate) : now;
+    const responseTime = (now.getTime() - lastDate.getTime()) / 1000;
     let insertInteraction = new InteractionChat();
     insertInteraction.convId = data.convId;
     insertInteraction.from = data.from;
@@ -37,7 +45,9 @@ export class WhatsappService {
 
     insertInteraction.actionType = ActionType.OUT;
     insertInteraction.sessionId = data.sessionId;
+    insertInteraction.ResponseTime = responseTime;
     insertInteraction.agentUsername = payload.username;
+    this.headerService.updateFrDate(data.sessionId);
     return this.whatsappRepository.save(insertInteraction);
   }
 

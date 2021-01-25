@@ -7,8 +7,10 @@ import { LibsModule } from "../application/libs/libs.module";
 
 //ENTITY
 import { InteractionHeader } from "../entity/interaction_header.entity";
+import { User } from "../entity/user.entity";
+
 @Module({
-  imports: [TypeOrmModule.forFeature([InteractionHeader]), LibsModule],
+  imports: [TypeOrmModule.forFeature([InteractionHeader, User]), LibsModule],
   providers: [EventsGateway],
   exports: [EventsGateway],
 })

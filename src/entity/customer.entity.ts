@@ -38,6 +38,15 @@ export class Customer {
   @Column({ length: 70, nullable: true })
   company: string;
 
+  @Column({ length: 20, nullable: true, unique: true })
+  phone: string;
+
+  @Column({ length: 100, nullable: true, unique: true })
+  email: string;
+
+  @Column({ length: 50, nullable: true, unique: true })
+  telegram: string;
+
   @Column({ type: "smallint", default: 0 })
   priority: number;
 
