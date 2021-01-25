@@ -1,4 +1,9 @@
-import { IsNotEmpty, IsOptional, IsInt } from "class-validator";
+import { IsEnum, IsNotEmpty, IsOptional, IsInt } from "class-validator";
+
+export enum StatusCall {
+  CONNECT = "connect",
+  DISCONNECT = "disconnect",
+}
 
 export class CwcPost {
   @IsNotEmpty()
@@ -23,4 +28,8 @@ export class CwcPost {
   @IsOptional()
   @IsInt()
   sentiment: number;
+
+  @IsOptional()
+  @IsEnum(StatusCall)
+  type: StatusCall;
 }

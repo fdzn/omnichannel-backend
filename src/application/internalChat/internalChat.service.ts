@@ -1,6 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository, getManager, getRepository } from "typeorm";
+import { getManager, getRepository } from "typeorm";
 
 //ENTITY
 import { InternalChat } from "../../entity/internal_chat.entity";
@@ -10,13 +9,6 @@ import { SendPost, GetChatPost } from "./dto/internalChat.dto";
 
 @Injectable()
 export class InternalChatService {
-  constructor(
-    @InjectRepository(InternalChat)
-    private readonly internalChatRepository: Repository<InternalChat>,
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>
-  ) {}
-
   async send(data: SendPost, payload) {
     try {
       let sentData = new InternalChat();
@@ -34,7 +26,8 @@ export class InternalChatService {
         sentData.media = data.media;
       }
 
-      const sentStatus = await this.internalChatRepository.save(sentData);
+      const repoInternalChat = getRepository(InternalChat);
+      const sentStatus = await repoInternalChat.save(sentData);
 
       return {
         isError: false,
@@ -50,7 +43,8 @@ export class InternalChatService {
   async getChat(data: GetChatPost, payload) {
     try {
       const limit = 10;
-      const listChat = await this.internalChatRepository.find({
+      const repoInternalChat = getRepository(InternalChat);
+      const listChat = await repoInternalChat.find({
         where: [
           { room: `${payload.username}-${data.to}` },
           { room: `${data.to}-${payload.username}` },
@@ -74,7 +68,8 @@ export class InternalChatService {
 
   async getChatAll(data: GetChatPost, payload) {
     try {
-      const listChat = await this.internalChatRepository.find({
+      const repoInternalChat = getRepository(InternalChat);
+      const listChat = await repoInternalChat.find({
         where: [
           { room: `${payload.username}-${data.to}` },
           { room: `${data.to}-${payload.username}` },
@@ -96,7 +91,8 @@ export class InternalChatService {
 
   async getUser(payload) {
     try {
-      let listUser = await this.userRepository.find({
+      const repoUser = getRepository(User);
+      let listUser = await repoUser.find({
         select: [
           "username",
           "name",
@@ -117,7 +113,8 @@ export class InternalChatService {
       output = listUser.filter((x) => x.username != payload.username);
       for (let index = 0; index < output.length; index++) {
         const x = output[index];
-        const lastChat = await this.internalChatRepository.findOne({
+        const repoInternalChat = getRepository(InternalChat);
+        const lastChat = await repoInternalChat.findOne({
           where: [
             { room: `${payload.username}-${x.username}` },
             { room: `${x.username}-${payload.username}` },
@@ -148,7 +145,8 @@ export class InternalChatService {
     try {
       const entityManager = getManager();
       const query = "";
-      const listChat = await this.internalChatRepository.find({
+      const repoInternalChat = getRepository(InternalChat);
+      const listChat = await repoInternalChat.find({
         where: [{ from: payload.username }, { to: payload.username }],
         order: {
           id: "DESC",

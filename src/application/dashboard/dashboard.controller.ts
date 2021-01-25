@@ -71,6 +71,13 @@ export class DashboardController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get("statusCall/:dateFrom/:dateTo/:channelId/:agentUsername")
+  async statusCall(@Param() params: ParamGeneral, @Res() res: Response) {
+    const result = await this.dashboardService.statusCall(params);
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get("logInteraction/:dateFrom/:dateTo/:channelId/:agentUsername/:page")
   async logInteraction(
     @Param() params: ParamLogInteraction,
