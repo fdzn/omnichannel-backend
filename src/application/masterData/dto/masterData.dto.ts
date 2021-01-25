@@ -112,12 +112,24 @@ export class EditCategoryPut {
   id: number;
   @IsNotEmpty()
   name: string;
+  @IsOptional()
+  @IsNotEmpty()
+  isActive: boolean;
+  @IsOptional()
+  @IsNotEmpty()
+  isDeleted: boolean;
 }
 
 export class EditSubCategoryPut extends EditCategoryPut {
   @IsNotEmpty()
   @IsInt()
   categoryId: number;
+  @IsOptional()
+  @IsNotEmpty()
+  isActive: boolean;
+  @IsOptional()
+  @IsNotEmpty()
+  isDeleted: boolean;
 }
 
 export class EditTemplatePut {

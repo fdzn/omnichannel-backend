@@ -474,6 +474,8 @@ export class MasterDataService {
       let newSubCategory = new mSubCategory();
       newSubCategory.categoryId = data.categoryId;
       newSubCategory.name = data.name;
+      newSubCategory.isActive = data.isActive;
+      newSubCategory.isDeleted = data.isDeleted;
       newSubCategory.updaterUsername = user.username;
       const result = await this.mSubCategoryRepository.update(
         {
