@@ -295,6 +295,7 @@ export class InteractionService {
       insertCwc.sentiment = data.sentiment;
       insertCwc.sessionId = data.sessionId;
       insertCwc.subcategoryId = data.subcategoryId;
+      insertCwc.statusCall = data.statusCall;
       insertCwc.updaterUsername = payload.username;
       const resultInsert = await this.cwcRepository.save(insertCwc);
 
