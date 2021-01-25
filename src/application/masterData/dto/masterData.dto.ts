@@ -79,6 +79,10 @@ export class AddWorkOrderPost {
   @IsInt()
   limit: number;
 }
+export class AddGroupIdPost {
+  @IsNotEmpty()
+  name: string;
+}
 
 export class AddTemplatePost {
   @IsNotEmpty()
@@ -104,6 +108,18 @@ export class EditWorkOrderPut {
   @IsNotEmpty()
   @IsInt()
   limit: number;
+}
+export class EditGroupIdPut {
+  @IsNotEmpty()
+  @IsInt()
+  id: number;
+  @IsOptional()
+  @IsNotEmpty()
+  name: string;
+  @IsOptional()
+  @IsNotEmpty()
+  @IsBoolean()
+  isActive: boolean;
 }
 
 export class EditCategoryPut {

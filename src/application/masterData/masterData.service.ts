@@ -9,6 +9,7 @@ import { mTemplate } from "../../entity/m_template.entity";
 import { WorkOrder } from "../../entity/work_order.entity";
 import { User } from "../../entity/user.entity";
 import { AgentLog } from "../../entity/agent_log.entity";
+import { mGroup } from "../../entity/m_group.entity";
 
 //DTO
 import {
@@ -26,7 +27,9 @@ import {
   EditUserPut,
   DeleteUser,
   AddWorkOrderPost,
-  EditWorkOrderPut
+  EditWorkOrderPut,
+  AddGroupIdPost,
+  EditGroupIdPut
 } from "./dto/masterData.dto";
 
 @Injectable()
@@ -43,7 +46,9 @@ export class MasterDataService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     @InjectRepository(WorkOrder)
-    private readonly workOrderRepository: Repository<WorkOrder>
+    private readonly workOrderRepository: Repository<WorkOrder>,
+    @InjectRepository(mGroup)
+    private readonly mGroupRepository: Repository<mGroup>
   ) {}
 
   async getCategoryPost(payload: GeneralTablePost) {
@@ -815,6 +820,116 @@ export class MasterDataService {
       return;
     } catch (error) {
       throw error;
+    }
+  }
+
+  async getGroupIdPost(payload: GeneralTablePost) {
+    try {
+      const page = (payload.page - 1) * payload.limit;
+      let keywords = payload.keywords || [];
+
+      let sql = this.mGroupRepository
+        .createQueryBuilder("m_group")
+        .select([
+          "m_group.id",
+          "m_group.name",
+          "m_group.isActive",
+          "m_group.isDeleted",
+          "m_group.createdAt",
+          "m_group.updatedAt",
+          "m_group.updaterUsername"
+        ]);
+
+      keywords.forEach((keyword) => {
+        const keywordKey = keyword.key.trim();
+        const keywordValue = keyword.value;
+        sql.andWhere(`m_group.${keywordKey} LIKE :${keywordKey}`, {
+          [keywordKey]: `%${keywordValue}%`
+        });
+      });
+
+      const count = await sql.getCount();
+      sql.skip(page);
+      sql.take(payload.limit);
+
+      const result = await sql.getMany();
+
+      const output = {
+        totalData: count,
+        listData: result
+      };
+      return {
+        isError: false,
+        data: output,
+        statusCode: 200
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async addGroupId(data: AddGroupIdPost, user) {
+    try {
+      let newGroupId = new mGroup();
+      newGroupId.name = data.name;
+      newGroupId.updaterUsername = user.username;
+      const result = await this.mGroupRepository.save(newGroupId);
+      return {
+        isError: false,
+        data: result,
+        statusCode: 200
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async editGroupId(data: EditGroupIdPut, user) {
+    try {
+      let updatedGroupId = new mGroup();
+      for (const key in data) {
+        if (Object.prototype.hasOwnProperty.call(data, key)) {
+          updatedGroupId[key] = data[key];
+        }
+      }
+      updatedGroupId.updaterUsername = user.username;
+      const result = await this.mGroupRepository.update(
+        {
+          id: data.id
+        },
+        updatedGroupId
+      );
+      return {
+        isError: false,
+        data: result,
+        statusCode: 200
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+  async deleteGroupId(data: DeleteGeneralPut, user) {
+    try {
+      let deletedGroupId = new mGroup();
+      deletedGroupId.isDeleted = true;
+      deletedGroupId.updaterUsername = user.username;
+      const result = await this.mGroupRepository.update(
+        {
+          id: data.id
+        },
+        deletedGroupId
+      );
+      return {
+        isError: false,
+        data: result,
+        statusCode: 200
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
     }
   }
 }

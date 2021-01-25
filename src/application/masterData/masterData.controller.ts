@@ -35,6 +35,8 @@ import {
   DeleteUser,
   AddWorkOrderPost,
   EditWorkOrderPut,
+  AddGroupIdPost,
+  EditGroupIdPut,
 } from "./dto/masterData.dto";
 
 @ApiBearerAuth()
@@ -333,6 +335,58 @@ export class MasterDataController {
     @Res() res: Response
   ) {
     const result = await this.masterDataService.editWorkOrder(
+      payload,
+      authData.user
+    );
+    res.status(result.statusCode).send(result);
+  }
+
+  @Post("groupId")
+  @HttpCode(200)
+  async getGroupId(@Body() payload: GeneralTablePost, @Res() res: Response) {
+    const result = await this.masterDataService.getGroupIdPost(payload);
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post("groupId/add")
+  @HttpCode(200)
+  async addGroupId(
+    @Request() authData,
+    @Body() payload: AddGroupIdPost,
+    @Res() res: Response
+  ) {
+    const result = await this.masterDataService.addGroupId(
+      payload,
+      authData.user
+    );
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put("groupId/edit")
+  @HttpCode(200)
+  async editGroupId(
+    @Request() authData,
+    @Body() payload: EditGroupIdPut,
+    @Res() res: Response
+  ) {
+    const result = await this.masterDataService.editGroupId(
+      payload,
+      authData.user
+    );
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put("groupId/delete")
+  @HttpCode(200)
+  async deleteGroupId(
+    @Request() authData,
+    @Body() payload: DeleteGeneralPut,
+    @Res() res: Response
+  ) {
+    const result = await this.masterDataService.deleteGroupId(
       payload,
       authData.user
     );
