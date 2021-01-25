@@ -675,6 +675,7 @@ export class MasterDataService {
       let sql = this.workOrderRepository
         .createQueryBuilder("work_order")
         .select([
+          "work_order.id",
           "work_order.agentUsername",
           "work_order.channelId",
           "work_order.limit",
