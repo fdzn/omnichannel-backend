@@ -9,7 +9,11 @@ import { JwtAuthGuard } from "../auth/guards/jwt.auth.guard";
 import { DashboardService } from "./dashboard.service";
 
 //DTO
-import { ParamGeneral } from "./dto/dashboard.dto";
+import {
+  ParamGeneral,
+  ParamLogInteraction,
+  ParamTotalHandled,
+} from "./dto/dashboard.dto";
 
 @ApiBearerAuth()
 @ApiTags("Dashboard")
@@ -49,6 +53,47 @@ export class DashboardController {
   @Get("aht/:dateFrom/:dateTo/:channelId/:agentUsername")
   async aht(@Param() params: ParamGeneral, @Res() res: Response) {
     const result = await this.dashboardService.aht(params);
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get("art/:dateFrom/:dateTo/:channelId/:agentUsername")
+  async art(@Param() params: ParamGeneral, @Res() res: Response) {
+    const result = await this.dashboardService.art(params);
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get("scr/:dateFrom/:dateTo/:channelId/:agentUsername")
+  async scr(@Param() params: ParamGeneral, @Res() res: Response) {
+    const result = await this.dashboardService.scr(params);
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get("logInteraction/:dateFrom/:dateTo/:channelId/:agentUsername/:page")
+  async logInteraction(
+    @Param() params: ParamLogInteraction,
+    @Res() res: Response
+  ) {
+    const result = await this.dashboardService.logInteraction(params);
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get("totalHandledByChannel/:dateFrom/:dateTo/:agentUsername")
+  async totalHandledByChannel(
+    @Param() params: ParamTotalHandled,
+    @Res() res: Response
+  ) {
+    const result = await this.dashboardService.totalHandledByChannel(params);
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get("sla/:dateFrom/:dateTo/:channelId/:agentUsername")
+  async sla(@Param() params: ParamGeneral, @Res() res: Response) {
+    const result = await this.dashboardService.sla(params);
     res.status(result.statusCode).send(result);
   }
 

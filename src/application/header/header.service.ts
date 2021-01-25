@@ -26,7 +26,7 @@ export class HeaderService {
     contact: ContactData
   ): Promise<{
     sessionId: string;
-    agentUsername: string,
+    agentUsername: string;
     customer: Customer;
     newInteraction: boolean;
   }> {
@@ -35,7 +35,7 @@ export class HeaderService {
       let output = {
         sessionId: undefined,
         customer: undefined,
-        agentUsername:undefined,
+        agentUsername: undefined,
         newInteraction: true,
       };
       if (!getConfig.multiSession) {
@@ -97,5 +97,12 @@ export class HeaderService {
       );
     }
     return data;
+  }
+
+  async updateFrDate(sessionId: string) {
+    const repo = getRepository(InteractionHeader);
+    let updateData = new InteractionHeader();
+    updateData.frDate = new Date();
+    return repo.update({ sessionId: sessionId }, updateData);
   }
 }

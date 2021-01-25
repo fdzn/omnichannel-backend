@@ -4,9 +4,13 @@ import { Between, getManager, getRepository } from "typeorm";
 import { InteractionHeader } from "../../entity/interaction_header.entity";
 import { InteractionHeaderHistory } from "../../entity/interaction_header_history.entity";
 import { InteractionHeaderHistoryToday } from "../../entity/interaction_header_history_today.entity";
-
+import { Setting } from "../../entity/setting.entity";
 import { LibsService } from "../libs/services/lib.service";
-import { ParamGeneral } from "./dto/dashboard.dto";
+import {
+  ParamGeneral,
+  ParamLogInteraction,
+  ParamTotalHandled,
+} from "./dto/dashboard.dto";
 @Injectable()
 export class DashboardService {
   constructor(private readonly libService: LibsService) {}
@@ -196,6 +200,223 @@ export class DashboardService {
       return {
         isError: false,
         data: result[0].result,
+        statusCode: 200,
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async art(payload: ParamGeneral) {
+    try {
+      const nowDate = this.libService.convertDate(new Date());
+      let table;
+      let dateFrom;
+      let dateTo;
+      let where = "";
+      if (nowDate == payload.dateFrom) {
+        table = "interaction_header_history_today";
+      } else {
+        table = "interaction_header_history";
+        dateFrom = payload.dateFrom;
+        dateTo = payload.dateTo;
+        where = `WHERE submitCwcDate BETWEEN "${dateFrom} 00:00:00" AND "${dateTo} 23:59:59"`;
+      }
+
+      const entityManager = getManager();
+      let query = `SELECT IFNULL(SEC_TO_TIME(ROUND(AVG(TIMESTAMPDIFF(SECOND,pickupDate,frDate)),0)),"00:00:00") as result FROM ${table} ${where}`;
+      if (payload.channelId != "0") {
+        if (where == "") {
+          query += `WHERE channelId='${payload.channelId}'`;
+        } else {
+          query += ` AND channelId='${payload.channelId}'`;
+        }
+      }
+      if (payload.agentUsername != "0") {
+        if (where == "") {
+          query += `WHERE agentUsername='${payload.agentUsername}'`;
+        } else {
+          query += ` AND agentUsername='${payload.agentUsername}'`;
+        }
+      }
+      console.log(query);
+      
+      let result = await entityManager.query(query);
+      return {
+        isError: false,
+        data: result[0].result,
+        statusCode: 200,
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async scr(payload: ParamGeneral) {
+    try {
+      const nowDate = this.libService.convertDate(new Date());
+
+      let repoHistory;
+      if (nowDate == payload.dateFrom) {
+        repoHistory = getRepository(InteractionHeaderHistoryToday);
+      } else {
+        repoHistory = getRepository(InteractionHeaderHistory);
+      }
+
+      let where = this.generateWhere(payload, "submitCwcDate");
+
+      let countOffered = 0;
+      let countABD = 0;
+      let scr = 0;
+      countOffered = await repoHistory.count({
+        where: where,
+      });
+
+      where["caseOut"] = 0;
+      countABD = await repoHistory.count({
+        where: where,
+      });
+
+      if (countOffered != 0) {
+        scr = (countOffered / countABD) * 100;
+      }
+      return {
+        isError: false,
+        data: scr,
+        statusCode: 200,
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async logInteraction(payload: ParamLogInteraction) {
+    try {
+      const nowDate = this.libService.convertDate(new Date());
+
+      let repoHistory;
+      if (nowDate == payload.dateFrom) {
+        repoHistory = getRepository(InteractionHeaderHistoryToday);
+      } else {
+        repoHistory = getRepository(InteractionHeaderHistory);
+      }
+
+      let where = this.generateWhere(payload, "submitCwcDate");
+      const limit = 10;
+      const logInteraction = await repoHistory.find({
+        where: where,
+        skip: Number(payload.page) * limit,
+        take: limit,
+      });
+
+      return {
+        isError: false,
+        data: logInteraction,
+        statusCode: 200,
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async totalHandledByChannel(payload: ParamTotalHandled) {
+    try {
+      const nowDate = this.libService.convertDate(new Date());
+      let table;
+      let dateFrom;
+      let dateTo;
+      let where = "";
+      let select = "SELECT channelId,count(1) as total";
+      let groupBy = "channelId";
+
+      if (nowDate == payload.dateFrom) {
+        table = "interaction_header_history_today";
+        dateFrom = nowDate;
+        dateTo = nowDate;
+      } else {
+        table = "interaction_header_history";
+        dateFrom = payload.dateFrom;
+        dateTo = payload.dateTo;
+        where = `WHERE submitCwcDate BETWEEN "${dateFrom} 00:00:00" AND "${dateTo} 23:59:59"`;
+      }
+
+      if (payload.agentUsername != "0") {
+        if (where == "") {
+          where += `WHERE agentUsername='${payload.agentUsername}'`;
+        } else {
+          where += ` AND agentUsername='${payload.agentUsername}'`;
+        }
+      }
+      const entityManager = getManager();
+      let queryHistory = `${select} from ${table} ${where} ${groupBy}`;
+
+      let resultHistory = await entityManager.query(queryHistory);
+
+      return {
+        isError: false,
+        data: resultHistory,
+        statusCode: 200,
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async sla(payload: ParamGeneral) {
+    try {
+      const nowDate = this.libService.convertDate(new Date());
+
+      //GET SLA
+      let repoSetting = getRepository(Setting);
+      const settingData = await repoSetting.findOne({
+        select: ["value"],
+        where: {
+          type: "sla",
+        },
+      });
+      const SLA = settingData.value;
+
+      let table;
+      let dateFrom;
+      let dateTo;
+      let where = "";
+      let select = `SELECT count(1) as total, SUM(CASE WHEN TIME_TO_SEC(TIMEDIFF(pickupDate,submitCwcDate)) < ${SLA} THEN 1 ELSE 0 END) as totalSLA`;
+      let groupBy = "";
+
+      if (nowDate == payload.dateFrom) {
+        table = "interaction_header_history_today";
+        dateFrom = nowDate;
+        dateTo = nowDate;
+      } else {
+        table = "interaction_header_history";
+        dateFrom = payload.dateFrom;
+        dateTo = payload.dateTo;
+        where = `WHERE submitCwcDate BETWEEN "${dateFrom} 00:00:00" AND "${dateTo} 23:59:59"`;
+      }
+
+      if (payload.agentUsername != "0") {
+        if (where == "") {
+          where += `WHERE agentUsername='${payload.agentUsername}'`;
+        } else {
+          where += ` AND agentUsername='${payload.agentUsername}'`;
+        }
+      }
+      const entityManager = getManager();
+      let queryHistory = `${select} from ${table} ${where} ${groupBy}`;
+      let { resultHistory } = await entityManager.query(queryHistory);
+
+      let result = 0;
+      if (resultHistory.total != 0) {
+        result = (resultHistory.totalSlA / resultHistory.total) * 100;
+      }
+      return {
+        isError: false,
+        data: result,
         statusCode: 200,
       };
     } catch (error) {

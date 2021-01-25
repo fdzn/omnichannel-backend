@@ -35,3 +35,25 @@ export class ParamGeneral {
   @IsString()
   channelId: string;
 }
+
+export class ParamLogInteraction {
+  @IsOnlyDate()
+  dateTo: string;
+  @IsOnlyDate()
+  dateFrom: string;
+  @IsString()
+  agentUsername: string;
+  @IsString()
+  channelId: string;
+  @IsString()
+  page: string;
+}
+
+export class ParamTotalHandled {
+  @IsOnlyDate()
+  dateTo: string;
+  @IsOnlyDate()
+  dateFrom: string;
+  @IsString()
+  agentUsername: string;
+}
