@@ -1,4 +1,4 @@
-import { IsDate, IsNotEmpty, IsOptional } from "class-validator";
+import { IsDateString, IsNotEmpty, IsOptional } from "class-validator";
 
 export class OutgoingWebchat {
   @IsNotEmpty()
@@ -20,6 +20,6 @@ export class OutgoingWebchat {
   media: string;
 
   @IsOptional()
-  @IsDate()
+  @IsDateString()
   lastDate: Date;
 }

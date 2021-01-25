@@ -241,7 +241,7 @@ export class DashboardService {
         }
       }
       console.log(query);
-      
+
       let result = await entityManager.query(query);
       return {
         isError: false,
@@ -331,7 +331,7 @@ export class DashboardService {
       let dateTo;
       let where = "";
       let select = "SELECT channelId,count(1) as total";
-      let groupBy = "channelId";
+      let groupBy = "group by channelId";
 
       if (nowDate == payload.dateFrom) {
         table = "interaction_header_history_today";
@@ -351,9 +351,10 @@ export class DashboardService {
           where += ` AND agentUsername='${payload.agentUsername}'`;
         }
       }
+
       const entityManager = getManager();
       let queryHistory = `${select} from ${table} ${where} ${groupBy}`;
-
+      console.log(queryHistory);
       let resultHistory = await entityManager.query(queryHistory);
 
       return {
@@ -379,6 +380,7 @@ export class DashboardService {
           type: "sla",
         },
       });
+
       const SLA = settingData.value;
 
       let table;
@@ -408,12 +410,18 @@ export class DashboardService {
       }
       const entityManager = getManager();
       let queryHistory = `${select} from ${table} ${where} ${groupBy}`;
-      let { resultHistory } = await entityManager.query(queryHistory);
 
+      let resultHistory = await entityManager.query(queryHistory);
       let result = 0;
-      if (resultHistory.total != 0) {
-        result = (resultHistory.totalSlA / resultHistory.total) * 100;
+      if (resultHistory.length > 0) {
+        const resultSLA = resultHistory[0];
+        if (resultSLA.total != 0) {
+          result =
+            (parseInt(resultSLA.totalSLA) / parseInt(resultSLA.total)) * 100;
+          result = Math.round(result);
+        }
       }
+
       return {
         isError: false,
         data: result,
