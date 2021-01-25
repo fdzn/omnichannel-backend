@@ -31,5 +31,5 @@ export class CwcPost {
 
   @IsOptional()
   @IsEnum(StatusCall)
-  type: StatusCall;
+  statusCall: StatusCall;
 }
