@@ -6,7 +6,7 @@ import {
   IsString,
   IsBoolean,
   IsEmail,
-  IsIn,
+  IsIn
 } from "class-validator";
 
 import { UserLevel } from "../../../entity/user.entity";
@@ -83,6 +83,10 @@ export class AddGroupIdPost {
   @IsNotEmpty()
   name: string;
 }
+export class AddUnitIdPost {
+  @IsNotEmpty()
+  name: string;
+}
 
 export class AddTemplatePost {
   @IsNotEmpty()
@@ -110,6 +114,18 @@ export class EditWorkOrderPut {
   limit: number;
 }
 export class EditGroupIdPut {
+  @IsNotEmpty()
+  @IsInt()
+  id: number;
+  @IsOptional()
+  @IsNotEmpty()
+  name: string;
+  @IsOptional()
+  @IsNotEmpty()
+  @IsBoolean()
+  isActive: boolean;
+}
+export class EditUnitIdPut {
   @IsNotEmpty()
   @IsInt()
   id: number;

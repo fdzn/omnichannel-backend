@@ -10,6 +10,7 @@ import { WorkOrder } from "../../entity/work_order.entity";
 import { User } from "../../entity/user.entity";
 import { AgentLog } from "../../entity/agent_log.entity";
 import { mGroup } from "../../entity/m_group.entity";
+import { mUnit } from "../../entity/m_unit.entity";
 
 //DTO
 import {
@@ -29,7 +30,9 @@ import {
   AddWorkOrderPost,
   EditWorkOrderPut,
   AddGroupIdPost,
-  EditGroupIdPut
+  EditGroupIdPut,
+  AddUnitIdPost,
+  EditUnitIdPut
 } from "./dto/masterData.dto";
 
 @Injectable()
@@ -48,7 +51,9 @@ export class MasterDataService {
     @InjectRepository(WorkOrder)
     private readonly workOrderRepository: Repository<WorkOrder>,
     @InjectRepository(mGroup)
-    private readonly mGroupRepository: Repository<mGroup>
+    private readonly mGroupRepository: Repository<mGroup>,
+    @InjectRepository(mUnit)
+    private readonly mUnitRepository: Repository<mUnit>
   ) {}
 
   async getCategoryPost(payload: GeneralTablePost) {
@@ -911,6 +916,7 @@ export class MasterDataService {
       return { isError: true, data: error.message, statusCode: 500 };
     }
   }
+
   async deleteGroupId(data: DeleteGeneralPut, user) {
     try {
       let deletedGroupId = new mGroup();
@@ -921,6 +927,117 @@ export class MasterDataService {
           id: data.id
         },
         deletedGroupId
+      );
+      return {
+        isError: false,
+        data: result,
+        statusCode: 200
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async getUnitIdPost(payload: GeneralTablePost) {
+    try {
+      const page = (payload.page - 1) * payload.limit;
+      let keywords = payload.keywords || [];
+
+      let sql = this.mUnitRepository
+        .createQueryBuilder("m_unit")
+        .select([
+          "m_unit.id",
+          "m_unit.name",
+          "m_unit.isActive",
+          "m_unit.isDeleted",
+          "m_unit.createdAt",
+          "m_unit.updatedAt",
+          "m_unit.updaterUsername"
+        ]);
+
+      keywords.forEach((keyword) => {
+        const keywordKey = keyword.key.trim();
+        const keywordValue = keyword.value;
+        sql.andWhere(`m_unit.${keywordKey} LIKE :${keywordKey}`, {
+          [keywordKey]: `%${keywordValue}%`
+        });
+      });
+
+      const count = await sql.getCount();
+      sql.skip(page);
+      sql.take(payload.limit);
+
+      const result = await sql.getMany();
+
+      const output = {
+        totalData: count,
+        listData: result
+      };
+      return {
+        isError: false,
+        data: output,
+        statusCode: 200
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async addUnitId(data: AddUnitIdPost, user) {
+    try {
+      let newUnitId = new mUnit();
+      newUnitId.name = data.name;
+      newUnitId.updaterUsername = user.username;
+      const result = await this.mUnitRepository.save(newUnitId);
+      return {
+        isError: false,
+        data: result,
+        statusCode: 200
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async editUnitId(data: EditUnitIdPut, user) {
+    try {
+      let updatedUnitId = new mUnit();
+      for (const key in data) {
+        if (Object.prototype.hasOwnProperty.call(data, key)) {
+          updatedUnitId[key] = data[key];
+        }
+      }
+      updatedUnitId.updaterUsername = user.username;
+      const result = await this.mUnitRepository.update(
+        {
+          id: data.id
+        },
+        updatedUnitId
+      );
+      return {
+        isError: false,
+        data: result,
+        statusCode: 200
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async deleteUnitId(data: DeleteGeneralPut, user) {
+    try {
+      let deletedUnitId = new mUnit();
+      deletedUnitId.isDeleted = true;
+      deletedUnitId.updaterUsername = user.username;
+      const result = await this.mUnitRepository.update(
+        {
+          id: data.id
+        },
+        deletedUnitId
       );
       return {
         isError: false,

@@ -37,6 +37,8 @@ import {
   EditWorkOrderPut,
   AddGroupIdPost,
   EditGroupIdPut,
+  AddUnitIdPost,
+  EditUnitIdPut,
 } from "./dto/masterData.dto";
 
 @ApiBearerAuth()
@@ -387,6 +389,58 @@ export class MasterDataController {
     @Res() res: Response
   ) {
     const result = await this.masterDataService.deleteGroupId(
+      payload,
+      authData.user
+    );
+    res.status(result.statusCode).send(result);
+  }
+
+  @Post("unitId")
+  @HttpCode(200)
+  async getUnitId(@Body() payload: GeneralTablePost, @Res() res: Response) {
+    const result = await this.masterDataService.getUnitIdPost(payload);
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post("unitId/add")
+  @HttpCode(200)
+  async addUnitId(
+    @Request() authData,
+    @Body() payload: AddUnitIdPost,
+    @Res() res: Response
+  ) {
+    const result = await this.masterDataService.addUnitId(
+      payload,
+      authData.user
+    );
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put("unitId/edit")
+  @HttpCode(200)
+  async editUnitId(
+    @Request() authData,
+    @Body() payload: EditUnitIdPut,
+    @Res() res: Response
+  ) {
+    const result = await this.masterDataService.editUnitId(
+      payload,
+      authData.user
+    );
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put("unitId/delete")
+  @HttpCode(200)
+  async deleteUnitId(
+    @Request() authData,
+    @Body() payload: DeleteGeneralPut,
+    @Res() res: Response
+  ) {
+    const result = await this.masterDataService.deleteUnitId(
       payload,
       authData.user
     );
