@@ -153,7 +153,8 @@ export class InteractionService {
       for (let index = 0; index < result.length; index++) {
         result[index].lastChat = await this.interactionLibService.getLastChat(
           result[index].channelId,
-          result[index].sessionId
+          result[index].sessionId,
+          result[index].customerId
         );
       }
       return { isError: false, data: result, statusCode: 200 };

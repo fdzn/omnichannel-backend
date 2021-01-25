@@ -72,19 +72,20 @@ export class InteractionLibService {
     return this.headerTodayRepository.save(data);
   }
 
-  async getLastChat(channelId: string, sessionId: string) {
+  async getLastChat(channelId: string, sessionId: string, customerId = null) {
     if (channelId === "voice") {
       return null;
     }
     let repo;
     repo = this.getRepository(channelId);
 
-    const result = await repo.logRepo.findOne({
+    let result = await repo.logRepo.findOne({
       where: { sessionId: sessionId },
       order: {
         id: "DESC",
       },
     });
+    result.customerId = customerId
     return result;
   }
 
