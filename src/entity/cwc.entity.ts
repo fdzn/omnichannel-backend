@@ -21,6 +21,11 @@ export enum CwcType {
   INTERACTION = "interaction",
 }
 
+export enum StatusCall {
+  CONNECT = "connect",
+  DISCONNECT = "disconnect",
+}
+
 @Entity()
 export class Cwc {
   @PrimaryGeneratedColumn()
@@ -32,6 +37,13 @@ export class Cwc {
     default: CwcType.INTERACTION,
   })
   type: CwcType;
+
+  @Column({
+    type: "enum",
+    enum: StatusCall,
+    nullable: true,
+  })
+  statusCall: StatusCall;
 
   @Column({ length: 50, unique: true })
   sessionId: string;

@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Between, getManager, getRepository } from "typeorm";
 //ENTITY
+import { Cwc } from "../../entity/cwc.entity";
 import { InteractionHeader } from "../../entity/interaction_header.entity";
 import { InteractionHeaderHistory } from "../../entity/interaction_header_history.entity";
 import { InteractionHeaderHistoryToday } from "../../entity/interaction_header_history_today.entity";
@@ -147,6 +148,44 @@ export class DashboardService {
     }
   }
 
+  async statusCall(payload: ParamGeneral) {
+    try {
+      const nowDate = this.libService.convertDate(new Date());
+      let table = "cwc";
+      let dateFrom = payload.dateFrom;
+      let dateTo = payload.dateTo;
+      let where = `WHERE b.submitCwcDate BETWEEN "${dateFrom} 00:00:00" AND "${dateTo} 23:59:59" AND a.statusCall IS NOT NULL`;
+      let group_by = "GROUP BY a.statusCall";
+      if (payload.channelId != "0") {
+        if (where == "") {
+          where += `WHERE b.channelId='${payload.channelId}'`;
+        } else {
+          where += ` AND b.channelId='${payload.channelId}'`;
+        }
+      }
+      if (payload.agentUsername != "0") {
+        if (where == "") {
+          where += `WHERE b.agentUsername='${payload.agentUsername}'`;
+        } else {
+          where += ` AND b.agentUsername='${payload.agentUsername}'`;
+        }
+      }
+
+      const entityManager = getManager();
+      let query = `SELECT count(1) as jml, a.statusCall FROM cwc a LEFT JOIN interaction_header_history b on a.sessionId=b.sessionId ${where} ${group_by}`;
+      // console.log(query);
+      let result = await entityManager.query(query);
+      return {
+        isError: false,
+        data: result.length > 0 ? result : [],
+        statusCode: 200,
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
   async totalQueue() {
     try {
       let repo = getRepository(InteractionHeader);
@@ -240,7 +279,7 @@ export class DashboardService {
           query += ` AND agentUsername='${payload.agentUsername}'`;
         }
       }
-      console.log(query);
+      // console.log(query);
 
       let result = await entityManager.query(query);
       return {
@@ -364,7 +403,7 @@ export class DashboardService {
 
       const entityManager = getManager();
       let queryHistory = `${select} from ${table} ${where} ${groupBy}`;
-      console.log(queryHistory);
+      // console.log(queryHistory);
       let resultHistory = await entityManager.query(queryHistory);
 
       return {
