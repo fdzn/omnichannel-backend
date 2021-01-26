@@ -1,10 +1,13 @@
 import {
   Entity,
   Column,
+  ManyToOne,
+  JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
   PrimaryGeneratedColumn,
 } from "typeorm";
+import { User } from "./user.entity";
 
 export enum ActionType {
   IN = "in",
@@ -58,6 +61,12 @@ export class InteractionVideoCall {
 
   @Column({ nullable: true })
   endDate: Date;
+
+  @Column({ length: 20, nullable: true })
+  agentUsername: string;
+  @ManyToOne((type) => User, (user) => user.username)
+  @JoinColumn()
+  agent: User;
 
   @CreateDateColumn({ type: "timestamp", select: false })
   createdAt: Date;
