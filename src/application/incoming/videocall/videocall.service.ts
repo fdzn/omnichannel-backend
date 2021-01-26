@@ -87,6 +87,7 @@ export class VideocallService {
       insertInteraction.sessionVideo = data.sessionVideo;
       insertInteraction.socketId = data.socketId;
       insertInteraction.token = data.token;
+      insertInteraction.agentUsername = foundAgent[0].agentUsername;
       insertInteraction.actionType = ActionType.IN;
       await repoVideo.save(insertInteraction);
 
