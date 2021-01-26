@@ -7,7 +7,7 @@ import {
   Body,
   Request,
   HttpCode,
-  UseGuards,
+  UseGuards
 } from "@nestjs/common";
 import { Response } from "express";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
@@ -19,9 +19,7 @@ import { JwtAuthGuard } from "../auth/guards/jwt.auth.guard";
 import { ReportService } from "./report.service";
 
 //DTO
-import {
-  GeneralTablePost,
-} from "./dto/report.dto";
+import { GeneralTablePost, InteractionDetailPost } from "./dto/report.dto";
 
 @ApiBearerAuth()
 @ApiTags("Report")
@@ -41,11 +39,44 @@ export class ReportController {
 
   @Post("agentLog")
   @HttpCode(200)
-  async getMessageTemplatePost(
+  async getAgentLog(@Body() payload: GeneralTablePost, @Res() res: Response) {
+    const result = await this.reportService.getAgentLog(payload);
+    res.status(result.statusCode).send(result);
+  }
+
+  @Post("interaction")
+  @HttpCode(200)
+  async getInteraction(
     @Body() payload: GeneralTablePost,
     @Res() res: Response
   ) {
-    const result = await this.reportService.getAgentLog(payload);
+    const result = await this.reportService.getInteraction(payload);
+    res.status(result.statusCode).send(result);
+  }
+
+  @Post("interactionDetail")
+  @HttpCode(200)
+  async getInteractionDetail(
+    @Body() payload: InteractionDetailPost,
+    @Res() res: Response
+  ) {
+    const result = await this.reportService.getInteractionDetail(payload);
+    res.status(result.statusCode).send(result);
+  }
+
+  @Post("performanceAgent")
+  @HttpCode(200)
+  async performanceAgent(
+    @Body() payload: GeneralTablePost,
+    @Res() res: Response
+  ) {
+    const result = await this.reportService.getPerformanceAgent(payload);
+    res.status(result.statusCode).send(result);
+  }
+  @Post("reportTraffic")
+  @HttpCode(200)
+  async reportTraffic(@Body() payload: GeneralTablePost, @Res() res: Response) {
+    const result = await this.reportService.getReportTraffic(payload);
     res.status(result.statusCode).send(result);
   }
 }

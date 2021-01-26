@@ -1,7 +1,14 @@
-import { IsNotEmpty, IsEnum, isNotEmpty, IsInt, Min, IsOptional } from "class-validator";
+import {
+  IsNotEmpty,
+  IsEnum,
+  isNotEmpty,
+  IsInt,
+  Min,
+  IsOptional
+} from "class-validator";
 export enum DashboardType {
   AGENT = "agent",
-  ALL = "all",
+  ALL = "all"
 }
 export class DashboardPost {
   @IsNotEmpty()
@@ -24,9 +31,20 @@ export class GeneralTablePost {
   @IsInt()
   limit: number;
 
+  @IsNotEmpty()
+  startDate: Date;
+
+  @IsNotEmpty()
+  endDate: Date;
+
   @IsOptional()
   keyword: string;
 
   @IsOptional()
   keywords: { key: string; value }[];
+}
+
+export class InteractionDetailPost extends GeneralTablePost {
+  @IsNotEmpty()
+  channelId: string;
 }
