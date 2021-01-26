@@ -462,15 +462,15 @@ export class DashboardService {
 
       if (nowDate == payload.dateFrom) {
         table = "interaction_header_history_today";
-        select = "SELECT hour(startDate) as time,count(1) as total";
-        groupBy = "group by hour(startDate)";
+        select = "SELECT hour(startDate) as time,count(1) as total,channelId";
+        groupBy = "group by hour(startDate),channelId";
         dateFrom = nowDate;
         dateTo = nowDate;
         where = `WHERE startDate BETWEEN "${dateFrom} 00:00:00" AND "${dateTo} 23:59:59"`;
       } else {
         table = "interaction_header_history";
-        select = "SELECT date(startDate) as time,count(1) as total";
-        groupBy = "group by date(startDate)";
+        select = "SELECT date(startDate) as time,count(1) as total,channelId";
+        groupBy = "group by date(startDate),channelId";
         dateFrom = payload.dateFrom;
         dateTo = payload.dateTo;
         where = `WHERE startDate BETWEEN "${dateFrom} 00:00:00" AND "${dateTo} 23:59:59"`;
