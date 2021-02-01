@@ -48,4 +48,12 @@ export class MinioController {
     let result = await this.minioNestService.download(dataPost);
     res.status(result.statusCode).send(result);
   }
+
+  @Post("uploadVCA")
+  uploadVCA(@Body() dataPost: uploadVCAPost, @Res() res: Response) {
+    const date = new Date();
+    console.log("uploadVCA", `${date} : ${JSON.stringify(dataPost)}`);
+    let result = this.minioNestService.uploadVCA(dataPost);
+    res.status(200).send(result);
+  }
 }
