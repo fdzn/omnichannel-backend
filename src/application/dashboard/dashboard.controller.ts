@@ -13,6 +13,8 @@ import {
   ParamGeneral,
   ParamLogInteraction,
   ParamTotalHandled,
+  ParamGeneralLimit,
+  ParamListQueue,
 } from "./dto/dashboard.dto";
 
 @ApiBearerAuth()
@@ -108,6 +110,40 @@ export class DashboardController {
   @Get("traffic/:dateFrom/:dateTo/:channelId/:agentUsername")
   async traffic(@Param() params: ParamGeneral, @Res() res: Response) {
     const result = await this.dashboardService.traffic(params);
+    res.status(result.statusCode).send(result);
+  }
+
+  // @UseGuards(JwtAuthGuard)
+  @Get("sentiment/:dateFrom/:dateTo/:channelId/:agentUsername")
+  async sentiment(@Param() params: ParamGeneral, @Res() res: Response) {
+    const result = await this.dashboardService.sentiment(params);
+    res.status(result.statusCode).send(result);
+  }
+
+  // @UseGuards(JwtAuthGuard)
+  @Get("listQueue/:channelId/:agentUsername/:page/:limit")
+  async listQueue(@Param() params: ParamListQueue, @Res() res: Response) {
+    const result = await this.dashboardService.listQueue(params);
+    res.status(result.statusCode).send(result);
+  }
+
+  // @UseGuards(JwtAuthGuard)
+  @Get("summaryCategory/:dateFrom/:dateTo/:channelId/:agentUsername/:limit")
+  async summaryCategory(
+    @Param() params: ParamGeneralLimit,
+    @Res() res: Response
+  ) {
+    const result = await this.dashboardService.summaryCategory(params);
+    res.status(result.statusCode).send(result);
+  }
+
+  // @UseGuards(JwtAuthGuard)
+  @Get("summarySubCategory/:dateFrom/:dateTo/:channelId/:agentUsername/:limit")
+  async summarySubCategory(
+    @Param() params: ParamGeneralLimit,
+    @Res() res: Response
+  ) {
+    const result = await this.dashboardService.summarySubCategory(params);
     res.status(result.statusCode).send(result);
   }
 }

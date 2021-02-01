@@ -36,6 +36,30 @@ export class ParamGeneral {
   channelId: string;
 }
 
+export class ParamGeneralLimit {
+  @IsOnlyDate()
+  dateTo: string;
+  @IsOnlyDate()
+  dateFrom: string;
+  @IsString()
+  agentUsername: string;
+  @IsString()
+  channelId: string;
+  @IsString()
+  limit: string;
+}
+
+export class ParamListQueue {
+  @IsString()
+  agentUsername: string;
+  @IsString()
+  channelId: string;
+  @IsString()
+  page: string;
+  @IsString()
+  limit: string;
+}
+
 export class ParamLogInteraction {
   @IsOnlyDate()
   dateTo: string;

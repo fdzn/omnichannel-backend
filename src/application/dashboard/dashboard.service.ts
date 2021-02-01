@@ -11,6 +11,8 @@ import {
   ParamGeneral,
   ParamLogInteraction,
   ParamTotalHandled,
+  ParamGeneralLimit,
+  ParamListQueue,
 } from "./dto/dashboard.dto";
 @Injectable()
 export class DashboardService {
@@ -372,6 +374,37 @@ export class DashboardService {
     }
   }
 
+  async listQueue(payload: ParamListQueue) {
+    try {
+      let repoHistory = getRepository(InteractionHeader);
+
+      let where = {};
+      if (payload.agentUsername != "0") {
+        where["agentUsername"] = payload.agentUsername;
+      }
+
+      if (payload.channelId != "0") {
+        where["channelId"] = payload.channelId;
+      }
+
+      const limit = Number(payload.limit);
+      const logInteraction = await repoHistory.find({
+        where: where,
+        skip: Number(payload.page) * limit,
+        take: limit,
+      });
+
+      return {
+        isError: false,
+        data: logInteraction,
+        statusCode: 200,
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
   async totalHandledByChannel(payload: ParamTotalHandled) {
     try {
       const nowDate = this.libService.convertDate(new Date());
@@ -559,6 +592,117 @@ export class DashboardService {
       return {
         isError: false,
         data: resultHistory,
+        statusCode: 200,
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async sentiment(payload: ParamGeneral) {
+    try {
+      let dateFrom = payload.dateFrom;
+      let dateTo = payload.dateTo;
+      let where = `WHERE a.createdAt BETWEEN "${dateFrom} 00:00:00" AND "${dateTo} 23:59:59"`;
+
+      if (payload.channelId != "0") {
+        if (where == "") {
+          where += `WHERE b.channelId='${payload.channelId}'`;
+        } else {
+          where += ` AND b.channelId='${payload.channelId}'`;
+        }
+      }
+      if (payload.agentUsername != "0") {
+        if (where == "") {
+          where += `WHERE b.agentUsername='${payload.agentUsername}'`;
+        } else {
+          where += ` AND b.agentUsername='${payload.agentUsername}'`;
+        }
+      }
+
+      const entityManager = getManager();
+      let query = `SELECT count(1) as total, a.sentiment FROM cwc a left join interaction_header_history b on a.sessionId=b.sessionId ${where} group by a.sentiment`;
+
+      let result = await entityManager.query(query);
+
+      return {
+        isError: false,
+        data: result ? result : [],
+        statusCode: 200,
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async summaryCategory(payload: ParamGeneralLimit) {
+    try {
+      let dateFrom = payload.dateFrom;
+      let dateTo = payload.dateTo;
+      let where = `WHERE a.createdAt BETWEEN "${dateFrom} 00:00:00" AND "${dateTo} 23:59:59"`;
+
+      if (payload.channelId != "0") {
+        if (where == "") {
+          where += `WHERE b.channelId='${payload.channelId}'`;
+        } else {
+          where += ` AND b.channelId='${payload.channelId}'`;
+        }
+      }
+      if (payload.agentUsername != "0") {
+        if (where == "") {
+          where += `WHERE b.agentUsername='${payload.agentUsername}'`;
+        } else {
+          where += ` AND b.agentUsername='${payload.agentUsername}'`;
+        }
+      }
+
+      const entityManager = getManager();
+      let query = `SELECT count(1) as total, a.categoryId,c.name as category FROM cwc a left join interaction_header_history b on a.sessionId=b.sessionId left join m_category c on a.categoryId=c.id ${where} group by categoryId order by total DESC limit ${payload.limit}`;
+      console.log(query);
+      let result = await entityManager.query(query);
+
+      return {
+        isError: false,
+        data: result ? result : [],
+        statusCode: 200,
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async summarySubCategory(payload: ParamGeneralLimit) {
+    try {
+      let dateFrom = payload.dateFrom;
+      let dateTo = payload.dateTo;
+      let where = `WHERE a.createdAt BETWEEN "${dateFrom} 00:00:00" AND "${dateTo} 23:59:59"`;
+
+      if (payload.channelId != "0") {
+        if (where == "") {
+          where += `WHERE b.channelId='${payload.channelId}'`;
+        } else {
+          where += ` AND b.channelId='${payload.channelId}'`;
+        }
+      }
+      if (payload.agentUsername != "0") {
+        if (where == "") {
+          where += `WHERE b.agentUsername='${payload.agentUsername}'`;
+        } else {
+          where += ` AND b.agentUsername='${payload.agentUsername}'`;
+        }
+      }
+
+      const entityManager = getManager();
+      let query = `SELECT count(1) as total, a.categoryId,c.name as category,a.subcategoryId,d.name as subcategory FROM cwc a left join interaction_header_history b on a.sessionId=b.sessionId left join m_category c on a.categoryId=c.id left join m_sub_category d on a.subcategoryId=d.id ${where} group by subcategoryId order by total DESC limit ${payload.limit}`;
+      console.log(query);
+      let result = await entityManager.query(query);
+
+      return {
+        isError: false,
+        data: result ? result : [],
         statusCode: 200,
       };
     } catch (error) {
