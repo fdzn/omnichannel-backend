@@ -27,6 +27,7 @@ export class WhatsappService {
     const lastDate = data.lastDate ? new Date(data.lastDate) : now;
     const responseTime = (now.getTime() - lastDate.getTime()) / 1000;
     let insertInteraction = new InteractionChat();
+    insertInteraction.channelId = "whatsapp";
     insertInteraction.convId = data.convId;
     insertInteraction.from = data.from;
     insertInteraction.fromName = payload.username;
