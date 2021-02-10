@@ -85,7 +85,7 @@ export class InteractionLibService {
         id: "DESC",
       },
     });
-    result.customerId = customerId
+    result.customerId = customerId;
     return result;
   }
 

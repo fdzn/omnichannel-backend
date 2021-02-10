@@ -10,6 +10,6 @@ import { LibsModule } from "../libs/libs.module";
 @Module({
   imports: [LibsModule],
   controllers: [MonitoringController],
-  providers: [MonitoringService]
+  providers: [MonitoringService],
 })
 export class MonitoringModule {}

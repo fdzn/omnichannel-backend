@@ -25,10 +25,10 @@ import { AgentLog } from "../../entity/agent_log.entity";
       WorkOrder,
       AgentLog,
       mGroup,
-      mUnit
-    ])
+      mUnit,
+    ]),
   ],
   providers: [MasterDataService],
-  controllers: [MasterDataController]
+  controllers: [MasterDataController],
 })
 export class MasterDataModule {}

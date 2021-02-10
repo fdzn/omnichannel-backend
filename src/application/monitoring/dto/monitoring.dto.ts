@@ -4,7 +4,7 @@ import {
   isNotEmpty,
   IsInt,
   Min,
-  IsOptional
+  IsOptional,
 } from "class-validator";
 
 export class GeneralTablePost {

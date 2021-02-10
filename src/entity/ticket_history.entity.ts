@@ -22,7 +22,7 @@ export class TicketHistory {
   @ManyToOne((type) => Ticket, (Ticket) => Ticket.id)
   @JoinColumn()
   ticket: Ticket;
-  
+
   @Column({ nullable: true })
   statusId: string;
   @ManyToOne((type) => mTicketStatus, (mTicketStatus) => mTicketStatus.id)
@@ -31,7 +31,7 @@ export class TicketHistory {
 
   @Column({ type: "text" })
   notes: string;
-  
+
   @Column({ length: 20, nullable: true })
   updaterUsername: string;
   @ManyToOne((type) => User, (user) => user.username)

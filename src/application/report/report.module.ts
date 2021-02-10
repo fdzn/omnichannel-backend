@@ -30,9 +30,9 @@ import { mSubCategory } from "../../entity/m_sub_category.entity";
       // mCategory,
       // mSubCategory
     ]),
-    LibsModule
+    LibsModule,
   ],
   controllers: [ReportController],
-  providers: [ReportService]
+  providers: [ReportService],
 })
 export class ReportModule {}

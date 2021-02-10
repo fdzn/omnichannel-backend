@@ -4,11 +4,11 @@ import {
   isNotEmpty,
   IsInt,
   Min,
-  IsOptional
+  IsOptional,
 } from "class-validator";
 export enum DashboardType {
   AGENT = "agent",
-  ALL = "all"
+  ALL = "all",
 }
 export class DashboardPost {
   @IsNotEmpty()

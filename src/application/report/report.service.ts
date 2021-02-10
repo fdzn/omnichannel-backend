@@ -70,7 +70,7 @@ export class ReportService {
       return {
         isError: false,
         data: result,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -95,20 +95,20 @@ export class ReportService {
           "agentLog.timeEnd",
           "agentLog.createdAt",
           "agentLog.updatedAt",
-          "agentLog.updater"
+          "agentLog.updater",
         ]);
 
       keywords.forEach((keyword) => {
         const keywordKey = keyword.key.trim();
         const keywordValue = keyword.value;
         sql.andWhere(`agentLog.${keywordKey} LIKE :${keywordKey}`, {
-          [keywordKey]: `%${keywordValue}%`
+          [keywordKey]: `%${keywordValue}%`,
         });
       });
 
       sql.andWhere(`agentLog.timeStart BETWEEN :startDate AND :endDate`, {
         startDate: payload.startDate,
-        endDate: payload.endDate
+        endDate: payload.endDate,
       });
 
       const count = await sql.getCount();
@@ -119,12 +119,12 @@ export class ReportService {
 
       const output = {
         totalData: count,
-        listData: result
+        listData: result,
       };
       return {
         isError: false,
         data: output,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -202,12 +202,12 @@ export class ReportService {
       const result = await entityManager.query(`${query}`);
       const output = {
         // totalData: count,
-        listData: result
+        listData: result,
       };
       return {
         isError: false,
         data: output,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -250,12 +250,12 @@ export class ReportService {
       const result = await entityManager.query(`${query}`);
       const output = {
         // totalData: count,
-        listData: result
+        listData: result,
       };
       return {
         isError: false,
         data: output,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -320,12 +320,12 @@ export class ReportService {
       const result = await entityManager.query(`${query}`);
       const output = {
         // totalData: count,
-        listData: result
+        listData: result,
       };
       return {
         isError: false,
         data: output,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -366,12 +366,12 @@ export class ReportService {
       const result = await entityManager.query(`${query}`);
       const output = {
         // totalData: count,
-        listData: result
+        listData: result,
       };
       return {
         isError: false,
         data: output,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);

@@ -28,13 +28,13 @@ export class MonitoringService {
                     ORDER BY loginStatus, isAux, \`name\``;
       const result = await entityManager.query(`${query}`);
       const output = {
-        listData: result
+        listData: result,
       };
       console.log(result);
       return {
         isError: false,
         data: output,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -61,13 +61,13 @@ export class MonitoringService {
                       channelId;`;
       const result = await entityManager.query(`${query}`);
       const output = {
-        listData: result
+        listData: result,
       };
       console.log(result);
       return {
         isError: false,
         data: output,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
@@ -92,13 +92,13 @@ export class MonitoringService {
                       agentUsername IS NOT NULL;`;
       const result = await entityManager.query(`${query}`);
       const output = {
-        listData: result
+        listData: result,
       };
       console.log(result);
       return {
         isError: false,
         data: output,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);

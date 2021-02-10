@@ -6,7 +6,7 @@ import {
   IsString,
   IsBoolean,
   IsEmail,
-  IsIn
+  IsIn,
 } from "class-validator";
 
 import { UserLevel } from "../../../entity/user.entity";

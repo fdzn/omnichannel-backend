@@ -139,7 +139,7 @@ export class CustomerService {
       return { isError: true, data: error.message, statusCode: 500 };
     }
   }
-  
+
   async generateCustomer(data: Customer, contact: ContactData) {
     const repoCustomer = getRepository(Customer);
     for (let key in contact) {

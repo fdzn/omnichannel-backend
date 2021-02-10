@@ -12,8 +12,8 @@ import { MasterDataModule } from "./masterData/masterData.module";
 import { ReportModule } from "./report/report.module";
 import { MonitoringModule } from "./monitoring/monitoring.module";
 import { DashboardModule } from "./dashboard/dashboard.module";
-import { HeaderModule } from './header/header.module';
-import { TicketingModule } from './ticketing/ticketing.module';
+import { HeaderModule } from "./header/header.module";
+import { TicketingModule } from "./ticketing/ticketing.module";
 @Module({
   imports: [
     AuthModule,
@@ -27,12 +27,8 @@ import { TicketingModule } from './ticketing/ticketing.module';
     ReportModule,
     DashboardModule,
     HeaderModule,
-<<<<<<< HEAD
     TicketingModule,
+    MonitoringModule,
   ],
-=======
-    MonitoringModule
-  ]
->>>>>>> 6c29530e0050ec1455126e06c20c77720e99608c
 })
 export class ApplicationModule {}
