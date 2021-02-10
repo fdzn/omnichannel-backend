@@ -10,6 +10,7 @@ import { CustomerModule } from "./customer/customer.module";
 import { InternalChatModule } from "./internalChat/internalChat.module";
 import { MasterDataModule } from "./masterData/masterData.module";
 import { ReportModule } from "./report/report.module";
+import { MonitoringModule } from "./monitoring/monitoring.module";
 import { DashboardModule } from "./dashboard/dashboard.module";
 import { HeaderModule } from './header/header.module';
 @Module({
@@ -25,6 +26,7 @@ import { HeaderModule } from './header/header.module';
     ReportModule,
     DashboardModule,
     HeaderModule,
-  ],
+    MonitoringModule
+  ]
 })
 export class ApplicationModule {}
