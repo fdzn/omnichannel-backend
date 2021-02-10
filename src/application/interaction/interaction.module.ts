@@ -13,6 +13,7 @@ import { WorkOrder } from "../../entity/work_order.entity";
 
 //MODULE
 import { LibsModule } from "../libs/libs.module";
+import { TicketingModule } from "../ticketing/ticketing.module";
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -22,6 +23,7 @@ import { LibsModule } from "../libs/libs.module";
       WorkOrder,
     ]),
     LibsModule,
+    TicketingModule,
   ],
   providers: [InteractionService],
   controllers: [InteractionController],

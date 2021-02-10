@@ -12,6 +12,7 @@ import { MasterDataModule } from "./masterData/masterData.module";
 import { ReportModule } from "./report/report.module";
 import { DashboardModule } from "./dashboard/dashboard.module";
 import { HeaderModule } from './header/header.module';
+import { TicketingModule } from './ticketing/ticketing.module';
 @Module({
   imports: [
     AuthModule,
@@ -25,6 +26,7 @@ import { HeaderModule } from './header/header.module';
     ReportModule,
     DashboardModule,
     HeaderModule,
+    TicketingModule,
   ],
 })
 export class ApplicationModule {}

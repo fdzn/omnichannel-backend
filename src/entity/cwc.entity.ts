@@ -14,6 +14,7 @@ import { mSubCategory } from "./m_sub_category.entity";
 import { mChannel } from "./m_channel.entity";
 import { Customer } from "./customer.entity";
 import { InteractionHeaderHistory } from "./interaction_header_history.entity";
+import { Ticket } from "./ticket.entity";
 import { User } from "./user.entity";
 
 export enum CwcType {
@@ -44,6 +45,12 @@ export class Cwc {
     nullable: true,
   })
   statusCall: StatusCall;
+
+  @Column({ nullable: true })
+  ticketId: string;
+  @ManyToOne((type) => Ticket, (Ticket) => Ticket.id)
+  @JoinColumn()
+  ticket: Ticket;
 
   @Column({ length: 50, unique: true })
   sessionId: string;

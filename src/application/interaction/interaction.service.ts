@@ -10,6 +10,8 @@ import { InteractionHeaderHistory } from "../../entity/interaction_header_histor
 import { Cwc } from "../../entity/cwc.entity";
 import { WorkOrder } from "../../entity/work_order.entity";
 
+//SERVICE
+import { TicketingService } from "../ticketing/ticketing.service";
 //DTO
 import {
   pickupManualPost,
@@ -36,7 +38,8 @@ export class InteractionService {
     @InjectRepository(WorkOrder)
     private readonly workOrderRepository: Repository<WorkOrder>,
     private readonly interactionLibService: InteractionLibService,
-    private readonly customerService: CustomerService
+    private readonly customerService: CustomerService,
+    private readonly ticketingService: TicketingService
   ) {}
 
   async updateAbandon(data: IsAbandonPut) {
@@ -299,7 +302,9 @@ export class InteractionService {
       insertCwc.statusCall = data.statusCall;
       insertCwc.updaterUsername = payload.username;
       const resultInsert = await this.cwcRepository.save(insertCwc);
-
+      if (data.createTicket) {
+        await this.ticketingService.createNewTicket(payload);
+      }
       return { isError: false, data: move, statusCode: 200 };
     } catch (error) {
       console.error(error);

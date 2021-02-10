@@ -1,4 +1,10 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsInt } from "class-validator";
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsInt,
+  IsBoolean,
+} from "class-validator";
 
 export enum StatusCall {
   CONNECT = "connect",
@@ -32,4 +38,8 @@ export class CwcPost {
   @IsOptional()
   @IsEnum(StatusCall)
   statusCall: StatusCall;
+
+  @IsBoolean()
+  @IsNotEmpty()
+  createTicket: boolean;
 }
