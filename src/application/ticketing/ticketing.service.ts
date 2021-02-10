@@ -1,13 +1,42 @@
 import { Injectable } from "@nestjs/common";
-import { getRepository, getManager } from "typeorm";
+import { getRepository } from "typeorm";
 import { nanoid } from "nanoid";
-//ENTITY
-import { Ticket, TicketAction } from "../../entity/ticket.entity";
-import { TicketHistory } from "../../entity/ticket_history.entity";
-import { mTicketStatus } from "../../entity/m_ticket_status.entity";
 
+//ENTITY
+import { Ticket } from "../../entity/ticket.entity";
+import { TicketHistory } from "../../entity/ticket_history.entity";
+
+//DTO
+import { SubmitTicketPost } from "./dto/ticketing.dto";
 @Injectable()
 export class TicketingService {
+  async submitTicket(payload: SubmitTicketPost, user) {
+    try {
+      const repoTicket = getRepository(Ticket);
+      const detailTicket = await repoTicket.findOne({
+        id: payload.ticketId,
+      });
+
+      if (detailTicket) {
+        if (detailTicket.statusId !== payload.statusId) {
+          let updateTicket = detailTicket;
+          updateTicket.action = payload.action;
+          updateTicket.notes = payload.notes;
+          updateTicket.priority = payload.priority;
+          updateTicket.statusId = payload.statusId;
+          updateTicket.subject = payload.subject;
+          updateTicket.unitId = payload.unitId;
+          updateTicket.updaterUsername = user.username;
+          const resultUpdate = await repoTicket.save(updateTicket);
+          return { isError: false, data: resultUpdate, statusCode: 200 };
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
   async createNewTicket(user) {
     let newTicket = new Ticket();
     newTicket.id = this.generateTicketId();

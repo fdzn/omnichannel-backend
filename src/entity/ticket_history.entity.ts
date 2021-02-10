@@ -24,7 +24,7 @@ export class TicketHistory {
   ticket: Ticket;
 
   @Column({ nullable: true })
-  statusId: string;
+  statusId: number;
   @ManyToOne((type) => mTicketStatus, (mTicketStatus) => mTicketStatus.id)
   @JoinColumn()
   status: mTicketStatus;

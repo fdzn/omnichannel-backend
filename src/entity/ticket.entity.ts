@@ -43,13 +43,13 @@ export class Ticket {
   action: TicketAction;
 
   @Column({ default: 1 })
-  statusId: string;
+  statusId: number;
   @ManyToOne((type) => mTicketStatus, (mTicketStatus) => mTicketStatus.id)
   @JoinColumn()
   status: mTicketStatus;
 
   @Column({ nullable: true })
-  unitId: string;
+  unitId: number;
   @ManyToOne((type) => mUnit, (mUnit) => mUnit.id)
   @JoinColumn()
   unit: mUnit;
