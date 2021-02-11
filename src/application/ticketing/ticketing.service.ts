@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { getRepository } from "typeorm";
+import { getRepository, getManager } from "typeorm";
 import { nanoid } from "nanoid";
 
 //ENTITY
@@ -10,7 +10,7 @@ import { TicketHistory } from "../../entity/ticket_history.entity";
 import {
   SubmitTicketPost,
   ListTicketPost,
-  HistoryTicketGet,
+  HistoryTicketGet
 } from "./dto/ticketing.dto";
 @Injectable()
 export class TicketingService {
@@ -18,7 +18,7 @@ export class TicketingService {
     try {
       const repoTicket = getRepository(Ticket);
       const detailTicket = await repoTicket.findOne({
-        id: payload.ticketId,
+        id: payload.ticketId
       });
 
       if (detailTicket) {
@@ -87,61 +87,135 @@ export class TicketingService {
 
   async getListTicketPost(payload: ListTicketPost, user) {
     try {
-      const page = (payload.page - 1) * payload.limit;
+      const entityManager = getManager();
+      let where = "";
       let keywords = payload.keywords || [];
+      keywords.forEach((keyword, index) => {
+        if (index == 0) {
+          where = "WHERE";
+        }
 
-      const repoTicket = getRepository(Ticket);
-      let sql = repoTicket
-        .createQueryBuilder("ticket")
-        .select([
-          "ticket.id",
-          "ticket.subject",
-          "ticket.priority",
-          "ticket.action",
-          "ticket.status",
-         " m_ticket_status.name",
-          "ticket.unit",
-          "ticket.notes",
-          "ticket.creatorUsername",
-          "ticket.updaterUsername",
-          "ticket.createdAt",
-          "ticket.updatedAt"
-        ])
-        .leftJoin("ticket.status", "m_ticket_status");
-
-      keywords.forEach((keyword) => {
         const keywordKey = keyword.key.trim();
         const keywordValue = keyword.value;
         if (keywordKey === "dateFrom") {
-          sql.andWhere(`ticket.createdAt >= :${keywordKey}`, {
-            [keywordKey]: `${keywordValue}`,
-          });
+          where += ` a.createdAt >= '${keywordValue}'`;
         } else if (keywordKey === "dateTo") {
-          sql.andWhere(`ticket.createdAt <= :${keywordKey}`, {
-            [keywordKey]: `${keywordValue}`,
-          });
+          where += ` a.createdAt <= '${keywordValue}'`;
         } else {
-          sql.andWhere(`ticket.${keywordKey} LIKE :${keywordKey}`, {
-            [keywordKey]: `%${keywordValue}%`,
-          });
+          where += ` a.${keywordKey} LIKE '%${keywordValue}%'`;
+        }
+        console.log("keywords.length-1", keywords.length - 1);
+        console.log("index", index);
+        if (index < keywords.length - 1) {
+          where += " AND";
         }
       });
 
-      const count = await sql.getCount();
-      sql.skip(page);
-      sql.take(payload.limit);
+      console.log("where>>>", where);
 
-      const result = await sql.getMany();
+      let limit = ` LIMIT ${payload.limit} OFFSET ${(payload.page - 1) * payload.limit}`
 
-      const output = {
-        totalData: count,
-        listData: result,
-      };
+      let query = `SELECT
+                      a.id,
+                      a.subject,
+                      a.priority,
+                      a.action,
+                      a.statusId,
+                      a.unitId,
+                      a.notes,
+                      a.creatorUsername,
+                      a.updaterUsername,
+                      a.createdAt,
+                      a.updatedAt,
+                      b.name AS ticketStatus,
+                      c.categoryId,
+                      c.subcategoryId,
+                      d.name AS category,
+                      e.name AS subcategory,
+                      f.customerId,
+                      g.name AS custName,
+                      g.phone,
+                      g.email,
+                      g.telegram,
+                      g.gender,
+                      g.address,
+                      g.city,
+                      g.company,
+                      g.priority,
+                      h.name as unit
+                    FROM
+                      ticket a
+                      LEFT JOIN m_ticket_status b ON (a.statusId = b.id)
+                      LEFT JOIN cwc c ON (a.id = c.ticketId)
+                      LEFT JOIN m_category d ON (c.categoryId = d.id)
+                      LEFT JOIN m_sub_category e ON (c.subcategoryId = e.id)
+                      LEFT JOIN interaction_header_history f ON (c.sessionId = f.sessionId)
+                      LEFT JOIN customer g ON (f.customerId = g.id)
+                      LEFT JOIN m_unit h ON (a.unitId = h.id)
+                      ${where} ${limit}
+      `;
+
+      let result = await entityManager.query(query);
       return {
         isError: false,
-        data: output,
-        statusCode: 200,
+        data: result.length > 0 ? result : [],
+        statusCode: 200
       };
+
+      // const page = (payload.page - 1) * payload.limit;
+      // let keywords = payload.keywords || [];
+
+      // const repoTicket = getRepository(Ticket);
+      // let sql = repoTicket
+      //   .createQueryBuilder("ticket")
+      //   .select([
+      //     "ticket.id",
+      //     "ticket.subject",
+      //     "ticket.priority",
+      //     "ticket.action",
+      //     "ticket.status",
+      //     "ticket.unit",
+      //     "ticket.notes",
+      //     "ticket.creatorUsername",
+      //     "ticket.updaterUsername",
+      //     "ticket.createdAt",
+      //     "ticket.updatedAt"
+      //   ])
+
+      // keywords.forEach((keyword) => {
+      //   const keywordKey = keyword.key.trim();
+      //   const keywordValue = keyword.value;
+      //   if (keywordKey === "dateFrom") {
+      //     sql.andWhere(`ticket.createdAt >= :${keywordKey}`, {
+      //       [keywordKey]: `${keywordValue}`,
+      //     });
+      //   } else if (keywordKey === "dateTo") {
+      //     sql.andWhere(`ticket.createdAt <= :${keywordKey}`, {
+      //       [keywordKey]: `${keywordValue}`,
+      //     });
+      //   } else {
+      //     sql.andWhere(`ticket.${keywordKey} LIKE :${keywordKey}`, {
+      //       [keywordKey]: `%${keywordValue}%`,
+      //     });
+      //   }
+      // });
+
+      // const count = await sql.getCount();
+      // sql.skip(page);
+      // sql.take(payload.limit);
+
+      // const result = await sql.getMany();
+
+      // const output = {
+      //   totalData: count,
+      //   listData: result,
+      // };
+      // console.log("output>>>", output);
+      // return {
+      //   isError: false,
+      //   data: output,
+      //   statusCode: 200,
+      // };
     } catch (error) {
       console.error(error);
       return { isError: true, data: error.message, statusCode: 500 };
@@ -154,18 +228,18 @@ export class TicketingService {
 
       const resultGet = repoTicket.find({
         where: {
-          ticketId: payload.ticketId,
+          ticketId: payload.ticketId
         },
         skip: payload.page * payload.limit,
         take: payload.limit,
         order: {
-          createdAt: "DESC",
-        },
+          createdAt: "DESC"
+        }
       });
       return {
         isError: false,
         data: resultGet,
-        statusCode: 200,
+        statusCode: 200
       };
     } catch (error) {
       console.error(error);
