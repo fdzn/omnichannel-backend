@@ -12,6 +12,7 @@ import { mTemplate } from "../../entity/m_template.entity";
 import { WorkOrder } from "../../entity/work_order.entity";
 import { mGroup } from "../../entity/m_group.entity";
 import { mUnit } from "../../entity/m_unit.entity";
+import { mTicketStatus } from "../../entity/m_ticket_status.entity";
 import { User } from "../../entity/user.entity";
 import { AgentLog } from "../../entity/agent_log.entity";
 
@@ -26,9 +27,10 @@ import { AgentLog } from "../../entity/agent_log.entity";
       AgentLog,
       mGroup,
       mUnit,
-    ]),
+      mTicketStatus
+    ])
   ],
   providers: [MasterDataService],
-  controllers: [MasterDataController],
+  controllers: [MasterDataController]
 })
 export class MasterDataModule {}
