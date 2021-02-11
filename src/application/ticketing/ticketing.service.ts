@@ -7,14 +7,18 @@ import { Ticket } from "../../entity/ticket.entity";
 import { TicketHistory } from "../../entity/ticket_history.entity";
 
 //DTO
-import { SubmitTicketPost, ListTicketPost } from "./dto/ticketing.dto";
+import {
+  SubmitTicketPost,
+  ListTicketPost,
+  HistoryTicketGet,
+} from "./dto/ticketing.dto";
 @Injectable()
 export class TicketingService {
   async submitTicket(payload: SubmitTicketPost, user) {
     try {
       const repoTicket = getRepository(Ticket);
       const detailTicket = await repoTicket.findOne({
-        id: payload.ticketId
+        id: payload.ticketId,
       });
 
       if (detailTicket) {
@@ -28,6 +32,9 @@ export class TicketingService {
           updateTicket.unitId = payload.unitId;
           updateTicket.updaterUsername = user.username;
           const resultUpdate = await repoTicket.save(updateTicket);
+
+          this.createHistory(resultUpdate);
+
           return { isError: false, data: resultUpdate, statusCode: 200 };
         }
       }
@@ -46,7 +53,8 @@ export class TicketingService {
     newTicket.updater = user.username;
 
     const repoTicket = getRepository(Ticket);
-    await repoTicket.save(newTicket);
+    const resultSave = await repoTicket.save(newTicket);
+    this.createHistory(resultSave);
     return newTicket;
   }
 
@@ -96,7 +104,7 @@ export class TicketingService {
           "ticket.creatorUsername",
           "ticket.updaterUsername",
           "ticket.createdAt",
-          "ticket.updatedAt"
+          "ticket.updatedAt",
         ]);
 
       keywords.forEach((keyword) => {
@@ -104,15 +112,15 @@ export class TicketingService {
         const keywordValue = keyword.value;
         if (keywordKey === "dateFrom") {
           sql.andWhere(`ticket.createdAt >= :${keywordKey}`, {
-            [keywordKey]: `${keywordValue}`
+            [keywordKey]: `${keywordValue}`,
           });
         } else if (keywordKey === "dateTo") {
           sql.andWhere(`ticket.createdAt <= :${keywordKey}`, {
-            [keywordKey]: `${keywordValue}`
+            [keywordKey]: `${keywordValue}`,
           });
         } else {
           sql.andWhere(`ticket.${keywordKey} LIKE :${keywordKey}`, {
-            [keywordKey]: `%${keywordValue}%`
+            [keywordKey]: `%${keywordValue}%`,
           });
         }
       });
@@ -125,12 +133,37 @@ export class TicketingService {
 
       const output = {
         totalData: count,
-        listData: result
+        listData: result,
       };
       return {
         isError: false,
         data: output,
-        statusCode: 200
+        statusCode: 200,
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
+  }
+
+  async historyTicket(payload: HistoryTicketGet) {
+    try {
+      const repoTicket = getRepository(TicketHistory);
+
+      const resultGet = repoTicket.find({
+        where: {
+          ticketId: payload.ticketId,
+        },
+        skip: payload.page * payload.limit,
+        take: payload.limit,
+        order: {
+          createdAt: "DESC",
+        },
+      });
+      return {
+        isError: false,
+        data: resultGet,
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);

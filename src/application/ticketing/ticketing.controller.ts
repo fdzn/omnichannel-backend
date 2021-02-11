@@ -6,6 +6,8 @@ import {
   Request,
   HttpCode,
   UseGuards,
+  Get,
+  Param,
 } from "@nestjs/common";
 import { Response } from "express";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
@@ -13,7 +15,11 @@ import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/guards/jwt.auth.guard";
 
 import { TicketingService } from "./ticketing.service";
-import { SubmitTicketPost, ListTicketPost } from "./dto/ticketing.dto";
+import {
+  SubmitTicketPost,
+  ListTicketPost,
+  HistoryTicketGet,
+} from "./dto/ticketing.dto";
 
 @ApiBearerAuth()
 @ApiTags("Ticketing")
@@ -41,7 +47,18 @@ export class TicketingController {
     @Body() postData: ListTicketPost,
     @Res() res: Response
   ) {
-    const result = await this.ticketingService.getListTicketPost(postData, payload);
+    const result = await this.ticketingService.getListTicketPost(
+      postData,
+      payload
+    );
     res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get("history/:ticketId/:page/:limit")
+  async history(@Param() params: HistoryTicketGet, @Res() res: Response) {
+    const result = await this.ticketingService.historyTicket(params);
+    res.status(result.statusCode).send(result);
+    res.status(200).send(params);
   }
 }

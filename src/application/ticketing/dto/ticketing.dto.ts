@@ -22,12 +22,10 @@ export class DashboardPost {
   channelId: number;
 }
 
-export class ListTicketGet {
+export class HistoryTicketGet {
+  ticketId: string;
   page: number;
   limit: number;
-  ticketStatus: number;
-  dateFrom: Date;
-  dateTo: Date;
 }
 
 export class ListTicketPost {

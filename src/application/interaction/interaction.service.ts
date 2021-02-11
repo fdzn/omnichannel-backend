@@ -301,10 +301,15 @@ export class InteractionService {
       insertCwc.subcategoryId = data.subcategoryId;
       insertCwc.statusCall = data.statusCall;
       insertCwc.updaterUsername = payload.username;
-      const resultInsert = await this.cwcRepository.save(insertCwc);
+
       if (data.createTicket) {
-        await this.ticketingService.createNewTicket(payload);
+        const resultCreateTicket = await this.ticketingService.createNewTicket(
+          payload
+        );
+        insertCwc.ticketId = resultCreateTicket.id;
       }
+      
+      const resultInsert = await this.cwcRepository.save(insertCwc);
       return { isError: false, data: move, statusCode: 200 };
     } catch (error) {
       console.error(error);
