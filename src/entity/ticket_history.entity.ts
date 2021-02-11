@@ -17,7 +17,7 @@ export class TicketHistory {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, length: 30 })
   ticketId: string;
   @ManyToOne((type) => Ticket, (Ticket) => Ticket.id)
   @JoinColumn()

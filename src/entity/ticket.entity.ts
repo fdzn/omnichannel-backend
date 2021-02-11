@@ -20,7 +20,7 @@ export enum TicketAction {
 export class Ticket {
   @Column({
     primary: true,
-    length: 20,
+    length: 30,
   })
   id: string;
 
