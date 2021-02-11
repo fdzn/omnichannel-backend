@@ -104,8 +104,9 @@ export class TicketingService {
           "ticket.creatorUsername",
           "ticket.updaterUsername",
           "ticket.createdAt",
-          "ticket.updatedAt",
-        ]);
+          "ticket.updatedAt"
+        ])
+        .leftJoin("ticket.status", "m_ticket_status");
 
       keywords.forEach((keyword) => {
         const keywordKey = keyword.key.trim();
