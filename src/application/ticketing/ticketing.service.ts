@@ -99,6 +99,7 @@ export class TicketingService {
           "ticket.priority",
           "ticket.action",
           "ticket.status",
+         " m_ticket_status.name",
           "ticket.unit",
           "ticket.notes",
           "ticket.creatorUsername",
