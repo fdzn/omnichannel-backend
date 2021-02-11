@@ -46,7 +46,7 @@ export class Cwc {
   })
   statusCall: StatusCall;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, length: 30 })
   ticketId: string;
   @ManyToOne((type) => Ticket, (Ticket) => Ticket.id)
   @JoinColumn()
