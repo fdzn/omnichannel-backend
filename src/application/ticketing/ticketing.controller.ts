@@ -13,7 +13,7 @@ import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/guards/jwt.auth.guard";
 
 import { TicketingService } from "./ticketing.service";
-import { SubmitTicketPost } from "./dto/ticketing.dto";
+import { SubmitTicketPost, ListTicketPost } from "./dto/ticketing.dto";
 
 @ApiBearerAuth()
 @ApiTags("Ticketing")
@@ -30,6 +30,18 @@ export class TicketingController {
     @Res() res: Response
   ) {
     const result = await this.ticketingService.submitTicket(postData, payload);
+    res.status(result.statusCode).send(result);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post("listTicket")
+  @HttpCode(200)
+  async listTicketPost(
+    @Request() payload,
+    @Body() postData: ListTicketPost,
+    @Res() res: Response
+  ) {
+    const result = await this.ticketingService.getListTicketPost(postData, payload);
     res.status(result.statusCode).send(result);
   }
 }

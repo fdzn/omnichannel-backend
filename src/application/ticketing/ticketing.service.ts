@@ -7,14 +7,14 @@ import { Ticket } from "../../entity/ticket.entity";
 import { TicketHistory } from "../../entity/ticket_history.entity";
 
 //DTO
-import { SubmitTicketPost } from "./dto/ticketing.dto";
+import { SubmitTicketPost, ListTicketPost } from "./dto/ticketing.dto";
 @Injectable()
 export class TicketingService {
   async submitTicket(payload: SubmitTicketPost, user) {
     try {
       const repoTicket = getRepository(Ticket);
       const detailTicket = await repoTicket.findOne({
-        id: payload.ticketId,
+        id: payload.ticketId
       });
 
       if (detailTicket) {
@@ -75,5 +75,66 @@ export class TicketingService {
     return `${[year, month, day, hour, minutes, seconds].join("")}-${nanoid(
       11
     )}`;
+  }
+
+  async getListTicketPost(payload: ListTicketPost, user) {
+    try {
+      const page = (payload.page - 1) * payload.limit;
+      let keywords = payload.keywords || [];
+
+      const repoTicket = getRepository(Ticket);
+      let sql = repoTicket
+        .createQueryBuilder("ticket")
+        .select([
+          "ticket.id",
+          "ticket.subject",
+          "ticket.priority",
+          "ticket.action",
+          "ticket.status",
+          "ticket.unit",
+          "ticket.notes",
+          "ticket.creatorUsername",
+          "ticket.updaterUsername",
+          "ticket.createdAt",
+          "ticket.updatedAt"
+        ]);
+
+      keywords.forEach((keyword) => {
+        const keywordKey = keyword.key.trim();
+        const keywordValue = keyword.value;
+        if (keywordKey === "dateFrom") {
+          sql.andWhere(`ticket.createdAt >= :${keywordKey}`, {
+            [keywordKey]: `${keywordValue}`
+          });
+        } else if (keywordKey === "dateTo") {
+          sql.andWhere(`ticket.createdAt <= :${keywordKey}`, {
+            [keywordKey]: `${keywordValue}`
+          });
+        } else {
+          sql.andWhere(`ticket.${keywordKey} LIKE :${keywordKey}`, {
+            [keywordKey]: `%${keywordValue}%`
+          });
+        }
+      });
+
+      const count = await sql.getCount();
+      sql.skip(page);
+      sql.take(payload.limit);
+
+      const result = await sql.getMany();
+
+      const output = {
+        totalData: count,
+        listData: result
+      };
+      return {
+        isError: false,
+        data: output,
+        statusCode: 200
+      };
+    } catch (error) {
+      console.error(error);
+      return { isError: true, data: error.message, statusCode: 500 };
+    }
   }
 }

@@ -30,6 +30,13 @@ export class ListTicketGet {
   dateTo: Date;
 }
 
+export class ListTicketPost {
+  page: number;
+  limit: number;
+  @IsOptional()
+  keywords: { key: string; value }[];
+}
+
 export class SubmitTicketPost {
   @IsNotEmpty()
   ticketId: string;
