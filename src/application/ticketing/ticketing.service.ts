@@ -136,6 +136,8 @@ export class TicketingService {
                       b.name AS ticketStatus,
                       c.categoryId,
                       c.subcategoryId,
+                      c.remark,
+                      c.feedback,
                       d.name AS category,
                       e.name AS subcategory,
                       f.customerId,
