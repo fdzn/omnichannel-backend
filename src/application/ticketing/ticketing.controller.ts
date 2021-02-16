@@ -59,6 +59,6 @@ export class TicketingController {
   async history(@Param() params: HistoryTicketGet, @Res() res: Response) {
     const result = await this.ticketingService.historyTicket(params);
     res.status(result.statusCode).send(result);
-    res.status(200).send(params);
+    // res.status(200).send(params);
   }
 }

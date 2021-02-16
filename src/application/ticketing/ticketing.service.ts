@@ -10,7 +10,7 @@ import { TicketHistory } from "../../entity/ticket_history.entity";
 import {
   SubmitTicketPost,
   ListTicketPost,
-  HistoryTicketGet
+  HistoryTicketGet,
 } from "./dto/ticketing.dto";
 @Injectable()
 export class TicketingService {
@@ -18,7 +18,7 @@ export class TicketingService {
     try {
       const repoTicket = getRepository(Ticket);
       const detailTicket = await repoTicket.findOne({
-        id: payload.ticketId
+        id: payload.ticketId,
       });
 
       if (detailTicket) {
@@ -177,7 +177,7 @@ export class TicketingService {
         isError: false,
         data: result.length > 0 ? result : [],
         totalData: parseInt(totalData[0].totalData, 10),
-        statusCode: 200
+        statusCode: 200,
       };
 
       // const page = (payload.page - 1) * payload.limit;
@@ -243,21 +243,24 @@ export class TicketingService {
   async historyTicket(payload: HistoryTicketGet) {
     try {
       const repoTicket = getRepository(TicketHistory);
+      console.log(payload);
+      const limit = Number(payload.limit);
+      const page = (Number(payload.page) - 1) * limit;
 
-      const resultGet = repoTicket.find({
+      const resultGet = await repoTicket.find({
         where: {
-          ticketId: payload.ticketId
+          ticketId: payload.ticketId,
         },
-        skip: payload.page * payload.limit,
-        take: payload.limit,
+        skip: page,
+        take: limit,
         order: {
-          createdAt: "DESC"
-        }
+          createdAt: "DESC",
+        },
       });
       return {
         isError: false,
         data: resultGet,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);
