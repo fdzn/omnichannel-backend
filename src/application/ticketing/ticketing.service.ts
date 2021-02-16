@@ -141,6 +141,8 @@ export class TicketingService {
                       d.name AS category,
                       e.name AS subcategory,
                       f.customerId,
+                      f.sessionId,
+                      f.channelId,
                       g.name AS custName,
                       g.phone,
                       g.email,
