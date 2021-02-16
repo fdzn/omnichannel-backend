@@ -101,6 +101,8 @@ export class TicketingService {
           where += ` a.createdAt >= '${keywordValue}'`;
         } else if (keywordKey === "dateTo") {
           where += ` a.createdAt <= '${keywordValue}'`;
+        } else if (keywordKey === "custName") {
+          where += ` g.name LIKE '%${keywordValue}%'`;
         } else {
           where += ` a.${keywordKey} LIKE '%${keywordValue}%'`;
         }
@@ -113,7 +115,9 @@ export class TicketingService {
 
       console.log("where>>>", where);
 
-      let limit = ` LIMIT ${payload.limit} OFFSET ${(payload.page - 1) * payload.limit}`
+      let limit = ` LIMIT ${payload.limit} OFFSET ${
+        (payload.page - 1) * payload.limit
+      }`;
 
       let query = `SELECT
                       a.id,
@@ -154,11 +158,25 @@ export class TicketingService {
                       LEFT JOIN m_unit h ON (a.unitId = h.id)
                       ${where} ${limit}
       `;
+      let queryCount = `SELECT count(0) as totalData
+                    FROM
+                      ticket a
+                      LEFT JOIN m_ticket_status b ON (a.statusId = b.id)
+                      LEFT JOIN cwc c ON (a.id = c.ticketId)
+                      LEFT JOIN m_category d ON (c.categoryId = d.id)
+                      LEFT JOIN m_sub_category e ON (c.subcategoryId = e.id)
+                      LEFT JOIN interaction_header_history f ON (c.sessionId = f.sessionId)
+                      LEFT JOIN customer g ON (f.customerId = g.id)
+                      LEFT JOIN m_unit h ON (a.unitId = h.id)
+                      ${where}
+      `;
 
       let result = await entityManager.query(query);
+      let totalData = await entityManager.query(queryCount);
       return {
         isError: false,
         data: result.length > 0 ? result : [],
+        totalData: parseInt(totalData[0].totalData, 10),
         statusCode: 200
       };
 
