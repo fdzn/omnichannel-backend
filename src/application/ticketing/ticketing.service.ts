@@ -37,6 +37,8 @@ export class TicketingService {
 
           return { isError: false, data: resultUpdate, statusCode: 200 };
         }
+      } else {
+        return { isError: false, data: "ticket id not found", statusCode: 404 };
       }
     } catch (error) {
       console.error(error);
