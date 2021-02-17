@@ -449,7 +449,10 @@ export class MasterDataController {
 
   @Post("ticketStatus")
   @HttpCode(200)
-  async getTicketStatus(@Body() payload: GeneralTablePost, @Res() res: Response) {
+  async getTicketStatus(
+    @Body() payload: GeneralTablePost,
+    @Res() res: Response
+  ) {
     const result = await this.masterDataService.getTicketStatusPost(payload);
     res.status(result.statusCode).send(result);
   }

@@ -308,7 +308,7 @@ export class InteractionService {
         );
         insertCwc.ticketId = resultCreateTicket.id;
       }
-      
+
       const resultInsert = await this.cwcRepository.save(insertCwc);
       return { isError: false, data: move, statusCode: 200 };
     } catch (error) {

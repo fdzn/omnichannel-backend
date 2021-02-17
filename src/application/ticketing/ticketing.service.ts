@@ -10,7 +10,7 @@ import { TicketHistory } from "../../entity/ticket_history.entity";
 import {
   SubmitTicketPost,
   ListTicketPost,
-  HistoryTicketGet
+  HistoryTicketGet,
 } from "./dto/ticketing.dto";
 @Injectable()
 export class TicketingService {
@@ -18,7 +18,7 @@ export class TicketingService {
     try {
       const repoTicket = getRepository(Ticket);
       const detailTicket = await repoTicket.findOne({
-        id: payload.ticketId
+        id: payload.ticketId,
       });
 
       if (detailTicket) {
@@ -36,9 +36,11 @@ export class TicketingService {
           this.createHistory(resultUpdate);
 
           return { isError: false, data: resultUpdate, statusCode: 200 };
+        } else {
+          return { isError: true, data: "status not changed", statusCode: 400 };
         }
       } else {
-        return { isError: false, data: "ticket id not found", statusCode: 404 };
+        return { isError: true, data: "ticket id not found", statusCode: 404 };
       }
     } catch (error) {
       console.error(error);
@@ -183,7 +185,7 @@ export class TicketingService {
         isError: false,
         data: result.length > 0 ? result : [],
         totalData: parseInt(totalData[0].totalData, 10),
-        statusCode: 200
+        statusCode: 200,
       };
 
       // const page = (payload.page - 1) * payload.limit;
@@ -265,21 +267,21 @@ export class TicketingService {
           "updaterUsername",
           "updater",
           "createdAt",
-          "updatedAt"
+          "updatedAt",
         ],
         where: {
-          ticketId: payload.ticketId
+          ticketId: payload.ticketId,
         },
         skip: page,
         take: limit,
         order: {
-          createdAt: "DESC"
-        }
+          createdAt: "DESC",
+        },
       });
       return {
         isError: false,
         data: resultGet,
-        statusCode: 200
+        statusCode: 200,
       };
     } catch (error) {
       console.error(error);

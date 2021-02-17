@@ -35,7 +35,10 @@ export class TicketingController {
     @Body() postData: SubmitTicketPost,
     @Res() res: Response
   ) {
-    const result = await this.ticketingService.submitTicket(postData, payload);
+    const result = await this.ticketingService.submitTicket(
+      postData,
+      payload.user
+    );
     res.status(result.statusCode).send(result);
   }
 

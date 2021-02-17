@@ -27,10 +27,10 @@ import { AgentLog } from "../../entity/agent_log.entity";
       AgentLog,
       mGroup,
       mUnit,
-      mTicketStatus
-    ])
+      mTicketStatus,
+    ]),
   ],
   providers: [MasterDataService],
-  controllers: [MasterDataController]
+  controllers: [MasterDataController],
 })
 export class MasterDataModule {}
